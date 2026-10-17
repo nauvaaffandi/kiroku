@@ -4,21 +4,18 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"kiroku/backend/internal/db"
+	"kiroku/backend/internal/models"
 )
 
 type Handler struct {
 	db  *db.DB
-	cfg *Config
-}
-
-type Config struct {
-	FXBaseCurrency string
+	cfg *models.Config
 }
 
 func NewHandler(db *db.DB, baseCurrency string) *Handler {
 	return &Handler{
 		db: db,
-		cfg: &Config{
+		cfg: &models.Config{
 			FXBaseCurrency: baseCurrency,
 		},
 	}

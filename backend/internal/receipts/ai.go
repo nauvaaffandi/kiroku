@@ -27,30 +27,7 @@ func NewNineRouterClient(baseURL, apiKey, modelComboName string) *NineRouterClie
 	}
 }
 
-type NineRouterMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
 
-type NineRouterRequest struct {
-	Model       string              `json:"model"`
-	Messages    []NineRouterMessage `json:"messages"`
-	Temperature float64             `json:"temperature"`
-	MaxTokens   int                 `json:"max_tokens"`
-}
-
-type NineRouterResponse struct {
-	Choices []struct {
-		Message struct {
-			Content string `json:"content"`
-		} `json:"message"`
-	} `json:"choices"`
-	Error *struct {
-		Message string `json:"message"`
-		Type    string `json:"type"`
-		Code    string `json:"code"`
-	} `json:"error"`
-}
 
 func buildSystemPrompt(categories []models.Category, accounts []models.Account, baseCurrency string, transactionTypes []string, statusValues []string, paymentTypes []string) string {
 	categoryJSON, _ := json.MarshalIndent(categories, "", "  ")
@@ -127,11 +104,11 @@ func (c *NineRouterClient) NormalizeReceipt(ctx context.Context, ocrText string,
 
 Return a JSON object with the transaction details following the schema above.`, ocrText)
 
-	reqBody := NineRouterRequest{
+	reqBody := models.NineRouterRequest{
 		Model:       c.ModelComboName,
 		Temperature: 0.1,
 		MaxTokens:   1500,
-		Messages: []NineRouterMessage{
+		Messages: []models.NineRouterMessage{
 			{Role: "system", Content: systemPrompt},
 			{Role: "user", Content: userPrompt},
 		},
@@ -155,7 +132,7 @@ Return a JSON object with the transaction details following the schema above.`, 
 	}
 	defer resp.Body.Close()
 
-	var aiResp NineRouterResponse
+	var aiResp models.NineRouterResponse
 	if err := json.NewDecoder(resp.Body).Decode(&aiResp); err != nil {
 		return nil, fmt.Errorf("decode ai response: %w", err)
 	}
@@ -214,11 +191,11 @@ VALIDATION ERRORS TO FIX:
 
 Return corrected JSON object following the exact schema. Use ONLY valid category IDs and account IDs from the reference data.`, ocrText, previousOutput, validationErrors)
 
-	reqBody := NineRouterRequest{
+	reqBody := models.NineRouterRequest{
 		Model:       c.ModelComboName,
 		Temperature: 0.1,
 		MaxTokens:   1500,
-		Messages: []NineRouterMessage{
+		Messages: []models.NineRouterMessage{
 			{Role: "system", Content: systemPrompt},
 			{Role: "user", Content: userPrompt},
 		},
@@ -242,7 +219,7 @@ Return corrected JSON object following the exact schema. Use ONLY valid category
 	}
 	defer resp.Body.Close()
 
-	var aiResp NineRouterResponse
+	var aiResp models.NineRouterResponse
 	if err := json.NewDecoder(resp.Body).Decode(&aiResp); err != nil {
 		return nil, fmt.Errorf("decode ai retry response: %w", err)
 	}

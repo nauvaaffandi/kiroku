@@ -72,3 +72,28 @@ type OCRResponse struct {
 	ErrorMessage          string `json:"ErrorMessage"`
 	ErrorDetails          string `json:"ErrorDetails"`
 }
+
+type NineRouterMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type NineRouterRequest struct {
+	Model       string              `json:"model"`
+	Messages    []NineRouterMessage `json:"messages"`
+	Temperature float64             `json:"temperature"`
+	MaxTokens   int                 `json:"max_tokens"`
+}
+
+type NineRouterResponse struct {
+	Choices []struct {
+		Message struct {
+			Content string `json:"content"`
+		} `json:"message"`
+	} `json:"choices"`
+	Error *struct {
+		Message string `json:"message"`
+		Type    string `json:"type"`
+		Code    string `json:"code"`
+	} `json:"error"`
+}

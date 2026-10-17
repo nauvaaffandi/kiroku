@@ -62,9 +62,6 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
-type passwordChangeRequestReq struct {
-    NewPassword string `json:"new_password"`
-}
 
 func (h *Handler) RequestPasswordChange(w http.ResponseWriter, r *http.Request) {
 	userID := GetUserID(r)
