@@ -24,6 +24,8 @@ type Config struct {
 	Argon2Time               uint32        `koanf:"argon2_time"`
 	Argon2Memory             uint32        `koanf:"argon2_memory"`
 	Argon2Threads            uint8         `koanf:"argon2_threads"`
+	// WARNING: Changing Argon2 parameters will invalidate existing password hashes.
+	// All existing users will need to reset their passwords.
 	FXBaseCurrency           string        `koanf:"fx_base_currency"`
 	BackupSchedule           string        `koanf:"backup_schedule"`
 	BackupRetentionDaily     int           `koanf:"backup_retention_daily"`
@@ -43,7 +45,32 @@ type Config struct {
 	TunnelEnabled            bool          `koanf:"tunnel_enabled"`
 }
 
+func loadDotEnv() {
+	paths := []string{".env", "../.env"}
+	for _, p := range paths {
+		b, err := os.ReadFile(p)
+		if err != nil {
+			continue
+		}
+		for _, line := range strings.Split(string(b), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) == 2 {
+				key := strings.TrimSpace(parts[0])
+				val := strings.Trim(strings.TrimSpace(parts[1]), `"'`)
+				if _, exists := os.LookupEnv(key); !exists {
+					os.Setenv(key, val)
+				}
+			}
+		}
+	}
+}
+
 func Load() (*Config, error) {
+	loadDotEnv()
 	k := koanf.New(".")
 
 	k.Load(file.Provider(filepath.Join(".", "config.yaml")), yaml.Parser())
@@ -128,8 +155,12 @@ func Load() (*Config, error) {
 	if cfg.UpstashRedisRestToken == "" {
 		cfg.UpstashRedisRestToken = os.Getenv("UPSTASH_REDIS_REST_TOKEN")
 	}
-	// Default TunnelEnabled to true unless explicitly configured to false
-	if os.Getenv("KIROKU_TUNNEL_ENABLED") != "false" {
+	if cfg.UpstashRedisRestToken == "" {
+		cfg.UpstashRedisRestToken = os.Getenv("BACKEND_UPSTASH_REDIS_REST_TOKEN")
+	}
+	if os.Getenv("KIROKU_TUNNEL_ENABLED") == "false" || os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") == "false" {
+		cfg.TunnelEnabled = false
+	} else {
 		cfg.TunnelEnabled = true
 	}
 

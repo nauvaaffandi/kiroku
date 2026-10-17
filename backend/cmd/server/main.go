@@ -69,6 +69,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(realIP)
+	r.Use(corsMiddleware)
 	r.Use(middleware.Recoverer)
 	if devMode {
 		r.Use(middleware.Logger)
@@ -85,7 +86,7 @@ func main() {
 	))
 
 	authHandler := auth.NewHandler(database, cfg, tgService)
-	r.Mount("/api/v1/auth", authHandler.Routes())
+	authHandler.CheckAndResetPasswordHash()
 
 	tgHandler := tgService.Routes()
 	r.Mount("/api/v1/telegram", tgHandler)
@@ -94,9 +95,24 @@ func main() {
 	sharedHandler := shared.NewHandler(database)
 	r.Mount("/shared", sharedHandler.Routes())
 
+	// Public auth routes (login, logout, password reset)
+	r.Route("/api/v1/auth", func(r chi.Router) {
+		r.Post("/login", authHandler.Login)
+		r.Post("/logout", authHandler.Logout)
+		r.Post("/password", authHandler.ChangePassword)
+		r.Post("/password/change-request", authHandler.RequestPasswordChange)
+		r.Post("/password/verify", authHandler.VerifyPasswordChange)
+		r.Post("/password/reset-request", authHandler.RequestPasswordReset)
+		r.Post("/password/reset-verify", authHandler.VerifyPasswordReset)
+		r.Post("/telegram/register-token", authHandler.GenerateRegisterToken)
+		r.Get("/telegram/status", authHandler.GetTelegramStatus)
+	})
+
 	// Protected routes
 	r.Group(func(r chi.Router) {
 		r.Use(auth.AuthMiddleware(cfg))
+
+		r.Get("/api/v1/auth/me", authHandler.Me)
 
 		accountsHandler := accounts.NewHandler(database)
 		r.Mount("/api/v1/accounts", accountsHandler.Routes())
@@ -270,6 +286,26 @@ func strPtr(s string) *string {
 func realIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Safe passthrough without trusting untrusted proxy headers unless behind known proxy
+		next.ServeHTTP(w, r)
+	})
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSRF-Token")
+			w.Header().Set("Access-Control-Max-Age", "86400")
+		}
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }

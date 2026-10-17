@@ -60,7 +60,7 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var accounts []models.Account
+	accounts := []models.Account{}
 	for rows.Next() {
 		var a models.Account
 		if err := rows.Scan(&a.ID, &a.Name, &a.Currency, &a.Type, &a.Icon, &a.Color, &a.Archived, &a.Balance); err != nil {

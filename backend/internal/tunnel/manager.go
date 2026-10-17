@@ -1,7 +1,9 @@
 package tunnel
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -157,13 +159,19 @@ func (m *Manager) pushToUpstash(url string) {
 		return
 	}
 
-	reqURL := fmt.Sprintf("%s/set/kiroku:backend:url/%s?EX=86400", m.upstashURL, url)
-	req, err := http.NewRequest("POST", reqURL, nil)
+	body, err := json.Marshal([]any{"SET", "kiroku:backend:url", url, "EX", 86400})
+	if err != nil {
+		log.Error().Err(err).Msg("tunnel: marshal upstash payload")
+		return
+	}
+
+	req, err := http.NewRequest("POST", m.upstashURL, bytes.NewReader(body))
 	if err != nil {
 		log.Error().Err(err).Msg("tunnel: create upstash request")
 		return
 	}
 	req.Header.Set("Authorization", "Bearer "+m.upstashToken)
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{Timeout: 5 * time.Second}
 	resp, err := client.Do(req)

@@ -42,7 +42,10 @@ export default {
     sharedAccess: 'Akses Berbagi',
     settings: 'Pengaturan',
     about: 'Tentang',
-    logout: 'Keluar'
+    logout: 'Keluar',
+    login: 'Masuk',
+    scanReceipt: 'Pindai Struk',
+    Login: 'Masuk'
   },
   dashboard: {
     title: 'Dasbor',

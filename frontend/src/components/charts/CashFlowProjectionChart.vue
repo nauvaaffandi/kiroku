@@ -129,7 +129,7 @@ async function fetchData() {
     if (selectedAccount.value) params.append('account_id', selectedAccount.value)
     if (selectedCurrency.value) params.append('currency', selectedCurrency.value)
 
-    const res = await api.get<CashFlowResponse>(`/analytics/cashflow/projection?${params}`)
+    const res = await api.get<CashFlowResponse>(`/api/v1/analytics/cashflow/projection?${params}`)
     projectionData.value = res.data.projected_balance || []
     selectedCurrency.value = res.data.projected_balance[0]?.currency || 'JPY'
   } catch (e) {

@@ -5,12 +5,15 @@ backend/*.db
 backend/*.db-*
 backend/go.work
 backend/go.work.sum
+backend/**/*_test.go
+backend/server
 
 # Frontend
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 frontend/*.local
+frontend/dev-dist/
 
 # Config
 config/ecosystem.config.js

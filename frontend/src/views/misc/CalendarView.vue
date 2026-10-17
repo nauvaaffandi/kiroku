@@ -135,7 +135,7 @@ async function fetchCalendar() {
     })
     if (selectedAccount.value) params.append('account_id', selectedAccount.value)
 
-    const res = await api.get<{ days: CalendarDayBackend[] }>(`/analytics/calendar?${params}`)
+    const res = await api.get<{ days: CalendarDayBackend[] }>(`/api/v1/analytics/calendar?${params}`)
     const map = new Map<string, CalendarDayBackend>()
     res.data.days.forEach(d => map.set(d.date, d))
     calendarData.value = map

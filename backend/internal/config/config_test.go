@@ -31,3 +31,12 @@ func TestConfig_DefaultsAndFallbacks(t *testing.T) {
 	assert.Equal(t, "test-token", cfg.UpstashRedisRestToken)
 	assert.True(t, cfg.TunnelEnabled)
 }
+
+func TestConfig_BackendUpstashTokenFallback(t *testing.T) {
+	os.Setenv("BACKEND_UPSTASH_REDIS_REST_TOKEN", "backend-token-xyz")
+	defer os.Unsetenv("BACKEND_UPSTASH_REDIS_REST_TOKEN")
+
+	cfg, err := Load()
+	require.NoError(t, err)
+	assert.Equal(t, "backend-token-xyz", cfg.UpstashRedisRestToken)
+}

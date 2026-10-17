@@ -20,6 +20,12 @@ fi
 
 cd "$PROJECT_ROOT"
 
+if [[ -f "$PROJECT_ROOT/.env" ]]; then
+    set -a
+    source "$PROJECT_ROOT/.env"
+    set +a
+fi
+
 pm2 delete all 2>/dev/null || true
 
 mkdir -p config backend/data backend/bin backend/logs frontend/logs
@@ -47,7 +53,12 @@ module.exports = {
         HOST: "0.0.0.0",
         INSITU_ADDR: ":8080",
         INSITU_DATA_DIR: process.env.PROJECT_ROOT + "/backend/data",
-        CGO_ENABLED: "0"
+        CGO_ENABLED: "0",
+        UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL || "",
+        UPSTASH_REDIS_REST_TOKEN: process.env.BACKEND_UPSTASH_REDIS_REST_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "",
+        BACKEND_UPSTASH_REDIS_REST_TOKEN: process.env.BACKEND_UPSTASH_REDIS_REST_TOKEN || "",
+        CLOUDFLARE_TUNNEL_ENABLED: "true",
+        KIROKU_TUNNEL_ENABLED: "true"
       },
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,

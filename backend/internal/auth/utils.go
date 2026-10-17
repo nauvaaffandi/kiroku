@@ -39,14 +39,13 @@ func (h *Handler) getOrCreateUser() (string, error) {
 
 // setAuthCookies sets the access and refresh cookies on the response
 func setAuthCookies(w http.ResponseWriter, accessToken, refreshToken string, accessTTL, refreshTTL time.Duration) {
-    secure := false // dev mode
     http.SetCookie(w, &http.Cookie{
         Name:     "access_token",
         Value:    accessToken,
         Path:     "/",
         HttpOnly: true,
-        Secure:   secure,
-        SameSite: http.SameSiteLaxMode,
+        Secure:   true,
+        SameSite: http.SameSiteNoneMode,
         MaxAge:   int(accessTTL.Seconds()),
     })
     http.SetCookie(w, &http.Cookie{
@@ -54,8 +53,8 @@ func setAuthCookies(w http.ResponseWriter, accessToken, refreshToken string, acc
         Value:    refreshToken,
         Path:     "/",
         HttpOnly: true,
-        Secure:   secure,
-        SameSite: http.SameSiteLaxMode,
+        Secure:   true,
+        SameSite: http.SameSiteNoneMode,
         MaxAge:   int(refreshTTL.Seconds()),
     })
 }
@@ -67,6 +66,8 @@ func clearAuthCookies(w http.ResponseWriter) {
         Value:    "",
         Path:     "/",
         HttpOnly: true,
+        Secure:   true,
+        SameSite: http.SameSiteNoneMode,
         MaxAge:   -1,
     })
     http.SetCookie(w, &http.Cookie{
@@ -74,9 +75,42 @@ func clearAuthCookies(w http.ResponseWriter) {
         Value:    "",
         Path:     "/",
         HttpOnly: true,
+        Secure:   true,
+        SameSite: http.SameSiteNoneMode,
         MaxAge:   -1,
     })
 }
 
 // ensure log is used to avoid unused import
 var _ = log.Error
+
+// CheckAndResetPasswordHash verifies the default user's password hash on startup.
+// If verification fails (e.g., due to Argon2 config change), it resets the hash.
+func (h *Handler) CheckAndResetPasswordHash() {
+	var userID, hash string
+	err := h.db.QueryRow("SELECT id, password_hash FROM users LIMIT 1").Scan(&userID, &hash)
+	if err != nil {
+		return // No user exists yet, will be created on first login
+	}
+
+	ok, err := VerifyPassword("123456", hash)
+	if err == nil && ok {
+		return // Password hash is valid
+	}
+
+	log.Warn().Msg("auth: default password hash invalid, resetting")
+
+	newHash, err := HashPassword("123456", h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	if err != nil {
+		log.Error().Err(err).Msg("auth: failed to hash new password")
+		return
+	}
+
+	_, err = h.db.Exec("UPDATE users SET password_hash = ? WHERE id = ?", newHash, userID)
+	if err != nil {
+		log.Error().Err(err).Msg("auth: failed to reset password hash")
+		return
+	}
+
+	log.Info().Msg("auth: password hash reset successfully")
+}

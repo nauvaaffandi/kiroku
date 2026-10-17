@@ -86,7 +86,9 @@ const isDark = ref(false)
 
 const pageTitle = computed(() => {
   const name = route.name as string
-  return t(`nav.${name}`) || name || t('nav.dashboard')
+  if (!name) return t('nav.dashboard')
+  const key = name.charAt(0).toLowerCase() + name.slice(1)
+  return t(`nav.${key}`) || name
 })
 
 const changeCurrency = async (e: Event) => {

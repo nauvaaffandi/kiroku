@@ -42,7 +42,10 @@ export default {
     sharedAccess: '共有アクセス',
     settings: '設定',
     about: 'アプリについて',
-    logout: 'ログアウト'
+    logout: 'ログアウト',
+    login: 'ログイン',
+    scanReceipt: 'レシートスキャン',
+    Login: 'ログイン'
   },
   dashboard: {
     title: 'ダッシュボード',

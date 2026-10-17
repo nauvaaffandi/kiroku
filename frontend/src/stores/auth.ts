@@ -11,13 +11,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!user.value)
 
-  const init = async () => {
-    try {
-      await fetchUser()
-    } catch {
-      showPasswordOverlay.value = true
-    }
+const init = async () => {
+  try {
+    await fetchUser()
+    showPasswordOverlay.value = false
+  } catch {
+    showPasswordOverlay.value = true
   }
+}
 
   const fetchUser = async () => {
     const response = await api.get('/api/v1/auth/me')

@@ -42,7 +42,10 @@ export default {
     sharedAccess: 'Shared Access',
     settings: 'Settings',
     about: 'About',
-    logout: 'Logout'
+    logout: 'Logout',
+    login: 'Login',
+    scanReceipt: 'Scan Receipt',
+    Login: 'Login'
   },
   dashboard: {
     title: 'Dashboard',

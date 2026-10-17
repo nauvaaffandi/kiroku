@@ -18,28 +18,37 @@ export const useBackendUrlStore = defineStore('backendUrl', () => {
     error.value = null
 
     try {
+      const upstashUrl = import.meta.env.VITE_UPSTASH_URL
+      const upstashToken = import.meta.env.VITE_FRONTEND_UPSTASH_REDIS_REST_TOKEN
+
+      if (upstashUrl && upstashToken) {
+        for (let attempt = 0; attempt < 5; attempt++) {
+          try {
+            const response = await fetch(`${upstashUrl}/get/kiroku:backend:url`, {
+              headers: { Authorization: `Bearer ${upstashToken}` }
+            })
+            if (response.ok) {
+              const data = await response.json()
+              if (data.result) {
+                url.value = data.result
+                localStorage.setItem('kiroku_backend_url', data.result)
+                return data.result
+              }
+            }
+          } catch {
+            // retry on network error
+          }
+          if (attempt < 4) {
+            await new Promise((r) => setTimeout(r, 1000))
+          }
+        }
+      }
+
       const envUrl = import.meta.env.VITE_API_BASE_URL
       if (envUrl && !envUrl.includes('localhost')) {
         url.value = envUrl
         localStorage.setItem('kiroku_backend_url', envUrl)
         return envUrl
-      }
-
-      const upstashUrl = import.meta.env.VITE_UPSTASH_URL
-      const upstashToken = import.meta.env.VITE_FRONTEND_UPSTASH_REDIS_REST_TOKEN
-
-      if (upstashUrl && upstashToken) {
-        const response = await fetch(`${upstashUrl}/get/kiroku:backend:url`, {
-          headers: { Authorization: `Bearer ${upstashToken}` }
-        })
-        if (response.ok) {
-          const data = await response.json()
-          if (data.result) {
-            url.value = data.result
-            localStorage.setItem('kiroku_backend_url', data.result)
-            return data.result
-          }
-        }
       }
 
       const cached = localStorage.getItem('kiroku_backend_url')

@@ -103,7 +103,7 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var transactions []models.Transaction
+	transactions := []models.Transaction{}
 	for rows.Next() {
 		var t models.Transaction
 		var fromAcc, toAcc, catID, templateID sql.NullString
@@ -164,7 +164,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var transactions []models.Transaction
+	transactions := []models.Transaction{}
 	for rows.Next() {
 		var t models.Transaction
 		var fromAcc, toAcc, catID, templateID sql.NullString
