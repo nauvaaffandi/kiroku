@@ -7,6 +7,7 @@ backend/go.work
 backend/go.work.sum
 backend/**/*_test.go
 backend/server
+backend/config.yaml
 
 # Frontend
 frontend/node_modules/
@@ -42,7 +43,8 @@ Thumbs.db
 graphify-out/
 
 # Working
-**/.air.toml
+scripts/
+**/node_modules
 **/tmp/
 .working/
 
@@ -56,15 +58,7 @@ graphify-out/
 CLAUDE.md
 AGENTS.md
 
-# Working directory
-scripts/
-**/node_modules/
-
 
 # Other
 **/cookie.txt
 **/cookies.txt
-
-# Code-hygiene
-**/.code-hygiene/
-.hygieneignore
