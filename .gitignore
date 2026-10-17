@@ -1,0 +1,67 @@
+# Backend
+backend/bin/
+backend/data/
+backend/*.db
+backend/*.db-*
+backend/go.work
+backend/go.work.sum
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.local
+
+# Config
+config/ecosystem.config.js
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Graphify
+graphify-out/
+
+# Working
+**/.air.toml
+**/tmp/
+.working/
+
+# Build artifacts
+*.tar.gzp
+*.tar.gz.enc
+
+# Agent
+.agent/
+.claude/
+CLAUDE.md
+AGENTS.md
+
+# Working directory
+scripts/
+**/node_modules/
+
+
+# Other
+**/cookie.txt
+**/cookies.txt
+
+# Code-hygiene
+**/.code-hygiene/
+.hygieneignore

@@ -1,0 +1,19 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Personal Finance Tracker API",
+        "title": "Kiroku API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {},
+    "securityDefinitions": {
+        "CookieAuth": {
+            "type": "apiKey",
+            "name": "auth_token",
+            "in": "cookie"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: Personal Finance Tracker API
+  title: Kiroku API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  CookieAuth:
+    in: cookie
+    name: auth_token
+    type: apiKey
+swagger: "2.0"

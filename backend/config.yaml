@@ -1,0 +1,14 @@
+addr: ":8080"
+data_dir: "./data"
+db_path: "kiroku.db"
+jwt_secret: "dev-secret-change-in-production-at-least-32-chars-long"
+jwt_access_ttl: "15m"
+jwt_refresh_ttl: "168h"
+argon2_time: 3
+argon2_memory: 65536
+argon2_threads: 4
+fx_base_currency: "JPY"
+backup_schedule: "0 3 * * *"
+backup_retention_daily: 7
+backup_retention_weekly: 4
+backup_retention_monthly: 6
