@@ -45,6 +45,7 @@ type Config struct {
 	UpstashRedisRestURL      string `koanf:"upstash_redis_rest_url"`
 	UpstashRedisRestToken    string `koanf:"upstash_redis_rest_token"`
 	TunnelEnabled            bool   `koanf:"tunnel_enabled"`
+	LogRetention             string `koanf:"log_retention"`
 }
 
 func loadDotEnv() {
@@ -168,6 +169,15 @@ func Load() (*Config, error) {
 	}
 	if cfg.UpstashRedisRestToken == "" {
 		cfg.UpstashRedisRestToken = os.Getenv("BACKEND_UPSTASH_REDIS_REST_TOKEN")
+	}
+	if cfg.LogRetention == "" {
+		cfg.LogRetention = os.Getenv("KIROKU_LOG_RETENTION")
+	}
+	if cfg.LogRetention == "" {
+		cfg.LogRetention = os.Getenv("LOG_RETENTION")
+	}
+	if cfg.LogRetention == "" {
+		cfg.LogRetention = "90d"
 	}
 	if os.Getenv("KIROKU_TUNNEL_ENABLED") == "false" || os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") == "false" {
 		cfg.TunnelEnabled = false
