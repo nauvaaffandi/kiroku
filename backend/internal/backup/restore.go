@@ -2,50 +2,19 @@ package backup
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
-	"encoding/json"
+	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"kiroku/backend/internal/auth"
 )
 
-func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
-	userID := auth.GetUserID(r)
-	if userID == "" {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	file, _, err := r.FormFile("file")
+func restoreTarGz(data []byte) error {
+	gzr, err := gzip.NewReader(bytes.NewReader(data))
 	if err != nil {
-		http.Error(w, "file required", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		http.Error(w, "read error", http.StatusBadRequest)
-		return
-	}
-
-	if h.cfg.BackupPassphrase != "" {
-		data, err = decrypt(data, h.cfg.BackupPassphrase)
-		if err != nil {
-			http.Error(w, "decrypt error (check passphrase)", http.StatusBadRequest)
-			return
-		}
-	}
-
-	// Extract tar.gz from data
-	gzr, err := gzip.NewReader(&readSeeker{data: data})
-	if err != nil {
-		http.Error(w, "invalid backup format", http.StatusBadRequest)
-		return
+		return fmt.Errorf("invalid backup format")
 	}
 	defer gzr.Close()
 
@@ -58,46 +27,45 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if err != nil {
-			break
+			return fmt.Errorf("read archive: %w", err)
 		}
 
-		if header.Name == "manifest.json" {
+		switch {
+		case header.Name == "manifest.json":
 			hasManifest = true
-		} else if header.Name == "kiroku.db" {
-			dbOut, err := os.Create("data/kiroku.db")
-			if err == nil {
-				io.Copy(dbOut, tr)
-				dbOut.Close()
+		case header.Name == "kiroku.db":
+			if err := writeAll("data/kiroku.db", tr); err != nil {
+				return err
 			}
-		} else if strings.HasPrefix(header.Name, "attachments/") {
-			os.MkdirAll(filepath.Dir(filepath.Join("data", header.Name)), 0755)
-			attOut, err := os.Create(filepath.Join("data", header.Name))
-			if err == nil {
-				io.Copy(attOut, tr)
-				attOut.Close()
+		case strings.HasPrefix(header.Name, "attachments/"):
+			if err := writeAll(filepath.Join("data", header.Name), tr); err != nil {
+				return err
 			}
 		}
 	}
 
 	if !hasManifest {
-		http.Error(w, "invalid backup: missing manifest", http.StatusBadRequest)
-		return
+		return fmt.Errorf("missing manifest")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"status": "restored successfully. please restart server."})
+	return nil
 }
 
-type readSeeker struct {
-	data []byte
-	pos  int
-}
-
-func (r *readSeeker) Read(p []byte) (n int, err error) {
-	n = copy(p, r.data[r.pos:])
-	r.pos += n
-	if n == 0 {
-		return 0, io.EOF
+func writeAll(path string, r io.Reader) error {
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
 	}
-	return n, nil
+	tmp, err := os.CreateTemp(filepath.Dir(path), ".tmp-*")
+	if err != nil {
+		return err
+	}
+	tmpName := tmp.Name()
+	defer os.Remove(tmpName)
+	if _, err := io.Copy(tmp, r); err != nil {
+		tmp.Close()
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmpName, path)
 }

@@ -1,6 +1,7 @@
 # Backend
 backend/bin/
 backend/data/
+backend/backup/
 backend/*.db
 backend/*.db-*
 backend/go.work

@@ -15,34 +15,36 @@ import (
 )
 
 type Config struct {
-	Addr                     string        `koanf:"addr"`
-	DataDir                  string        `koanf:"data_dir"`
-	DBPath                   string        `koanf:"db_path"`
-	JWTSecret                string        `koanf:"jwt_secret"`
-	JWTAccessTTL             time.Duration `koanf:"jwt_access_ttl"`
-	JWTRefreshTTL            time.Duration `koanf:"jwt_refresh_ttl"`
-	Argon2Time               uint32        `koanf:"argon2_time"`
-	Argon2Memory             uint32        `koanf:"argon2_memory"`
-	Argon2Threads            uint8         `koanf:"argon2_threads"`
+	Addr          string        `koanf:"addr"`
+	DataDir       string        `koanf:"data_dir"`
+	DBPath        string        `koanf:"db_path"`
+	JWTSecret     string        `koanf:"jwt_secret"`
+	JWTAccessTTL  time.Duration `koanf:"jwt_access_ttl"`
+	JWTRefreshTTL time.Duration `koanf:"jwt_refresh_ttl"`
+	Argon2Time    uint32        `koanf:"argon2_time"`
+	Argon2Memory  uint32        `koanf:"argon2_memory"`
+	Argon2Threads uint8         `koanf:"argon2_threads"`
 	// WARNING: Changing Argon2 parameters will invalidate existing password hashes.
 	// All existing users will need to reset their passwords.
-	FXBaseCurrency           string        `koanf:"fx_base_currency"`
-	BackupSchedule           string        `koanf:"backup_schedule"`
-	BackupRetentionDaily     int           `koanf:"backup_retention_daily"`
-	BackupRetentionWeekly    int           `koanf:"backup_retention_weekly"`
-	BackupRetentionMonthly   int           `koanf:"backup_retention_monthly"`
-	BackupPassphrase         string        `koanf:"backup_passphrase"`
-	OCRSpaceAPIKey           string        `koanf:"ocr_space_api_key"`
-	NineRouterBaseURL        string        `koanf:"ninerouter_base_url"`
-	NineRouterAPIKey         string        `koanf:"ninerouter_api_key"`
-	NineRouterModelComboName string        `koanf:"ninerouter_model_combo_name"`
-	MockOCREnabled           bool          `koanf:"mock_ocr_enabled"`
-	TelegramBotToken         string        `koanf:"telegram_bot_token"`
-	TelegramBotUsername      string        `koanf:"telegram_bot_username"`
-	TelegramWebhookSecret    string        `koanf:"telegram_webhook_secret"`
-	UpstashRedisRestURL      string        `koanf:"upstash_redis_rest_url"`
-	UpstashRedisRestToken    string        `koanf:"upstash_redis_rest_token"`
-	TunnelEnabled            bool          `koanf:"tunnel_enabled"`
+	FXBaseCurrency           string `koanf:"fx_base_currency"`
+	BackupSchedule           string `koanf:"backup_schedule"`
+	BackupRetentionDaily     int    `koanf:"backup_retention_daily"`
+	BackupRetentionWeekly    int    `koanf:"backup_retention_weekly"`
+	BackupRetentionMonthly   int    `koanf:"backup_retention_monthly"`
+	BackupPassphrase         string `koanf:"backup_passphrase"`
+	BackupRepoPath           string `koanf:"backup_repo_path"`
+	BackupGitToken           string `koanf:"backup_git_token"`
+	OCRSpaceAPIKey           string `koanf:"ocr_space_api_key"`
+	NineRouterBaseURL        string `koanf:"ninerouter_base_url"`
+	NineRouterAPIKey         string `koanf:"ninerouter_api_key"`
+	NineRouterModelComboName string `koanf:"ninerouter_model_combo_name"`
+	MockOCREnabled           bool   `koanf:"mock_ocr_enabled"`
+	TelegramBotToken         string `koanf:"telegram_bot_token"`
+	TelegramBotUsername      string `koanf:"telegram_bot_username"`
+	TelegramWebhookSecret    string `koanf:"telegram_webhook_secret"`
+	UpstashRedisRestURL      string `koanf:"upstash_redis_rest_url"`
+	UpstashRedisRestToken    string `koanf:"upstash_redis_rest_token"`
+	TunnelEnabled            bool   `koanf:"tunnel_enabled"`
 }
 
 func loadDotEnv() {
@@ -124,6 +126,15 @@ func Load() (*Config, error) {
 	}
 	if cfg.BackupRetentionMonthly == 0 {
 		cfg.BackupRetentionMonthly = 6
+	}
+	if cfg.BackupRepoPath == "" {
+		cfg.BackupRepoPath = "backup/kiroku-backup-storage"
+	}
+	if cfg.BackupGitToken == "" {
+		cfg.BackupGitToken = os.Getenv("KIROKU_BACKUP_GIT_TOKEN")
+	}
+	if cfg.BackupGitToken == "" {
+		cfg.BackupGitToken = os.Getenv("BACKUP_GIT_TOKEN")
 	}
 	if cfg.NineRouterBaseURL == "" {
 		cfg.NineRouterBaseURL = "http://localhost:20128/v1"

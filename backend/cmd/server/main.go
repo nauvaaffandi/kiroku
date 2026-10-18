@@ -108,6 +108,8 @@ func main() {
 		r.Get("/telegram/status", authHandler.GetTelegramStatus)
 	})
 
+	backupHandler := backup.NewHandler(database, cfg)
+
 	// Protected routes
 	r.Group(func(r chi.Router) {
 		r.Use(auth.AuthMiddleware(cfg))
@@ -132,7 +134,6 @@ func main() {
 		reportsHandler := reports.NewHandler(database, cfg)
 		r.Mount("/api/v1/reports", reportsHandler.Routes())
 
-		backupHandler := backup.NewHandler(database, cfg)
 		r.Mount("/api/v1/backup", backupHandler.Routes())
 
 		fxHandler := fx.NewHandler(database, cfg)
@@ -158,6 +159,9 @@ func main() {
 
 	// Start FX scheduler
 	fx.StartScheduler(database, cfg.FXBaseCurrency, cfg.BackupSchedule)
+
+	// Start backup scheduler (XLSX -> local git repo -> GitHub when configured)
+	backup.StartScheduler(backupHandler.Scheduler())
 
 	// Start Cloudflare tunnel manager & coordinate Telegram webhook
 	if cfg.TunnelEnabled {
