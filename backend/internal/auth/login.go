@@ -15,8 +15,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.PIN == "" {
-		http.Error(w, "pin required", http.StatusBadRequest)
+	if err := ValidatePIN(req.PIN); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

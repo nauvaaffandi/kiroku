@@ -25,8 +25,12 @@ func (h *Handler) ChangePin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.CurrentPIN == "" || req.NewPIN == "" {
-		http.Error(w, "current_pin and new_pin required", http.StatusBadRequest)
+	if err := ValidatePIN(req.CurrentPIN); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := ValidatePIN(req.NewPIN); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -75,8 +79,8 @@ func (h *Handler) RequestPinChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.NewPIN == "" {
-		http.Error(w, "new_pin required", http.StatusBadRequest)
+	if err := ValidatePIN(req.NewPIN); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -132,8 +136,12 @@ func (h *Handler) VerifyPinChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Token == "" || req.NewPIN == "" {
-		http.Error(w, "token and new_pin required", http.StatusBadRequest)
+	if req.Token == "" {
+		http.Error(w, "token required", http.StatusBadRequest)
+		return
+	}
+	if err := ValidatePIN(req.NewPIN); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -242,8 +250,12 @@ func (h *Handler) VerifyPinReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Token == "" || req.NewPIN == "" {
-		http.Error(w, "token and new_pin required", http.StatusBadRequest)
+	if req.Token == "" {
+		http.Error(w, "token required", http.StatusBadRequest)
+		return
+	}
+	if err := ValidatePIN(req.NewPIN); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

@@ -66,7 +66,8 @@ const close = () => {
               v-model="oldPin"
               type="password"
               inputmode="numeric"
-              pattern="[0-9]*"
+              pattern="[0-9]{6}"
+              maxlength="6"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -78,7 +79,8 @@ const close = () => {
               v-model="newPin"
               type="password"
               inputmode="numeric"
-              pattern="[0-9]*"
+              pattern="[0-9]{6}"
+              maxlength="6"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -90,7 +92,8 @@ const close = () => {
               v-model="confirmPin"
               type="password"
               inputmode="numeric"
-              pattern="[0-9]*"
+              pattern="[0-9]{6}"
+              maxlength="6"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />

@@ -18,7 +18,8 @@
             v-model="pin"
             type="password"
             inputmode="numeric"
-            pattern="[0-9]*"
+            pattern="[0-9]{6}"
+            maxlength="6"
             required
             autocomplete="current-password"
             :disabled="authStore.loading"

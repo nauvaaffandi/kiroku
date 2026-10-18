@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"golang.org/x/crypto/argon2"
 )
@@ -19,7 +20,24 @@ const (
 	saltLen       = 16
 )
 
-var ErrInvalidHash = errors.New("invalid hash format")
+var (
+	ErrInvalidHash = errors.New("invalid hash format")
+	ErrInvalidPIN  = errors.New("pin must be exactly 6 numeric digits")
+)
+
+const pinLen = 6
+
+func ValidatePIN(pin string) error {
+	if len(pin) != pinLen {
+		return ErrInvalidPIN
+	}
+	for _, r := range pin {
+		if !unicode.IsDigit(r) {
+			return ErrInvalidPIN
+		}
+	}
+	return nil
+}
 
 func HashPin(pin string, time, memory uint32, threads uint8) (string, error) {
 	salt := make([]byte, saltLen)
