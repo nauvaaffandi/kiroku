@@ -6,19 +6,17 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<{ user_id: string } | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const showPasswordOverlay = ref(false)
   const isChangingPassword = ref(false)
 
   const isAuthenticated = computed(() => !!user.value)
 
-const init = async () => {
-  try {
-    await fetchUser()
-    showPasswordOverlay.value = false
-  } catch {
-    showPasswordOverlay.value = true
+  const init = async () => {
+    try {
+      await fetchUser()
+    } catch {
+      // unauthenticated -> router redirects to /login
+    }
   }
-}
 
   const fetchUser = async () => {
     const response = await api.get('/api/v1/auth/me')
@@ -31,7 +29,6 @@ const init = async () => {
     try {
       await api.post('/api/v1/auth/login', { password })
       await fetchUser()
-      showPasswordOverlay.value = false
       return true
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Invalid password'
@@ -46,7 +43,6 @@ const init = async () => {
       await api.post('/api/v1/auth/logout')
     } finally {
       user.value = null
-      showPasswordOverlay.value = true
     }
   }
 
@@ -71,7 +67,6 @@ const init = async () => {
     user,
     loading,
     error,
-    showPasswordOverlay,
     isChangingPassword,
     isAuthenticated,
     init,
