@@ -1,8 +1,16 @@
 <template>
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-    <line x1="2" y1="10" x2="22" y2="10"></line>
-  </svg>
+  <Wallet class="lucide-icon" />
 </template>
-
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Wallet } from '@lucide/vue'
+</script>
+<style scoped>
+.lucide-icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  display: inline-block;
+  color: currentColor;
+  vertical-align: middle;
+}
+</style>

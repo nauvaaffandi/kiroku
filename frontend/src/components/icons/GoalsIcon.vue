@@ -1,9 +1,16 @@
 <template>
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-    <path d="M2 17l10 5 10-5"></path>
-    <path d="M2 12l10 5 10-5"></path>
-    <circle cx="12" cy="12" r="3"></circle>
-  </svg>
+  <Target class="lucide-icon" />
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Target } from '@lucide/vue'
+</script>
+<style scoped>
+.lucide-icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  display: inline-block;
+  color: currentColor;
+  vertical-align: middle;
+}
+</style>
