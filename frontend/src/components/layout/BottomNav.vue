@@ -56,6 +56,7 @@ const isActive = (path: string) => {
   justify-content: center;
   flex: 1;
   height: 100%;
+  flex-shrink: 0;
   color: var(--color-neutral-500);
   text-decoration: none;
   transition: color 0.2s ease;
@@ -68,6 +69,8 @@ const isActive = (path: string) => {
 .bottom-nav-icon {
   width: 1.25rem;
   height: 1.25rem;
+  flex-shrink: 0;
+  color: currentColor;
   margin-bottom: 0.125rem;
 }
 
