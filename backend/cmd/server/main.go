@@ -10,6 +10,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -71,9 +72,7 @@ func main() {
 	r.Use(realIP)
 	r.Use(corsMiddleware)
 	r.Use(middleware.Recoverer)
-	if devMode {
-		r.Use(middleware.Logger)
-	}
+	r.Use(loggingMiddleware)
 
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -312,4 +311,70 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+type statusWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (w *statusWriter) WriteHeader(code int) {
+	w.status = code
+	w.ResponseWriter.WriteHeader(code)
+}
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		ww := &statusWriter{ResponseWriter: w, status: http.StatusOK}
+		next.ServeHTTP(ww, r)
+		duration := time.Since(start)
+		ip := ipFromRequest(r)
+		fmt.Printf("%s%s%s %s %s%s%s %s%d%s %s%v%s %s\n",
+			colorReset, colorMethod, r.Method,
+			r.URL.Path,
+			colorTime, time.Now().Format("15:04:05"), colorReset,
+			colorStatus(ww.status), ww.status, colorReset,
+			colorDuration, duration, colorReset,
+			ip,
+		)
+	})
+}
+
+func colorStatus(code int) string {
+	switch {
+	case code >= 200 && code < 300:
+		return colorGreen
+	case code >= 300 && code < 400:
+		return colorYellow
+	case code >= 400 && code < 500:
+		return colorRed
+	default:
+		return colorRedBold
+	}
+}
+
+const (
+	colorReset  = "\033[0m"
+	colorRed    = "\033[31m"
+	colorRedBold = "\033[1;31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorBlue   = "\033[34m"
+	colorMagenta = "\033[35m"
+	colorCyan   = "\033[36m"
+	colorMethod = colorCyan
+	colorTime   = colorMagenta
+	colorDuration = colorYellow
+)
+
+func ipFromRequest(r *http.Request) string {
+	ip := r.RemoteAddr
+	if colon := strings.LastIndex(ip, ":"); colon >= 0 {
+		ip = ip[:colon]
+	}
+	if ip == "" {
+		ip = "0.0.0.0"
+	}
+	return ip
 }
