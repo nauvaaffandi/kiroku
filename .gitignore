@@ -17,6 +17,9 @@ frontend/.vite/
 frontend/*.local
 frontend/dev-dist/
 
+# Logctl
+logctl/logctl
+
 # Config
 config/ecosystem.config.js
 
@@ -24,6 +27,7 @@ config/ecosystem.config.js
 .env
 .env.local
 .env.*.local
+**/.env
 
 # Logs
 *.log
