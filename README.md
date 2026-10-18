@@ -1,6 +1,14 @@
 # Kiroku — Personal Finance Tracker
 
-Self-hosted, single-user, multi-account/multi-currency personal finance tracker with Japanese precision.
+Self-hosted, multi-account, multi-currency personal finance tracker with Japanese household taxonomy and precision.
+
+## Core Features
+- **Multi-Account & Currency**: Track bank accounts, cash, investments, and liabilities with base currency conversion.
+- **Japanese Household Taxonomy**: Hierarchical category structure (食費, 交通費, etc.) with budgeting rules.
+- **Fast Entry & Automation**: Templates, recurring transactions (RRULE), and AI/OCR receipt scanning.
+- **Analytics & Forecasting**: Cashflow forecasting, spending breakdowns, trends, and multi-merchant analytics.
+- **Security**: JWT auth, Argon2, TOTP 2FA, Telegram approval bot, and temporary read-only sharing links.
+- **Backups & Portability**: Automated backups, Excel/ZIP export/import.
 
 ## Quick Start
 
@@ -13,52 +21,32 @@ npm install
 npm run dev
 ```
 
-Backend runs on http://localhost:8080
-Frontend runs on http://localhost:5173
+Backend runs on `http://localhost:8080`, frontend on `http://localhost:5173`.
 
 ### Production
 ```bash
-# Build and start production
+# Build and start production via PM2
 ./start.sh --prod
 ```
 
 ## Project Structure
 ```
 kiroku/
-├── backend/          # Go API server
-│   ├── cmd/server/   # Entry point
-│   ├── internal/     # Private packages
-│   ├── pkg/          # Public packages
-│   └── data/         # SQLite database (gitignored)
-├── frontend/         # Vue 3 + Vite + Pinia
-│   ├── src/
-│   └── public/
-├── config/           # PM2 ecosystem config (generated)
-├── .tasks/           # Task definitions
-├── docs/             # Documentation
-├── start.sh          # Unified start script
-├── PRD.md            # Product requirements
-└── AGENTS.md         # AI agent directives
+├── backend/          # Go API server (Chi, SQLite, Zerolog)
+├── frontend/         # Vue 3, Vite, Pinia, Tailwind, ECharts
+├── .agent/           # Agent plans and workflows
+├── docs/             # Documentation & API specs
+└── start.sh          # Unified start script
 ```
 
 ## Tech Stack
-- **Backend**: Go 1.22+, Chi router, SQLite (modernc.org/sqlite), sqlc
-- **Frontend**: Vue 3, Vite, Pinia, ECharts, Leaflet
-- **Deployment**: PM2, Cloudflare Tunnel, Upstash Redis
-- **PWA**: Workbox via Vite PWA plugin
-
-## Scripts
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start both dev servers |
-| `npm run build` | Build both apps |
-| `npm run lint` | Lint both apps |
-| `npm run test` | Run tests |
-| `./start.sh --dev` | Dev mode with PM2 |
-| `./start.sh --prod` | Production mode |
+- **Backend**: Go 1.22+, Chi router, SQLite (pure Go `modernc.org/sqlite`), Zerolog
+- **Frontend**: Vue 3, Vite, Pinia, Tailwind CSS, ECharts, Leaflet
+- **Deployment**: PM2, Cloudflare Tunnel, Upstash Redis, Telegram Bot
 
 ## Environment
-Copy `.env.example` to `.env` and configure:
-- `JWT_SECRET`: Min 32 chars for token signing
-- `UPSTASH_REDIS_REST_URL/TOKEN`: For Cloudflare tunnel URL discovery
-- `BACKUP_PASSPHRASE`: Optional encryption for backups
+Copy `backend/.env.example` to `backend/.env` and configure:
+- `JWT_SECRET`: Min 32 characters for token signing
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`: Cloudflare tunnel URL discovery
+- `BACKUP_PASSPHRASE`: Encryption passphrase for backups
+- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`: Telegram integration
