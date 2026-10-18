@@ -12,11 +12,13 @@
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="pin">PIN</label>
           <input
-            id="password"
-            v-model="password"
+            id="pin"
+            v-model="pin"
             type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
             required
             autocomplete="current-password"
             :disabled="authStore.loading"
@@ -55,15 +57,15 @@ const authStore = useAuthStore()
 const uiStore = useUIStore()
 const router = useRouter()
 
-const password = ref('')
+const pin = ref('')
 
 const handleVerify = async () => {
-  const success = await authStore.login(password.value)
+  const success = await authStore.login(pin.value)
   if (success) {
     uiStore.success('Welcome back!')
     router.push('/dashboard')
   }
-  password.value = ''
+  pin.value = ''
 }
 </script>
 

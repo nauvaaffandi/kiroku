@@ -94,12 +94,12 @@ func (s *TelegramService) handleCommand(msg *models.Message) {
 		s.handleStart(chatID, telegramUserID, text)
 	case strings.HasPrefix(text, "/register"):
 		s.handleRegister(chatID, telegramUserID, text)
-	case strings.HasPrefix(text, "/changepassword"):
-		s.handleChangePassword(chatID, telegramUserID)
-	case strings.HasPrefix(text, "/forgotpassword"):
-		s.handleForgotPassword(chatID, telegramUserID)
+	case strings.HasPrefix(text, "/changepin"):
+		s.handleChangePin(chatID, telegramUserID)
+	case strings.HasPrefix(text, "/forgotpin"):
+		s.handleForgotPin(chatID, telegramUserID)
 	default:
-		s.sendMessage(chatID, "Unknown command. Available: /register <token>, /changepassword, /forgotpassword")
+		s.sendMessage(chatID, "Unknown command. Available: /register <token>, /changepin, /forgotpin")
 	}
 }
 
@@ -110,7 +110,7 @@ func (s *TelegramService) handleStart(chatID, telegramUserID, text string) {
 		s.handleRegister(chatID, telegramUserID, "/register "+token)
 		return
 	}
-	s.sendMessage(chatID, "Welcome to Kiroku Bot! Available commands: /register <token>, /changepassword, /forgotpassword")
+	s.sendMessage(chatID, "Welcome to Kiroku Bot! Available commands: /register <token>, /changepin, /forgotpin")
 }
 
 func (s *TelegramService) handleRegister(chatID, telegramUserID, text string) {
@@ -123,7 +123,7 @@ func (s *TelegramService) handleRegister(chatID, telegramUserID, text string) {
 	token := parts[1]
 	var userID string
 	err := s.db.QueryRow(`
-		SELECT user_id FROM password_change_tokens 
+		SELECT user_id FROM pin_change_tokens 
 		WHERE token = ? AND type = 'register' AND expires_at > datetime('now')
 	`, token).Scan(&userID)
 
@@ -147,15 +147,15 @@ func (s *TelegramService) handleRegister(chatID, telegramUserID, text string) {
 		return
 	}
 
-	_, err = s.db.Exec(`DELETE FROM password_change_tokens WHERE token = ?`, token)
+	_, err = s.db.Exec(`DELETE FROM pin_change_tokens WHERE token = ?`, token)
 	if err != nil {
 		log.Warn().Err(err).Msg("telegram: cleanup register token")
 	}
 
-	s.sendMessage(chatID, "✅ Successfully registered! Your Telegram is now linked to Kiroku.\n\nYou can now use /changepassword and /forgotpassword commands.")
+	s.sendMessage(chatID, "✅ Successfully registered! Your Telegram is now linked to Kiroku.\n\nYou can now use /changepin and /forgotpin commands.")
 }
 
-func (s *TelegramService) handleChangePassword(chatID, telegramUserID string) {
+func (s *TelegramService) handleChangePin(chatID, telegramUserID string) {
 	var userID string
 	err := s.db.QueryRow(`
 		SELECT user_id FROM telegram_bindings WHERE telegram_chat_id = ?
@@ -165,7 +165,7 @@ func (s *TelegramService) handleChangePassword(chatID, telegramUserID string) {
 		if err == sql.ErrNoRows {
 			s.sendMessage(chatID, "❌ This Telegram chat is not linked to any Kiroku account. Use /register <token> first.")
 		} else {
-			log.Error().Err(err).Msg("telegram: changepassword lookup")
+			log.Error().Err(err).Msg("telegram: changepin lookup")
 			s.sendMessage(chatID, "❌ Error checking binding")
 		}
 		return
@@ -174,7 +174,7 @@ func (s *TelegramService) handleChangePassword(chatID, telegramUserID string) {
 	token := uuid.New().String()
 	expiresAt := time.Now().Add(5 * time.Minute)
 	_, err = s.db.Exec(`
-		INSERT INTO password_change_tokens (id, user_id, token, type, expires_at)
+		INSERT INTO pin_change_tokens (id, user_id, token, type, expires_at)
 		VALUES (?, ?, ?, 'changepassword', ?)
 	`, uuid.New().String(), userID, token, expiresAt.Format("2006-01-02 15:04:05"))
 	if err != nil {
@@ -184,13 +184,13 @@ func (s *TelegramService) handleChangePassword(chatID, telegramUserID string) {
 	}
 
 	msg := fmt.Sprintf(
-		"🔑 Password Change Token (valid 5 minutes):\n\n`%s`\n\nPaste this token in Kiroku web settings along with your new password.",
+		"🔑 PIN Change Token (valid 5 minutes):\n\n`%s`\n\nPaste this token in Kiroku web settings along with your new PIN.",
 		token,
 	)
 	s.sendMessage(chatID, msg)
 }
 
-func (s *TelegramService) handleForgotPassword(chatID, telegramUserID string) {
+func (s *TelegramService) handleForgotPin(chatID, telegramUserID string) {
 	var userID string
 	err := s.db.QueryRow(`
 		SELECT user_id FROM telegram_bindings WHERE telegram_chat_id = ?
@@ -200,7 +200,7 @@ func (s *TelegramService) handleForgotPassword(chatID, telegramUserID string) {
 		if err == sql.ErrNoRows {
 			s.sendMessage(chatID, "❌ This Telegram chat is not linked to any Kiroku account. Use /register <token> first.")
 		} else {
-			log.Error().Err(err).Msg("telegram: forgotpassword lookup")
+			log.Error().Err(err).Msg("telegram: forgotpin lookup")
 			s.sendMessage(chatID, "❌ Error checking binding")
 		}
 		return
@@ -209,7 +209,7 @@ func (s *TelegramService) handleForgotPassword(chatID, telegramUserID string) {
 	token := uuid.New().String()
 	expiresAt := time.Now().Add(10 * time.Minute)
 	_, err = s.db.Exec(`
-		INSERT INTO password_change_tokens (id, user_id, token, type, expires_at)
+		INSERT INTO pin_change_tokens (id, user_id, token, type, expires_at)
 		VALUES (?, ?, ?, 'forgotpassword', ?)
 	`, uuid.New().String(), userID, token, expiresAt.Format("2006-01-02 15:04:05"))
 	if err != nil {
@@ -219,7 +219,7 @@ func (s *TelegramService) handleForgotPassword(chatID, telegramUserID string) {
 	}
 
 	msg := fmt.Sprintf(
-		"🔐 Password Reset Token (valid 10 minutes):\n\n`%s`\n\nUse this token in Kiroku web to reset your password.",
+		"🔐 PIN Reset Token (valid 10 minutes):\n\n`%s`\n\nUse this token in Kiroku web to reset your PIN.",
 		token,
 	)
 	s.sendMessage(chatID, msg)

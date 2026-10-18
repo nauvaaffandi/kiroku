@@ -6,7 +6,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<{ user_id: string } | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const isChangingPassword = ref(false)
+  const isChangingPin = ref(false)
 
   const isAuthenticated = computed(() => !!user.value)
 
@@ -23,15 +23,15 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = response.data
   }
 
-  const login = async (password: string) => {
+  const login = async (pin: string) => {
     loading.value = true
     error.value = null
     try {
-      await api.post('/api/v1/auth/login', { password })
+      await api.post('/api/v1/auth/login', { pin })
       await fetchUser()
       return true
     } catch (e: any) {
-      error.value = e.response?.data?.error || 'Invalid password'
+      error.value = e.response?.data?.error || 'Invalid PIN'
       return false
     } finally {
       loading.value = false
@@ -46,20 +46,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const changePassword = async (oldPassword: string, newPassword: string) => {
-    isChangingPassword.value = true
+  const changePin = async (currentPin: string, newPin: string) => {
+    isChangingPin.value = true
     error.value = null
     try {
-      await api.post('/api/v1/auth/password', {
-        old_password: oldPassword,
-        new_password: newPassword
+      await api.post('/api/v1/auth/pin', {
+        current_pin: currentPin,
+        new_pin: newPin
       })
       return true
     } catch (e: any) {
-      error.value = e.response?.data?.error || 'Failed to change password'
+      error.value = e.response?.data?.error || 'Failed to change PIN'
       return false
     } finally {
-      isChangingPassword.value = false
+      isChangingPin.value = false
     }
   }
 
@@ -67,12 +67,12 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     loading,
     error,
-    isChangingPassword,
+    isChangingPin,
     isAuthenticated,
     init,
     fetchUser,
     login,
     logout,
-    changePassword
+    changePin
   }
 })

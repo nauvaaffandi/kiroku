@@ -2,37 +2,37 @@ package models
 
 type BootstrapReq struct {
 	Email      string `json:"email"`
-	Password   string `json:"password"`
+	PIN        string `json:"pin"`
 	TOTPSecret string `json:"totp_secret,omitempty"`
 }
 
 type LoginReq struct {
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	PIN      string `json:"pin"`
 	TOTPCode string `json:"totp_code,omitempty"`
 }
 
-type ChangePasswordReq struct {
-	OldPassword string `json:"old_password"`
-	NewPassword string `json:"new_password"`
+type ChangePINReq struct {
+	CurrentPIN string `json:"current_pin"`
+	NewPIN     string `json:"new_pin"`
 }
 
-type PasswordChangeRequestReq struct {
-	NewPassword string `json:"new_password"`
+type PinChangeRequestReq struct {
+	NewPIN string `json:"new_pin"`
 }
 
-type VerifyPasswordChangeReq struct {
-	Token       string `json:"token"`
-	NewPassword string `json:"new_password"`
+type VerifyPinChangeReq struct {
+	Token  string `json:"token"`
+	NewPIN string `json:"new_pin"`
 }
 
-type RequestPasswordResetReq struct {
+type RequestPinResetReq struct {
 	Email string `json:"email"`
 }
 
-type VerifyPasswordResetReq struct {
-	Token       string `json:"token"`
-	NewPassword string `json:"new_password"`
+type VerifyPinResetReq struct {
+	Token  string `json:"token"`
+	NewPIN string `json:"new_pin"`
 }
 
 type AuthResponse struct {

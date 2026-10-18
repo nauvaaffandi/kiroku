@@ -21,13 +21,13 @@ const (
 
 var ErrInvalidHash = errors.New("invalid hash format")
 
-func HashPassword(password string, time, memory uint32, threads uint8) (string, error) {
+func HashPin(pin string, time, memory uint32, threads uint8) (string, error) {
 	salt := make([]byte, saltLen)
 	if _, err := rand.Read(salt); err != nil {
 		return "", err
 	}
 
-	hash := argon2.IDKey([]byte(password), salt, time, memory, threads, argon2KeyLen)
+	hash := argon2.IDKey([]byte(pin), salt, time, memory, threads, argon2KeyLen)
 
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
@@ -35,7 +35,7 @@ func HashPassword(password string, time, memory uint32, threads uint8) (string, 
 	return fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, memory, time, threads, b64Salt, b64Hash), nil
 }
 
-func VerifyPassword(password, encodedHash string) (bool, error) {
+func VerifyPin(pin, encodedHash string) (bool, error) {
 	parts := strings.Split(encodedHash, "$")
 	if len(parts) != 6 {
 		return false, ErrInvalidHash
@@ -67,7 +67,7 @@ func VerifyPassword(password, encodedHash string) (bool, error) {
 		return false, err
 	}
 
-	otherHash := argon2.IDKey([]byte(password), salt, time, memory, threads, uint32(len(hash)))
+	otherHash := argon2.IDKey([]byte(pin), salt, time, memory, threads, uint32(len(hash)))
 
 	if subtle.ConstantTimeCompare(hash, otherHash) == 1 {
 		return true, nil

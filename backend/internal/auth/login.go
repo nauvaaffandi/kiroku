@@ -15,8 +15,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Password == "" {
-		http.Error(w, "password required", http.StatusBadRequest)
+	if req.PIN == "" {
+		http.Error(w, "pin required", http.StatusBadRequest)
 		return
 	}
 
@@ -28,16 +28,16 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
     }
 
     var hash string
-    err = h.db.QueryRow("SELECT password_hash FROM users WHERE id = ?", userID).Scan(&hash)
+    err = h.db.QueryRow("SELECT pin_hash FROM users WHERE id = ?", userID).Scan(&hash)
     if err != nil {
-        log.Error().Err(err).Msg("auth: get password hash")
+        log.Error().Err(err).Msg("auth: get pin hash")
         http.Error(w, "internal error", http.StatusInternalServerError)
         return
     }
 
-    ok, err := VerifyPassword(req.Password, hash)
+    ok, err := VerifyPin(req.PIN, hash)
     if err != nil || !ok {
-        http.Error(w, "invalid password", http.StatusUnauthorized)
+        http.Error(w, "invalid pin", http.StatusUnauthorized)
         return
     }
 

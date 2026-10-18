@@ -9,28 +9,28 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
-  (e: 'submit', oldPass: string, newPass: string): void
+  (e: 'submit', oldPin: string, newPin: string): void
 }>()
 
-const oldPassword = ref('')
-const newPassword = ref('')
-const confirmPassword = ref('')
+const oldPin = ref('')
+const newPin = ref('')
+const confirmPin = ref('')
 const error = ref('')
 
 const handleSubmit = (e: Event) => {
   e.preventDefault()
-  if (newPassword.value !== confirmPassword.value) {
-    error.value = 'New passwords do not match'
+  if (newPin.value !== confirmPin.value) {
+    error.value = 'New PINs do not match'
     return
   }
   error.value = ''
-  emit('submit', oldPassword.value, newPassword.value)
+  emit('submit', oldPin.value, newPin.value)
 }
 
 const close = () => {
-  oldPassword.value = ''
-  newPassword.value = ''
-  confirmPassword.value = ''
+  oldPin.value = ''
+  newPin.value = ''
+  confirmPin.value = ''
   error.value = ''
   emit('update:modelValue', false)
 }
@@ -52,7 +52,7 @@ const close = () => {
         <div v-if="loading" class="text-center py-8">
           <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-500 border-t-transparent mb-4"></div>
           <p class="text-gray-600 dark:text-gray-300 font-medium">Waiting for Telegram approval...</p>
-          <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Please reply YES on Telegram to approve password change.</p>
+          <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Please reply YES on Telegram to approve PIN change.</p>
         </div>
 
         <form v-else @submit="handleSubmit" class="space-y-4">
@@ -61,30 +61,36 @@ const close = () => {
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current PIN</label>
             <input
-              v-model="oldPassword"
+              v-model="oldPin"
               type="password"
+              inputmode="numeric"
+              pattern="[0-9]*"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New PIN</label>
             <input
-              v-model="newPassword"
+              v-model="newPin"
               type="password"
+              inputmode="numeric"
+              pattern="[0-9]*"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New PIN</label>
             <input
-              v-model="confirmPassword"
+              v-model="confirmPin"
               type="password"
+              inputmode="numeric"
+              pattern="[0-9]*"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />

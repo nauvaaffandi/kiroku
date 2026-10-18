@@ -86,7 +86,7 @@ func main() {
 	))
 
 	authHandler := auth.NewHandler(database, cfg, tgService)
-	authHandler.CheckAndResetPasswordHash()
+	authHandler.CheckAndResetPinHash()
 
 	tgHandler := tgService.Routes()
 	r.Mount("/api/v1/telegram", tgHandler)
@@ -95,15 +95,15 @@ func main() {
 	sharedHandler := shared.NewHandler(database)
 	r.Mount("/shared", sharedHandler.Routes())
 
-	// Public auth routes (login, logout, password reset)
+	// Public auth routes (login, logout, pin reset)
 	r.Route("/api/v1/auth", func(r chi.Router) {
 		r.Post("/login", authHandler.Login)
 		r.Post("/logout", authHandler.Logout)
-		r.Post("/password", authHandler.ChangePassword)
-		r.Post("/password/change-request", authHandler.RequestPasswordChange)
-		r.Post("/password/verify", authHandler.VerifyPasswordChange)
-		r.Post("/password/reset-request", authHandler.RequestPasswordReset)
-		r.Post("/password/reset-verify", authHandler.VerifyPasswordReset)
+		r.Post("/pin", authHandler.ChangePin)
+		r.Post("/pin/change-request", authHandler.RequestPinChange)
+		r.Post("/pin/verify", authHandler.VerifyPinChange)
+		r.Post("/pin/reset-request", authHandler.RequestPinReset)
+		r.Post("/pin/reset-verify", authHandler.VerifyPinReset)
 		r.Post("/telegram/register-token", authHandler.GenerateRegisterToken)
 		r.Get("/telegram/status", authHandler.GetTelegramStatus)
 	})

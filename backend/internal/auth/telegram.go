@@ -35,7 +35,7 @@ func (h *Handler) GenerateRegisterToken(w http.ResponseWriter, r *http.Request) 
     token := uuid.New().String()
     expiresAt := time.Now().Add(10 * time.Minute)
     _, err = h.db.Exec(`
-        INSERT INTO password_change_tokens (id, user_id, token, type, expires_at)
+        INSERT INTO pin_change_tokens (id, user_id, token, type, expires_at)
         VALUES (?, ?, ?, 'register', ?)
     `, uuid.New().String(), userID, token, expiresAt.Format("2006-01-02 15:04:05"))
     if err != nil {

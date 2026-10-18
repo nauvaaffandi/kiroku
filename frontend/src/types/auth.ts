@@ -14,12 +14,12 @@ export interface AuthState {
 
 export interface BootstrapRequest {
   email: string
-  password: string
+  pin: string
 }
 
 export interface LoginRequest {
   email: string
-  password: string
+  pin: string
   totp_code?: string
 }
 

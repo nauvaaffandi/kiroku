@@ -10,18 +10,18 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
-  (e: 'submit', token: string, newPassword: string): void
+  (e: 'submit', token: string, newPin: string): void
 }>()
 
 const token = ref('')
-const newPassword = ref('')
-const confirmPassword = ref('')
+const newPin = ref('')
+const confirmPin = ref('')
 const error = ref('')
 
 const handleSubmit = (e: Event) => {
   e.preventDefault()
-  if (newPassword.value !== confirmPassword.value) {
-    error.value = 'New passwords do not match'
+  if (newPin.value !== confirmPin.value) {
+    error.value = 'New PINs do not match'
     return
   }
   if (!token.value.trim()) {
@@ -29,13 +29,13 @@ const handleSubmit = (e: Event) => {
     return
   }
   error.value = ''
-  emit('submit', token.value.trim(), newPassword.value)
+  emit('submit', token.value.trim(), newPin.value)
 }
 
 const close = () => {
   token.value = ''
-  newPassword.value = ''
-  confirmPassword.value = ''
+  newPin.value = ''
+  confirmPin.value = ''
   error.value = ''
   emit('update:modelValue', false)
 }
@@ -72,26 +72,30 @@ const close = () => {
             />
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ mode === 'change' 
-                ? 'Request token via /changepassword command in Telegram' 
-                : 'Request token via /forgotpassword command in Telegram' }}
+                ? 'Request token via /changepin command in Telegram' 
+                : 'Request token via /forgotpin command in Telegram' }}
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New PIN</label>
             <input
-              v-model="newPassword"
+              v-model="newPin"
               type="password"
+              inputmode="numeric"
+              pattern="[0-9]*"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New PIN</label>
             <input
-              v-model="confirmPassword"
+              v-model="confirmPin"
               type="password"
+              inputmode="numeric"
+              pattern="[0-9]*"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />

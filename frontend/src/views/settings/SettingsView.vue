@@ -89,11 +89,11 @@
 
     <SettingSection :title="t('settings.security')">
       <SettingItem
-        :label="t('settings.changePassword')"
-        :description="t('settings.changePasswordDesc')"
+        :label="t('settings.changePin')"
+        :description="t('settings.changePinDesc')"
       >
         <template #default>
-          <BaseButton variant="primary" @click="requestPasswordChange" :loading="passwordChangeLoading">
+          <BaseButton variant="primary" @click="requestPinChange" :loading="pinChangeLoading">
             {{ t('settings.requestToken') }}
           </BaseButton>
         </template>
@@ -135,12 +135,12 @@
       </SettingItem>
     </SettingSection>
 
-    <TelegramPasswordModal
-      v-model="showTelegramPasswordModal"
-      :title="t('settings.changePassword')"
-      :loading="passwordChangeLoading"
+    <TelegramPinModal
+      v-model="showTelegramPinModal"
+      :title="t('settings.changePin')"
+      :loading="pinChangeLoading"
       mode="change"
-      @submit="handleVerifyPasswordChange"
+      @submit="handleVerifyPinChange"
     />
 
     <TelegramRegisterModal
@@ -181,7 +181,7 @@ import LanguageSwitcher from '@/components/forms/LanguageSwitcher.vue'
 import type { Theme, WeekStart } from '@/types'
 import { SettingItem, SettingSection, TotpSetupModal, SettingsBackupModal } from '@/widgets/settings'
 import { BaseSelect, BaseButton } from '@/components/ui'
-import TelegramPasswordModal from '@/components/auth/TelegramPasswordModal.vue'
+import TelegramPinModal from '@/components/auth/TelegramPinModal.vue'
 import TelegramRegisterModal from '@/components/auth/TelegramRegisterModal.vue'
 
 const settingsStore = useSettingsStore()
@@ -208,10 +208,10 @@ const totpLoading = ref(false)
 const totpSetupData = ref<{ qr_code: string; secret: string } | null>(null)
 const showTotpSetup = ref(false)
 const showBackupModal = ref(false)
-const showTelegramPasswordModal = ref(false)
+const showTelegramPinModal = ref(false)
 const showTelegramRegister = ref(false)
 const telegramLoading = ref(false)
-const passwordChangeLoading = ref(false)
+const pinChangeLoading = ref(false)
 const isTelegramLinked = ref(false)
 
 const totpButtonVariant = computed<'primary' | 'danger'>(() =>
@@ -285,40 +285,40 @@ const onTelegramRegistered = () => {
   uiStore.success('Telegram linked successfully')
 }
 
-const requestPasswordChange = async () => {
-  passwordChangeLoading.value = true
+const requestPinChange = async () => {
+  pinChangeLoading.value = true
   try {
-    // First prompt for new password
-    const newPass = prompt('Enter your new password:')
-    if (!newPass) {
-      passwordChangeLoading.value = false
+    // First prompt for new PIN
+    const newPin = prompt('Enter your new PIN:')
+    if (!newPin) {
+      pinChangeLoading.value = false
       return
     }
 
-    const res = await api.post('/api/v1/auth/password/change-request', { new_password: newPass })
+    const res = await api.post('/api/v1/auth/pin/change-request', { new_pin: newPin })
     if (res.status === 200) {
       uiStore.success(t('settings.tokenRequested'))
-      // Store temporary new password in sessionStorage or state
-      sessionStorage.setItem('kiroku_temp_new_password', newPass)
-      showTelegramPasswordModal.value = true
+      // Store temporary new PIN in sessionStorage or state
+      sessionStorage.setItem('kiroku_temp_new_pin', newPin)
+      showTelegramPinModal.value = true
     }
   } catch (e: any) {
-    uiStore.error(e.response?.data || 'Failed to request password change')
+    uiStore.error(e.response?.data || 'Failed to request PIN change')
   } finally {
-    passwordChangeLoading.value = false
+    pinChangeLoading.value = false
   }
 }
 
-const handleVerifyPasswordChange = async (token: string, newPassword: string) => {
-  passwordChangeLoading.value = true
+const handleVerifyPinChange = async (token: string, newPin: string) => {
+  pinChangeLoading.value = true
   try {
-    await api.post('/api/v1/auth/password/verify', { token, new_password: newPassword })
-    uiStore.success(t('settings.passwordChangeSuccess'))
-    showTelegramPasswordModal.value = false
+    await api.post('/api/v1/auth/pin/verify', { token, new_pin: newPin })
+    uiStore.success(t('settings.pinChangeSuccess'))
+    showTelegramPinModal.value = false
   } catch (e: any) {
     uiStore.error(e.response?.data || 'Invalid or expired token')
   } finally {
-    passwordChangeLoading.value = false
+    pinChangeLoading.value = false
   }
 }
 
