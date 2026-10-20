@@ -129,15 +129,16 @@ func scanCategories(rows *sql.Rows) ([][]string, error) {
 	var out [][]string
 	for rows.Next() {
 		var (
-			id, name, icon, color, kind string
-			parentID                    sql.NullString
-			sortOrder                   int64
-			createdAt, updatedAt        sql.NullTime
+			id, name string
+			icon, color, kind sql.NullString
+			parentID       sql.NullString
+			sortOrder      int64
+			createdAt, updatedAt sql.NullTime
 		)
 		if err := rows.Scan(&id, &parentID, &name, &icon, &color, &kind, &sortOrder, &createdAt, &updatedAt); err != nil {
 			return nil, err
 		}
-		out = append(out, []string{id, nullStr(parentID), name, icon, color, kind,
+		out = append(out, []string{id, nullStr(parentID), name, nullStr(icon), nullStr(color), nullStr(kind),
 			strconv.FormatInt(sortOrder, 10), nullTimeStr(createdAt), nullTimeStr(updatedAt)})
 	}
 	return out, rows.Err()

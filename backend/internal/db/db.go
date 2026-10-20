@@ -84,6 +84,21 @@ func (d *DB) runMigrations() error {
 			return err
 		}
 
+		if version == 13 {
+			applied, err := d.columnExists("users", "pin_hash")
+			if err != nil {
+				return err
+			}
+			if applied {
+				if _, err := d.Exec("INSERT INTO schema_version (version) VALUES (?)", version); err != nil {
+					return err
+				}
+				logger.GetLogger().Info().Int("version", version).Str("file", entry.Name()).Msg("Migration already applied, skipping")
+				currentVersion = version
+				continue
+			}
+		}
+
 		tx, err := d.Begin()
 		if err != nil {
 			return err
@@ -108,4 +123,24 @@ func (d *DB) runMigrations() error {
 	}
 
 	return nil
+}
+
+func (d *DB) columnExists(table, column string) (bool, error) {
+	rows, err := d.Query(fmt.Sprintf("PRAGMA table_info(%s)", table))
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid, notnull, pk int
+		var name, ctype string
+		var dflt sql.NullString
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
+			return false, err
+		}
+		if name == column {
+			return true, nil
+		}
+	}
+	return false, nil
 }
