@@ -61,6 +61,7 @@ const handleFABClick = () => {
   bottom: 0;
   left: 0;
   right: 0;
+  width: 100%;
   height: 60px;
   background-color: var(--color-neutral-100);
   border-top: 1px solid var(--color-neutral-200);
@@ -72,16 +73,15 @@ const handleFABClick = () => {
 }
 
 .bottom-nav-item {
+  position: static;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex: 1;
   height: 100%;
-  flex-shrink: 0;
   color: var(--color-neutral-500);
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
 .bottom-nav-item.active {
@@ -91,8 +91,6 @@ const handleFABClick = () => {
 .bottom-nav-icon {
   width: 1.25rem;
   height: 1.25rem;
-  flex-shrink: 0;
-  color: currentColor;
   margin-bottom: 0.125rem;
 }
 
@@ -102,6 +100,7 @@ const handleFABClick = () => {
 }
 
 .bottom-add-btn {
+  position: static;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,7 +109,6 @@ const handleFABClick = () => {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
 }
 
 .bottom-add-circle {
@@ -123,15 +121,5 @@ const handleFABClick = () => {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-md);
-  transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-.bottom-add-circle:hover {
-  background-color: var(--color-primary-hover);
-  transform: scale(1.05);
-}
-
-.bottom-add-circle:active {
-  transform: scale(0.95);
 }
 </style>
