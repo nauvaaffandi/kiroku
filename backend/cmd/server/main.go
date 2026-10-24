@@ -15,9 +15,11 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	_ "kiroku/backend/docs"
+	"kiroku/backend/internal/auth"
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/db"
 	httpdelivery "kiroku/backend/internal/delivery/http"
+	"kiroku/backend/internal/telegram"
 	"kiroku/backend/internal/logger"
 	"kiroku/backend/internal/repository/sqlite"
 	"kiroku/backend/internal/tunnel"
@@ -37,6 +39,8 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to open database")
 	}
 	defer database.Close()
+
+	tgService := telegram.NewTelegramService(database, cfg)
 
 	seedCategories(database)
 
@@ -73,6 +77,9 @@ func main() {
 
 	// API V1 routes
 	r.Route("/api/v1", func(r chi.Router) {
+		authHandler := auth.NewHandler(database, cfg, tgService)
+		r.Mount("/auth", authHandler.Routes())
+
 		accHandler := httpdelivery.NewAccountsHandler(accountsRepo)
 		r.Mount("/accounts", accHandler.Routes())
 

@@ -29,14 +29,18 @@ func (h *Handler) Routes() chi.Router {
     r := chi.NewRouter()
     r.Post("/login", h.Login)
     r.Post("/logout", h.Logout)
-    r.Get("/me", h.Me)
-    r.Post("/pin", h.ChangePin)
-    r.Post("/pin/change-request", h.RequestPinChange)
-    r.Post("/pin/verify", h.VerifyPinChange)
     r.Post("/pin/reset-request", h.RequestPinReset)
     r.Post("/pin/reset-verify", h.VerifyPinReset)
-    r.Post("/telegram/register-token", h.GenerateRegisterToken)
-    r.Get("/telegram/status", h.GetTelegramStatus)
+
+    r.Group(func(r chi.Router) {
+        r.Use(AuthMiddleware(h.cfg))
+        r.Get("/me", h.Me)
+        r.Post("/pin", h.ChangePin)
+        r.Post("/pin/change-request", h.RequestPinChange)
+        r.Post("/pin/verify", h.VerifyPinChange)
+        r.Post("/telegram/register-token", h.GenerateRegisterToken)
+        r.Get("/telegram/status", h.GetTelegramStatus)
+    })
     return r
 }
 

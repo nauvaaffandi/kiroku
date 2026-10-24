@@ -57,7 +57,7 @@ export const useBackendUrlStore = defineStore('backendUrl', () => {
         return cached
       }
 
-      const fallback = 'http://localhost:8080/api/v1'
+      const fallback = 'http://localhost:8080'
       url.value = fallback
       return fallback
     } catch (e) {
@@ -71,7 +71,7 @@ export const useBackendUrlStore = defineStore('backendUrl', () => {
         return cached
       }
       
-      const fallback = 'http://localhost:8080/api/v1'
+      const fallback = 'http://localhost:8080'
       url.value = fallback
       return fallback
     } finally {

@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 
@@ -13,16 +14,27 @@ type contextKey string
 
 const userIDKey contextKey = "user_id"
 
+func extractToken(r *http.Request) string {
+	if cookie, err := r.Cookie("access_token"); err == nil && cookie.Value != "" {
+		return cookie.Value
+	}
+	authHeader := r.Header.Get("Authorization")
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		return strings.TrimPrefix(authHeader, "Bearer ")
+	}
+	return ""
+}
+
 func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			cookie, err := r.Cookie("access_token")
-			if err != nil {
+			token := extractToken(r)
+			if token == "" {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
 
-			userID, err := ValidateAccessToken(cookie.Value, cfg.JWTSecret)
+			userID, err := ValidateAccessToken(token, cfg.JWTSecret)
 			if err != nil {
 				log.Debug().Err(err).Msg("auth: invalid access token")
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
@@ -38,9 +50,9 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 func OptionalAuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			cookie, err := r.Cookie("access_token")
-			if err == nil {
-				if userID, err := ValidateAccessToken(cookie.Value, cfg.JWTSecret); err == nil {
+			token := extractToken(r)
+			if token != "" {
+				if userID, err := ValidateAccessToken(token, cfg.JWTSecret); err == nil {
 					r = r.WithContext(context.WithValue(r.Context(), userIDKey, userID))
 				}
 			}
