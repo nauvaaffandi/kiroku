@@ -55,12 +55,12 @@ const trendChart = ref<HTMLElement | null>(null)
 let spendingChartInstance: echarts.ECharts | null = null
 let trendChartInstance: echarts.ECharts | null = null
 
-const recentTransactions = computed(() => transactionsStore.transactions.slice(0, 5))
+const recentTransactions = computed(() => (transactionsStore.transactions || []).slice(0, 5))
 
 const monthlyIncome = computed(() => {
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth(), 1)
-  return transactionsStore.transactions
+  return (transactionsStore.transactions || [])
     .filter(t => t.type === 'income' && new Date(t.date_time) >= start)
     .reduce((sum, t) => sum + t.amount, 0)
 })
@@ -68,7 +68,7 @@ const monthlyIncome = computed(() => {
 const monthlyExpense = computed(() => {
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth(), 1)
-  return transactionsStore.transactions
+  return (transactionsStore.transactions || [])
     .filter(t => t.type === 'expense' && new Date(t.date_time) >= start)
     .reduce((sum, t) => sum + t.amount, 0)
 })
@@ -76,7 +76,7 @@ const monthlyExpense = computed(() => {
 const monthlyNet = computed(() => monthlyIncome.value - monthlyExpense.value)
 
 const totalBalance = computed(() => {
-  return accountsStore.accounts.reduce((sum, a) => sum + a.balance, 0)
+  return (accountsStore.accounts || []).reduce((sum, a) => sum + a.balance, 0)
 })
 
 const formatCurrency = (num: number) => {
@@ -91,7 +91,7 @@ const initCharts = async () => {
       .slice(0, 8)
     
     const data = expenseCats.map(c => {
-      const total = transactionsStore.transactions
+      const total = (transactionsStore.transactions || [])
         .filter(t => t.category_id === c.id && t.type === 'expense')
         .reduce((sum, t) => sum + t.amount, 0)
       return { name: c.name, value: total, color: c.color }

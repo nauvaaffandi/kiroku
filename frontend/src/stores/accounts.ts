@@ -31,7 +31,7 @@ export const useAccountsStore = defineStore('accounts', () => {
         )
       })
       const response = await api.get(`/api/v1/accounts?${params}`)
-      accounts.value = response.data
+      accounts.value = Array.isArray(response.data) ? response.data : []
       pagination.value = {
         ...pagination.value,
         page,

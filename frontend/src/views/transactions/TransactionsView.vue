@@ -98,9 +98,9 @@ const categoriesStore = useCategoriesStore()
 const uiStore = useUIStore()
 const { t } = useI18n()
 
-const transactions = computed(() => transactionsStore.transactions)
-const accounts = computed(() => accountsStore.accounts)
-const categories = computed(() => categoriesStore.categories)
+const transactions = computed(() => transactionsStore.transactions || [])
+const accounts = computed(() => accountsStore.accounts || [])
+const categories = computed(() => categoriesStore.categories || [])
 const currentPage = computed(() => transactionsStore.pagination.page)
 const totalPages = computed(() => transactionsStore.totalPages)
 

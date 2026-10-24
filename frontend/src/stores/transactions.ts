@@ -33,7 +33,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
     try {
       const params = { page, limit: pagination.value.limit, ...filters.value }
       const response = await api.get('/api/v1/transactions', { params })
-      transactions.value = response.data
+      transactions.value = Array.isArray(response.data) ? response.data : []
       pagination.value.page = page
     } catch (e) {
       uiStore.error('Failed to fetch transactions')

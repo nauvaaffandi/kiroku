@@ -34,8 +34,8 @@ export const useCategoriesStore = defineStore('categories', () => {
         api.get(`/api/v1/categories?${params}`),
         api.get('/api/v1/categories/tree')
       ])
-      categories.value = listRes.data
-      tree.value = treeRes.data
+      categories.value = Array.isArray(listRes.data) ? listRes.data : []
+      tree.value = Array.isArray(treeRes.data) ? treeRes.data : []
       pagination.value = {
         ...pagination.value,
         page,
