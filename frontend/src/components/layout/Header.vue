@@ -144,13 +144,13 @@ defineEmits(['toggle-sidebar'])
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
   height: 64px;
 }
 .header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 .menu-btn {
   display: flex;
@@ -238,8 +238,6 @@ defineEmits(['toggle-sidebar'])
   margin: 0.25rem 0;
 }
 @media (min-width: 768px) {
-  .menu-btn {
-    display: none;
-  }
+  /* Removed desktop hiding of menu button */
 }
 </style>

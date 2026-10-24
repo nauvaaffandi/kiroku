@@ -1,11 +1,7 @@
 <template>
   <div class="app-shell">
-    <aside :class="['sidebar', { open: uiStore.sidebarOpen }]" v-show="uiStore.sidebarOpen || !isMobile">
-      <Sidebar />
-    </aside>
-    
     <div class="main-wrapper">
-      <header class="app-header" v-show="!isMobile || uiStore.sidebarOpen">
+      <header class="app-header">
         <Header @toggle-sidebar="uiStore.toggleSidebar" />
       </header>
       
@@ -18,11 +14,15 @@
       </main>
     </div>
     
-    <BottomNav v-show="isMobile" />
+    <BottomNav />
     
     <FAB v-if="showFAB" @click="onFABClick" />
     
-    <div v-if="uiStore.sidebarOpen && isMobile" class="sidebar-overlay" @click="uiStore.toggleSidebar" />
+    <div v-if="uiStore.sidebarOpen" class="sidebar-overlay" @click="uiStore.toggleSidebar">
+      <aside class="sidebar open" @click.stop>
+        <Sidebar @close="uiStore.toggleSidebar" />
+      </aside>
+    </div>
     
     <ToastContainer />
   </div>
@@ -43,15 +43,7 @@ const router = useRouter()
 const route = useRoute()
 const uiStore = useUIStore()
 
-const isMobile = ref(false)
 const showFAB = ref(true)
-
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768
-  if (!isMobile.value) {
-    uiStore.sidebarOpen = false
-  }
-}
 
 const updateFABVisibility = () => {
   const fabRoutes = ['/dashboard', '/transactions', '/accounts', '/categories', '/scheduled']
@@ -59,13 +51,7 @@ const updateFABVisibility = () => {
 }
 
 onMounted(() => {
-  checkMobile()
-  window.addEventListener('resize', checkMobile)
   updateFABVisibility()
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', checkMobile)
 })
 
 watch(() => route.path, updateFABVisibility)
@@ -85,25 +71,35 @@ const onFABClick = () => {
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: var(--bg-primary);
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
   width: 280px;
-  background-color: var(--color-neutral-100);
-  border-right: 1px solid var(--color-neutral-200);
-  z-index: 200;
+  height: 100vh;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-primary);
   display: flex;
   flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  animation: slideRight 0.3s ease;
 }
 
-.sidebar.open {
-  transform: translateX(0);
+@keyframes slideRight {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
 .main-wrapper {
@@ -111,46 +107,20 @@ const onFABClick = () => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin-left: 0;
-  transition: margin-left 0.3s ease;
+  padding-bottom: 70px; /* space for bottom nav */
 }
 
 .app-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--color-neutral-100);
-  border-bottom: 1px solid var(--color-neutral-200);
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .app-main {
   flex: 1;
-  padding: 1.5rem;
-  max-width: 1200px;
+  padding: 1rem;
   width: 100%;
-  margin: 0 auto;
-  padding-top: calc(1.5rem + 64px);
-}
-
-@media (min-width: 768px) {
-  .main-wrapper {
-    margin-left: 280px;
-  }
-  
-  .app-header {
-    left: 280px;
-    right: 0;
-  }
-  
-  .sidebar {
-    transform: translateX(0);
-  }
-}
-
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 150;
 }
 </style>
