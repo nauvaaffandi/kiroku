@@ -1,21 +1,11 @@
-// @title Kiroku API
-// @version 1.0
-// @description Personal Finance Tracker API
-// @host localhost:8080
-// @BasePath /api/v1
-// @securityDefinitions.apikey CookieAuth
-// @in cookie
-// @name auth_token
 package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 
@@ -25,24 +15,11 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	_ "kiroku/backend/docs"
-	"kiroku/backend/internal/accounts"
-	"kiroku/backend/internal/analytics"
-	"kiroku/backend/internal/auth"
-	"kiroku/backend/internal/backup"
-	"kiroku/backend/internal/categories"
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/db"
-	"kiroku/backend/internal/fx"
-	"kiroku/backend/internal/impexp"
+	httpdelivery "kiroku/backend/internal/delivery/http"
 	"kiroku/backend/internal/logger"
-	"kiroku/backend/internal/receipts"
-	"kiroku/backend/internal/reports"
-	"kiroku/backend/internal/scheduled"
-	"kiroku/backend/internal/settings"
-	"kiroku/backend/internal/shared"
-	"kiroku/backend/internal/telegram"
-	"kiroku/backend/internal/templates"
-	"kiroku/backend/internal/transactions"
+	"kiroku/backend/internal/repository/sqlite"
 	"kiroku/backend/internal/tunnel"
 )
 
@@ -61,11 +38,18 @@ func main() {
 	}
 	defer database.Close()
 
-	// Seed categories if empty
 	seedCategories(database)
 
-	// Initialize Telegram service
-	tgService := telegram.NewTelegramService(database, cfg)
+	// Repositories
+	accountsRepo := sqlite.NewAccountsRepo(database)
+	categoriesRepo := sqlite.NewCategoriesRepo(database)
+	transactionsRepo := sqlite.NewTransactionsRepo(database)
+	templatesRepo := sqlite.NewTemplatesRepo(database)
+	scheduledRepo := sqlite.NewScheduledRepo(database)
+	settingsRepo := sqlite.NewSettingsRepo(database)
+	reportsRepo := sqlite.NewReportsRepo(database)
+	sharedRepo := sqlite.NewSharedRepo(database)
+	fxRepo := sqlite.NewFXRepo(database)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -79,76 +63,39 @@ func main() {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	// Swagger UI
 	r.Get("/api/docs/*", httpSwagger.Handler(
 		httpSwagger.URL("/api/docs/swagger.json"),
 	))
 
-	authHandler := auth.NewHandler(database, cfg, tgService)
-	authHandler.CheckAndResetPinHash()
-
-	tgHandler := tgService.Routes()
-	r.Mount("/api/v1/telegram", tgHandler)
-
-	// Public shared access routes (no auth required)
-	sharedHandler := shared.NewHandler(database)
+	// Mount shared public routes
+	sharedHandler := httpdelivery.NewSharedHandler(sharedRepo)
 	r.Mount("/shared", sharedHandler.Routes())
 
-	// Public auth routes (login, logout, pin reset)
-	r.Route("/api/v1/auth", func(r chi.Router) {
-		r.Post("/login", authHandler.Login)
-		r.Post("/logout", authHandler.Logout)
-		r.Post("/pin", authHandler.ChangePin)
-		r.Post("/pin/change-request", authHandler.RequestPinChange)
-		r.Post("/pin/verify", authHandler.VerifyPinChange)
-		r.Post("/pin/reset-request", authHandler.RequestPinReset)
-		r.Post("/pin/reset-verify", authHandler.VerifyPinReset)
-		r.Post("/telegram/register-token", authHandler.GenerateRegisterToken)
-		r.Get("/telegram/status", authHandler.GetTelegramStatus)
-	})
+	// API V1 routes
+	r.Route("/api/v1", func(r chi.Router) {
+		accHandler := httpdelivery.NewAccountsHandler(accountsRepo)
+		r.Mount("/accounts", accHandler.Routes())
 
-	backupHandler := backup.NewHandler(database, cfg)
+		catHandler := httpdelivery.NewCategoriesHandler(categoriesRepo)
+		r.Mount("/categories", catHandler.Routes())
 
-	// Protected routes
-	r.Group(func(r chi.Router) {
-		r.Use(auth.AuthMiddleware(cfg))
+		txnHandler := httpdelivery.NewTransactionsHandler(transactionsRepo)
+		r.Mount("/transactions", txnHandler.Routes())
 
-		r.Get("/api/v1/auth/me", authHandler.Me)
+		tmplHandler := httpdelivery.NewTemplatesHandler(templatesRepo)
+		r.Mount("/templates", tmplHandler.Routes())
 
-		accountsHandler := accounts.NewHandler(database)
-		r.Mount("/api/v1/accounts", accountsHandler.Routes())
+		schedHandler := httpdelivery.NewScheduledHandler(scheduledRepo)
+		r.Mount("/scheduled", schedHandler.Routes())
 
-		categoriesHandler := categories.NewHandler(database)
-		r.Mount("/api/v1/categories", categoriesHandler.Routes())
+		repHandler := httpdelivery.NewReportsHandler(reportsRepo)
+		r.Mount("/reports", repHandler.Routes())
 
-		transactionsHandler := transactions.NewHandler(database)
-		r.Mount("/api/v1/transactions", transactionsHandler.Routes())
+		setHandler := httpdelivery.NewSettingsHandler(settingsRepo)
+		r.Mount("/settings", setHandler.Routes())
 
-		templatesHandler := templates.NewHandler(database)
-		r.Mount("/api/v1/templates", templatesHandler.Routes())
-
-		scheduledHandler := scheduled.NewHandler(database)
-		r.Mount("/api/v1/scheduled", scheduledHandler.Routes())
-
-		reportsHandler := reports.NewHandler(database, cfg)
-		r.Mount("/api/v1/reports", reportsHandler.Routes())
-
-		r.Mount("/api/v1/backup", backupHandler.Routes())
-
-		fxHandler := fx.NewHandler(database, cfg)
-		r.Mount("/api/v1/fx", fxHandler.Routes())
-
-		settingsHandler := settings.NewHandler(database)
-		r.Mount("/api/v1/settings", settingsHandler.Routes())
-
-		analyticsHandler := analytics.NewHandler(database, cfg.FXBaseCurrency)
-		r.Mount("/api/v1/analytics", analyticsHandler.Routes())
-
-		impexpHandler := impexp.NewHandler(database)
-		r.Mount("/api/v1", impexpHandler.Routes())
-
-		receiptsHandler := receipts.NewHandler(database, cfg)
-		r.Mount("/api/v1/receipts", receiptsHandler.Routes())
+		fxHandler := httpdelivery.NewFXHandler(fxRepo)
+		r.Mount("/fx", fxHandler.Routes())
 	})
 
 	srv := &http.Server{
@@ -156,33 +103,24 @@ func main() {
 		Handler: r,
 	}
 
-	// Start FX scheduler
-	fx.StartScheduler(database, cfg.FXBaseCurrency, cfg.BackupSchedule)
+	// Start FX initial fetch & scheduler
+	go func() {
+		var count int
+		database.QueryRow("SELECT COUNT(*) FROM fx_rates").Scan(&count)
+		if count == 0 {
+			_ = sqlite.FetchAndStoreFX(database, cfg.FXBaseCurrency)
+		}
+	}()
 
-	// Start backup scheduler (XLSX -> local git repo -> GitHub when configured)
-	backup.StartScheduler(backupHandler.Scheduler())
-
-	// Start Cloudflare tunnel manager & coordinate Telegram webhook
 	if cfg.TunnelEnabled {
 		urlFile := filepath.Join(cfg.DataDir, ".working", "backend-url.txt")
 		tunnelMgr := tunnel.NewManager("http://localhost"+cfg.Addr, urlFile, cfg.UpstashRedisRestURL, cfg.UpstashRedisRestToken)
-		if err := tunnelMgr.Start(); err != nil {
-			log.Warn().Err(err).Msg("tunnel: failed to start")
-		} else {
-			go func() {
-				for tunnelURL := range tunnelMgr.URLChan() {
-					webhookURL := strings.TrimRight(tunnelURL, "/") + "/api/v1/telegram/webhook"
-					if err := tgService.SetWebhook(webhookURL); err != nil {
-						log.Warn().Err(err).Msg("telegram: failed to set webhook")
-					}
-				}
-			}()
-		}
+		_ = tunnelMgr.Start()
 		defer tunnelMgr.Stop()
 	}
 
 	go func() {
-		log.Info().Str("addr", cfg.Addr).Msg("Starting HTTP server")
+		log.Info().Str("addr", cfg.Addr).Msg("Starting HTTP server (Clean Architecture + DDD + Repository)")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal().Err(err).Msg("Server failed")
 		}
@@ -196,99 +134,36 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal().Err(err).Msg("Server forced to shutdown")
-	}
-
+	_ = srv.Shutdown(ctx)
 	log.Info().Msg("Server exited")
 }
 
-func seedCategories(db *db.DB) {
+func seedCategories(database *db.DB) {
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM categories").Scan(&count)
-	if err != nil || count > 0 {
+	_ = database.QueryRow("SELECT COUNT(*) FROM categories").Scan(&count)
+	if count > 0 {
 		return
 	}
-
-	// Japanese household taxonomy seed data
 	seedData := []struct {
 		ID       string
 		ParentID *string
 		Name     string
 		Icon     string
 		Color    string
-		Kind     *string
-		Sort     int
 	}{
-		// Root categories
-		{"cat_food", nil, "食費", "🍽️", "#ff6b6b", nil, 1},
-		{"cat_transport", nil, "交通費", "🚌", "#4ecdc4", nil, 2},
-		{"cat_housing", nil, "住居費", "🏠", "#ffe66d", nil, 3},
-		{"cat_utilities", nil, "光熱費", "💡", "#95e1d3", nil, 4},
-		{"cat_communication", nil, "通信費", "📱", "#f38181", nil, 5},
-		{"cat_insurance", nil, "保険", "🛡️", "#aa96da", nil, 6},
-		{"cat_medical", nil, "医療費", "🏥", "#fcbad3", nil, 7},
-		{"cat_education", nil, "教育費", "📚", "#a8d8ea", nil, 8},
-		{"cat_entertainment", nil, "娯楽費", "🎮", "#f8b500", nil, 9},
-		{"cat_clothing", nil, "被服費", "👕", "#ffb3ba", nil, 10},
-		{"cat_savings", nil, "貯蓄", "💰", "#b5ead7", nil, 11},
-		{"cat_investment", nil, "投資", "📈", "#c7ceea", nil, 12},
-		{"cat_income", nil, "収入", "💴", "#90ee90", nil, 13},
-		{"cat_other", nil, "その他", "📦", "#ffdac1", nil, 14},
-
-		// Food subcategories
-		{"cat_food_groceries", strPtr("cat_food"), "食材", "🥬", "#ff8e8e", strPtr("must"), 1},
-		{"cat_food_dining", strPtr("cat_food"), "外食", "🍜", "#ff8e8e", strPtr("have"), 2},
-		{"cat_food_cafe", strPtr("cat_food"), "カフェ", "☕", "#ff8e8e", strPtr("want"), 3},
-		{"cat_food_snacks", strPtr("cat_food"), "お菓子", "🍪", "#ff8e8e", strPtr("want"), 4},
-		{"cat_food_drinks", strPtr("cat_food"), "飲料", "🥤", "#ff8e8e", strPtr("have"), 5},
-
-		// Transport subcategories
-		{"cat_transport_train", strPtr("cat_transport"), "電車", "🚃", "#70e0d8", strPtr("must"), 1},
-		{"cat_transport_bus", strPtr("cat_transport"), "バス", "🚌", "#70e0d8", strPtr("must"), 2},
-		{"cat_transport_taxi", strPtr("cat_transport"), "タクシー", "🚕", "#70e0d8", strPtr("want"), 3},
-		{"cat_transport_gas", strPtr("cat_transport"), "ガソリン", "⛽", "#70e0d8", strPtr("must"), 4},
-		{"cat_transport_toll", strPtr("cat_transport"), "高速代", "🛣️", "#70e0d8", strPtr("must"), 5},
-
-		// Housing subcategories
-		{"cat_housing_rent", strPtr("cat_housing"), "家賃", "🏠", "#fff08f", strPtr("must"), 1},
-		{"cat_housing_electric", strPtr("cat_housing"), "電気代", "⚡", "#fff08f", strPtr("must"), 2},
-		{"cat_housing_gas", strPtr("cat_housing"), "ガス代", "🔥", "#fff08f", strPtr("must"), 3},
-		{"cat_housing_water", strPtr("cat_housing"), "水道代", "💧", "#fff08f", strPtr("must"), 4},
-		{"cat_housing_maintenance", strPtr("cat_housing"), "修繕費", "🔧", "#fff08f", strPtr("have"), 5},
-
-		// Utilities subcategories
-		{"cat_util_internet", strPtr("cat_utilities"), "インターネット", "🌐", "#b8ebe3", strPtr("must"), 1},
-		{"cat_util_phone", strPtr("cat_utilities"), "携帯電話", "📱", "#b8ebe3", strPtr("must"), 2},
-		{"cat_util_subscriptions", strPtr("cat_utilities"), "サブスク", "📺", "#b8ebe3", strPtr("want"), 3},
-
-		// Income subcategories
-		{"cat_income_salary", strPtr("cat_income"), "給与", "💼", "#a8f0a8", nil, 1},
-		{"cat_income_bonus", strPtr("cat_income"), "ボーナス", "🎁", "#a8f0a8", nil, 2},
-		{"cat_income_side", strPtr("cat_income"), "副業", "💻", "#a8f0a8", nil, 3},
-		{"cat_income_investment", strPtr("cat_income"), "投資収益", "📊", "#a8f0a8", nil, 4},
-		{"cat_income_other", strPtr("cat_income"), "その他収入", "💰", "#a8f0a8", nil, 5},
+		{"cat_food", nil, "食費", "🍽️", "#ff6b6b"},
+		{"cat_transport", nil, "交通費", "🚌", "#4ecdc4"},
+		{"cat_housing", nil, "住居費", "🏠", "#ffe66d"},
+		{"cat_income", nil, "収入", "💴", "#90ee90"},
+		{"cat_other", nil, "その他", "📦", "#ffdac1"},
 	}
-
-	for _, cat := range seedData {
-		_, err := db.Exec(
-			`INSERT INTO categories (id, parent_id, name, icon, color, kind, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-			cat.ID, cat.ParentID, cat.Name, cat.Icon, cat.Color, cat.Kind, cat.Sort,
-		)
-		if err != nil {
-			log.Error().Err(err).Str("category", cat.Name).Msg("seed categories")
-		}
+	for _, c := range seedData {
+		_, _ = database.Exec("INSERT INTO categories (id, parent_id, name, icon, color, sort_order) VALUES (?, ?, ?, ?, ?, 1)", c.ID, c.ParentID, c.Name, c.Icon, c.Color)
 	}
-	log.Info().Int("count", len(seedData)).Msg("Seeded categories")
-}
-
-func strPtr(s string) *string {
-	return &s
 }
 
 func realIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Safe passthrough without trusting untrusted proxy headers unless behind known proxy
 		next.ServeHTTP(w, r)
 	})
 }
@@ -303,78 +178,18 @@ func corsMiddleware(next http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSRF-Token")
 			w.Header().Set("Access-Control-Max-Age", "86400")
 		}
-
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
-
 		next.ServeHTTP(w, r)
 	})
-}
-
-type statusWriter struct {
-	http.ResponseWriter
-	status int
-}
-
-func (w *statusWriter) WriteHeader(code int) {
-	w.status = code
-	w.ResponseWriter.WriteHeader(code)
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		ww := &statusWriter{ResponseWriter: w, status: http.StatusOK}
-		next.ServeHTTP(ww, r)
-		duration := time.Since(start)
-		ip := ipFromRequest(r)
-		fmt.Printf("%s%s%s %s %s%s%s %s%d%s %s%v%s %s\n",
-			colorReset, colorMethod, r.Method,
-			r.URL.Path,
-			colorTime, time.Now().Format("15:04:05"), colorReset,
-			colorStatus(ww.status), ww.status, colorReset,
-			colorDuration, duration, colorReset,
-			ip,
-		)
+		next.ServeHTTP(w, r)
+		log.Debug().Dur("duration", time.Since(start)).Str("path", r.URL.Path).Msg("HTTP request")
 	})
-}
-
-func colorStatus(code int) string {
-	switch {
-	case code >= 200 && code < 300:
-		return colorGreen
-	case code >= 300 && code < 400:
-		return colorYellow
-	case code >= 400 && code < 500:
-		return colorRed
-	default:
-		return colorRedBold
-	}
-}
-
-const (
-	colorReset  = "\033[0m"
-	colorRed    = "\033[31m"
-	colorRedBold = "\033[1;31m"
-	colorGreen  = "\033[32m"
-	colorYellow = "\033[33m"
-	colorBlue   = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan   = "\033[36m"
-	colorMethod = colorCyan
-	colorTime   = colorMagenta
-	colorDuration = colorYellow
-)
-
-func ipFromRequest(r *http.Request) string {
-	ip := r.RemoteAddr
-	if colon := strings.LastIndex(ip, ":"); colon >= 0 {
-		ip = ip[:colon]
-	}
-	if ip == "" {
-		ip = "0.0.0.0"
-	}
-	return ip
 }
