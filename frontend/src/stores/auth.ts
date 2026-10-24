@@ -11,11 +11,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value)
 
   const init = async () => {
-    try {
-      await fetchUser()
-    } catch {
-      // unauthenticated -> router redirects to /login
-    }
+    // Skipped auto fetching /api/v1/auth/me on startup to avoid extra latency / flash,
+    // session state should be explicitly checked or established via user login action.
   }
 
   const fetchUser = async () => {
@@ -28,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
     try {
       await api.post('/api/v1/auth/login', { pin })
-      await fetchUser()
+      user.value = { user_id: 'authenticated' }
       return true
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Invalid PIN'

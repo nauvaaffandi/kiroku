@@ -14,7 +14,7 @@
       </main>
     </div>
     
-    <BottomNav />
+    <FAB v-if="authStore.isAuthenticated" />
     
     <div v-if="uiStore.sidebarOpen" class="sidebar-overlay" @click="uiStore.toggleSidebar">
       <aside class="sidebar open" @click.stop>
@@ -28,13 +28,15 @@
 
 <script setup lang="ts">
 import { useUIStore } from '@/stores/ui'
+import { useAuthStore } from '@/stores/auth'
 
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
-import BottomNav from './BottomNav.vue'
+import FAB from '@/components/forms/FAB.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 
 const uiStore = useUIStore()
+const authStore = useAuthStore()
 </script>
 
 <style scoped>
@@ -79,7 +81,6 @@ const uiStore = useUIStore()
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-bottom: 70px; /* space for bottom nav */
 }
 
 .app-header {
