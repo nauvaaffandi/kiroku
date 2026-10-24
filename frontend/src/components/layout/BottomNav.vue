@@ -1,25 +1,36 @@
 <template>
   <nav class="bottom-nav">
-    <router-link
-      v-for="item in navItems"
-      :key="item.path"
-      :to="item.path"
-      :class="['bottom-nav-item', { active: isActive(item.path) }]"
-    >
-      <component :is="item.icon" class="bottom-nav-icon" />
-      <span class="bottom-nav-label">{{ item.label }}</span>
-    </router-link>
+    <template v-for="(item, index) in navItems" :key="item.path">
+      <router-link
+        :to="item.path"
+        :class="['bottom-nav-item', { active: isActive(item.path) }]"
+      >
+        <component :is="item.icon" class="bottom-nav-icon" />
+        <span class="bottom-nav-label">{{ item.label }}</span>
+      </router-link>
+
+      <!-- Insert the Add Transaction button right in the exact center (after index 1) -->
+      <button v-if="index === 1" @click="handleFABClick" class="bottom-add-btn" aria-label="Add transaction">
+        <div class="bottom-add-circle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+      </button>
+    </template>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DashboardIcon from '@/components/icons/DashboardIcon.vue'
 import TransactionsIcon from '@/components/icons/TransactionsIcon.vue'
 import AccountsIcon from '@/components/icons/AccountsIcon.vue'
 import ReportsIcon from '@/components/icons/ReportsIcon.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const navItems = [
   { path: '/dashboard', label: 'Home', icon: DashboardIcon },
@@ -30,6 +41,17 @@ const navItems = [
 
 const isActive = (path: string) => {
   return route.path.startsWith(path)
+}
+
+const handleFABClick = () => {
+  if (navigator.vibrate) {
+    navigator.vibrate(10)
+  }
+  if (route.path === '/transactions') {
+    router.push({ name: 'Transactions', query: { create: 'true' } })
+  } else {
+    router.push('/transactions?create=true')
+  }
 }
 </script>
 
@@ -77,5 +99,39 @@ const isActive = (path: string) => {
 .bottom-nav-label {
   font-size: 0.6875rem;
   font-weight: 500;
+}
+
+.bottom-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.bottom-add-circle {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.bottom-add-circle:hover {
+  background-color: var(--color-primary-hover);
+  transform: scale(1.05);
+}
+
+.bottom-add-circle:active {
+  transform: scale(0.95);
 }
 </style>

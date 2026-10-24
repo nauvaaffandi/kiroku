@@ -16,8 +16,6 @@
     
     <BottomNav />
     
-    <FAB v-if="showFAB" @click="onFABClick" />
-    
     <div v-if="uiStore.sidebarOpen" class="sidebar-overlay" @click="uiStore.toggleSidebar">
       <aside class="sidebar open" @click.stop>
         <Sidebar @close="uiStore.toggleSidebar" />
@@ -29,40 +27,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
 import { useUIStore } from '@/stores/ui'
 
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
 import BottomNav from './BottomNav.vue'
-import FAB from '@/components/forms/FAB.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 
-const router = useRouter()
-const route = useRoute()
 const uiStore = useUIStore()
-
-const showFAB = ref(true)
-
-const updateFABVisibility = () => {
-  const fabRoutes = ['/dashboard', '/transactions', '/accounts', '/categories', '/scheduled']
-  showFAB.value = fabRoutes.some(r => route.path.startsWith(r))
-}
-
-onMounted(() => {
-  updateFABVisibility()
-})
-
-watch(() => route.path, updateFABVisibility)
-
-const onFABClick = () => {
-  if (route.path === '/transactions') {
-    router.push({ name: 'Transactions', query: { create: 'true' } })
-  } else {
-    router.push('/transactions?create=true')
-  }
-}
 </script>
 
 <style scoped>
