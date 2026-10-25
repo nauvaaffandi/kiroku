@@ -22,17 +22,17 @@
         :label="t('settings.currency')"
         :description="t('settings.currencyDesc')"
       >
-        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+        <div class="flex flex-col gap-2 w-full">
           <BaseSelect
             v-model="settings.base_currency"
             :options="currencyOptions"
             @change="saveSettings"
           />
-          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+          <div class="flex gap-2 mt-2">
             <input
               v-model="newCurrencyCode"
               placeholder="Add Currency (e.g. IDR)"
-              style="padding: 0.5rem; border: 1px solid var(--border-primary); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-size: 0.875rem;"
+              class="p-2 border border-[var(--border-primary)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm flex-1"
               maxlength="5"
             />
             <BaseButton variant="secondary" @click="handleAddCurrency">Add</BaseButton>

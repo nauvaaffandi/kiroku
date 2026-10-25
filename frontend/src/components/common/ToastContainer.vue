@@ -85,10 +85,20 @@ const removeToast = (id: number) => {
   color: #166534;
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.success {
+  background-color: #064e3b;
+  color: #a7f3d0;
+}
+
 .toast.error {
   background-color: #fef2f2;
   border-left: 4px solid #dc2626;
   color: #991b1b;
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.error {
+  background-color: #7f1d1d;
+  color: #fecaca;
 }
 
 .toast.warning {
@@ -97,10 +107,20 @@ const removeToast = (id: number) => {
   color: #92400e;
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.warning {
+  background-color: #78350f;
+  color: #fde68a;
+}
+
 .toast.info {
   background-color: #eff6ff;
   border-left: 4px solid #3b82f6;
   color: #1e40af;
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.info {
+  background-color: #1e3a8a;
+  color: #bfdbfe;
 }
 
 .toast-icon {
@@ -114,10 +134,15 @@ const removeToast = (id: number) => {
 .toast.warning .toast-icon { color: #f59e0b; }
 .toast.info .toast-icon { color: #3b82f6; }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.success .toast-icon { color: #34d399; }
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.error .toast-icon { color: #f87171; }
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.warning .toast-icon { color: #fbbf24; }
+:where([data-theme="dark"], [data-theme="dark"] *) .toast.info .toast-icon { color: #60a5fa; }
+
 .toast-message {
   flex: 1;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

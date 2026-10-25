@@ -92,8 +92,17 @@ const expanded = ref(true)
   transition: background-color 0.2s ease;
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .tree-row {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+}
+
 .tree-row:hover {
   background-color: var(--color-neutral-200);
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .tree-row:hover {
+  background-color: #27272a;
 }
 
 .category-info {
@@ -111,6 +120,10 @@ const expanded = ref(true)
   color: var(--color-neutral-500);
   cursor: pointer;
   flex-shrink: 0;
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .tree-toggle {
+  color: #a1a1aa;
 }
 
 .tree-toggle.placeholder {
@@ -134,9 +147,17 @@ const expanded = ref(true)
   background-color: transparent;
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .category-icon.default {
+  color: #a1a1aa;
+}
+
 .category-name {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-neutral-900);
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .category-name {
+  color: #f4f4f5;
 }
 
 .kind-badge {
@@ -144,7 +165,7 @@ const expanded = ref(true)
   padding: 0.125rem 0.5rem;
   border-radius: 9999px;
   font-size: 0.625rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: capitalize;
 }
 
@@ -170,11 +191,20 @@ const expanded = ref(true)
   vertical-align: middle;
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .color-swatch {
+  border-color: #27272a;
+}
+
 .color-hex {
   font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-neutral-500);
   font-family: monospace;
   margin-left: 0.5rem;
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .color-hex {
+  color: #a1a1aa;
 }
 
 .btn-icon {
@@ -183,7 +213,13 @@ const expanded = ref(true)
   color: var(--color-neutral-500);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+:where([data-theme="dark"], [data-theme="dark"] *) .btn-icon {
+  color: #a1a1aa;
+}
+
 .btn-icon:hover { background-color: var(--color-neutral-200); color: var(--color-neutral-900); }
+:where([data-theme="dark"], [data-theme="dark"] *) .btn-icon:hover { background-color: #27272a; color: #f4f4f5; }
 .btn-icon.text-danger:hover { background-color: rgba(220, 53, 69, 0.15); color: var(--color-danger); }
 
 .category-children {

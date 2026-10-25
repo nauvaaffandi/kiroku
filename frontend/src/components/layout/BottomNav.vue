@@ -72,6 +72,11 @@ const handleFABClick = () => {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .bottom-nav {
+  background-color: #18181b;
+  border-top-color: #27272a;
+}
+
 .bottom-nav-item {
   position: static;
   display: flex;
@@ -84,7 +89,15 @@ const handleFABClick = () => {
   text-decoration: none;
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .bottom-nav-item {
+  color: #a1a1aa;
+}
+
 .bottom-nav-item.active {
+  color: var(--color-primary);
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .bottom-nav-item.active {
   color: var(--color-primary);
 }
 
@@ -96,7 +109,7 @@ const handleFABClick = () => {
 
 .bottom-nav-label {
   font-size: 0.6875rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .bottom-add-btn {

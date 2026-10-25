@@ -8,7 +8,7 @@
         </svg>
         <span>Kiroku</span>
       </router-link>
-      <button v-show="isMobile" @click="$emit('close')" class="sidebar-close" aria-label="Close sidebar">
+      <button v-show="isMobile" @click="$emit('close')" class="sidebar-close text-zinc-600 dark:text-white hover:text-zinc-900 dark:hover:text-white" aria-label="Close sidebar">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -21,7 +21,7 @@
         <li v-for="item in navItems" :key="item.path">
           <router-link
             :to="item.path"
-            :class="['nav-link', { active: isActive(item.path) }]"
+            :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
             @click="closeMobileSidebar"
           >
             <component :is="item.icon" class="nav-icon" />
@@ -36,7 +36,7 @@
         <li v-for="item in settingsItems" :key="item.path">
           <router-link
             :to="item.path"
-            :class="['nav-link', { active: isActive(item.path) }]"
+            :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
             @click="closeMobileSidebar"
           >
             <span>{{ item.label }}</span>
@@ -45,23 +45,38 @@
       </ul>
     </nav>
     
-    <div class="sidebar-footer">
+      <div class="sidebar-footer">
       <div class="user-info" v-if="authStore.user">
         <div class="user-avatar">
           {{ authStore.user.user_id.charAt(0).toUpperCase() }}
         </div>
         <div class="user-details">
-          <span class="user-name">{{ authStore.user.user_id.slice(0, 8) }}</span>
-          <span class="user-role">User</span>
+          <span class="user-name text-zinc-900 dark:text-white font-bold">{{ authStore.user.user_id.slice(0, 8) }}</span>
+          <span class="user-role text-zinc-500 dark:text-zinc-300 font-medium">User</span>
         </div>
       </div>
-      <router-link to="/settings" class="footer-link" @click="closeMobileSidebar">
+      <router-link to="/settings" class="footer-link text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold" @click="closeMobileSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
         <span>Settings</span>
       </router-link>
+      <label class="inline-flex items-center gap-2 font-semibold text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 cursor-pointer" aria-label="Toggle theme">
+        <span class="text-sm">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
+        <button
+          @click="toggleTheme"
+          class="relative inline-block w-10 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 transition-colors duration-200"
+        >
+          <span
+            :class="[
+              'absolute inline-block w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200',
+              isDark ? 'translate-x-4' : 'translate-x-1'
+            ]"
+            aria-hidden="true"
+          />
+        </button>
+      </label>
     </div>
   </div>
 </template>
@@ -71,6 +86,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
+import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/locales'
 
 import DashboardIcon from '@/components/icons/DashboardIcon.vue'
@@ -88,7 +104,24 @@ import GoalsIcon from '@/components/icons/GoalsIcon.vue'
 const route = useRoute()
 const authStore = useAuthStore()
 const uiStore = useUIStore()
+const settingsStore = useSettingsStore()
 const { t } = useI18n()
+
+const isDark = computed(() => {
+  return document.documentElement.classList.contains('dark') || settingsStore.theme === 'dark'
+})
+
+const toggleTheme = () => {
+  const newTheme = isDark.value ? 'light' : 'dark'
+  document.documentElement.classList.toggle('dark', newTheme === 'dark')
+  if (newTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark')
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light')
+  }
+  localStorage.setItem('theme', newTheme)
+  settingsStore.updateSettings({ theme: newTheme })
+}
 
 const isMobile = computed(() => window.innerWidth < 768)
 

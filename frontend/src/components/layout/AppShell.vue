@@ -91,6 +91,20 @@ const authStore = useAuthStore()
   border-bottom: 1px solid var(--border-primary);
 }
 
+:where([data-theme="dark"], [data-theme="dark"] *) .app-shell {
+  background-color: #121212;
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .sidebar {
+  background-color: #18181b;
+  border-right-color: #27272a;
+}
+
+:where([data-theme="dark"], [data-theme="dark"] *) .app-header {
+  background-color: #18181b;
+  border-bottom-color: #27272a;
+}
+
 .app-main {
   flex: 1;
   padding: 1rem;

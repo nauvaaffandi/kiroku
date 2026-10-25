@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
   --color-primary: #4a90d9;
@@ -8,6 +9,19 @@
   --color-warning: #ffc107;
   --color-danger: #dc3545;
   --color-info: #17a2b8;
+
+  /* Zinc Palette for Tailwind dark classes */
+  --color-zinc-50: #f4f4f5;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #121212;
   
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   
@@ -129,77 +143,77 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-  --bg-primary: #1a1d21;
-  --bg-secondary: #24272d;
-  --bg-tertiary: #2d3139;
-  --bg-card: #24272d;
-  --bg-hover: #2d3139;
+  --bg-primary: #121212;
+  --bg-secondary: #18181b;
+  --bg-tertiary: #27272a;
+  --bg-card: #18181b;
+  --bg-hover: #27272a;
   
-  --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-muted: #999;
-  --text-inverse: #212529;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-inverse: #18181b;
   
-  --accent: #6ab0f3;
-  --accent-hover: #8bc0f5;
-  --accent-light: #1e3a5f;
+  --accent: #38bdf8;
+  --accent-hover: #7dd3fc;
+  --accent-light: #0369a1;
   
-  --border-primary: #3a3f47;
-  --border-secondary: #2d3139;
-  --border-focus: #6ab0f3;
+  --border-primary: #27272a;
+  --border-secondary: #3f3f46;
+  --border-focus: #38bdf8;
   
   --success: #4ade80;
-  --success-light: #1a3d2e;
-  --warning: #fbbf24;
-  --warning-light: #3d2b0a;
+  --success-light: #052e16;
+  --warning: #facc15;
+  --warning-light: #422006;
   --error: #f87171;
-  --error-light: #3d1a1a;
+  --error-light: #450a0a;
   --info: #38bdf8;
-  --info-light: #1a3547;
+  --info-light: #082f49;
   
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow: 0 2px 8px 0 rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 12px 0 rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 8px 24px 0 rgb(0 0 0 / 0.6);
+  --shadow-xl: 0 16px 48px 0 rgb(0 0 0 / 0.7);
 }
 
 /* System preference fallback */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg-primary: #1a1d21;
-    --bg-secondary: #24272d;
-    --bg-tertiary: #2d3139;
-    --bg-card: #24272d;
-    --bg-hover: #2d3139;
+    --bg-primary: #121212;
+    --bg-secondary: #18181b;
+    --bg-tertiary: #27272a;
+    --bg-card: #18181b;
+    --bg-hover: #27272a;
     
-    --text-primary: #ffffff;
-    --text-secondary: #e0e0e0;
-    --text-muted: #999;
-    --text-inverse: #212529;
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --text-inverse: #18181b;
     
-    --accent: #6ab0f3;
-    --accent-hover: #8bc0f5;
-    --accent-light: #1e3a5f;
+    --accent: #38bdf8;
+    --accent-hover: #7dd3fc;
+    --accent-light: #0369a1;
     
-    --border-primary: #3a3f47;
-    --border-secondary: #2d3139;
-    --border-focus: #6ab0f3;
+    --border-primary: #27272a;
+    --border-secondary: #3f3f46;
+    --border-focus: #38bdf8;
     
     --success: #4ade80;
-    --success-light: #1a3d2e;
-    --warning: #fbbf24;
-    --warning-light: #3d2b0a;
+    --success-light: #052e16;
+    --warning: #facc15;
+    --warning-light: #422006;
     --error: #f87171;
-    --error-light: #3d1a1a;
+    --error-light: #450a0a;
     --info: #38bdf8;
-    --info-light: #1a3547;
+    --info-light: #082f49;
     
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.45);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+    --shadow: 0 2px 8px 0 rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 12px 0 rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 8px 24px 0 rgb(0 0 0 / 0.6);
+    --shadow-xl: 0 16px 48px 0 rgb(0 0 0 / 0.7);
   }
 }
 

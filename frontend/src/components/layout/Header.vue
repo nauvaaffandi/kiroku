@@ -18,22 +18,7 @@
         </select>
       </div>
       
-      <button @click="toggleTheme" class="icon-btn" aria-label="Toggle theme">
-        <svg v-if="isDark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
+
       
       <div class="more-menu-container">
         <button @click="toggleMoreMenu" class="icon-btn" aria-label="More options">
@@ -81,7 +66,6 @@ const { t } = useI18n()
 const { currencies } = useCurrencies()
 
 const showMoreMenu = ref(false)
-const isDark = ref(false)
 
 const pageTitle = computed(() => {
   const name = route.name as string
@@ -93,13 +77,6 @@ const pageTitle = computed(() => {
 const changeCurrency = async (e: Event) => {
   const val = (e.target as HTMLSelectElement).value
   await settingsStore.updateSettings({ base_currency: val })
-}
-
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-  showMoreMenu.value = false
 }
 
 const toggleMoreMenu = () => {
@@ -117,10 +94,6 @@ const logout = async () => {
 }
 
 onMounted(() => {
-  isDark.value = document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark'
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-  }
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -162,11 +135,17 @@ defineEmits(['toggle-sidebar'])
   border: none;
   cursor: pointer;
 }
+:where([data-theme="dark"], [data-theme="dark"] *) .menu-btn {
+  color: #d4d4d8;
+}
 .page-title {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-neutral-900);
   margin: 0;
+}
+:where([data-theme="dark"], [data-theme="dark"] *) .page-title {
+  color: #f4f4f5;
 }
 .header-right {
   display: flex;
@@ -180,7 +159,13 @@ defineEmits(['toggle-sidebar'])
   background-color: var(--color-neutral-100);
   color: var(--color-neutral-900);
   font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
+}
+:where([data-theme="dark"], [data-theme="dark"] *) .currency-selector select {
+  background-color: #121212;
+  border-color: #27272a;
+  color: #f4f4f5;
 }
 .icon-btn {
   display: flex;
@@ -193,6 +178,9 @@ defineEmits(['toggle-sidebar'])
   border: none;
   color: var(--color-neutral-600);
   cursor: pointer;
+}
+:where([data-theme="dark"], [data-theme="dark"] *) .icon-btn {
+  color: #d4d4d8;
 }
 .more-menu-container {
   position: relative;
@@ -209,6 +197,10 @@ defineEmits(['toggle-sidebar'])
   padding: 0.5rem 0;
   z-index: 300;
 }
+:where([data-theme="dark"], [data-theme="dark"] *) .more-dropdown {
+  background-color: #18181b;
+  border-color: #27272a;
+}
 .dropdown-section {
   padding: 0.25rem 0;
 }
@@ -222,11 +214,19 @@ defineEmits(['toggle-sidebar'])
   background: none;
   border: none;
   font-size: 0.875rem;
+  font-weight: 500;
   color: var(--color-neutral-700);
   cursor: pointer;
 }
+:where([data-theme="dark"], [data-theme="dark"] *) .dropdown-item {
+  color: #d4d4d8;
+}
 .dropdown-item:hover {
   background-color: var(--color-neutral-200);
+}
+:where([data-theme="dark"], [data-theme="dark"] *) .dropdown-item:hover {
+  background-color: #27272a;
+  color: #f4f4f5;
 }
 .dropdown-item.danger {
   color: var(--color-danger);
@@ -235,6 +235,9 @@ defineEmits(['toggle-sidebar'])
   height: 1px;
   background-color: var(--color-neutral-200);
   margin: 0.25rem 0;
+}
+:where([data-theme="dark"], [data-theme="dark"] *) .dropdown-divider {
+  background-color: #27272a;
 }
 @media (min-width: 768px) {
   /* Removed desktop hiding of menu button */
