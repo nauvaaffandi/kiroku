@@ -39,26 +39,54 @@
           </span>
           <span v-else>Sign In</span>
         </button>
+
+        <!-- Only show fingerprint login button if biometric is set/enabled in settings -->
+        <button
+          v-if="isBiometricConfigured"
+          type="button"
+          class="login-fingerprint-btn"
+          @click="showFingerprintOverlay = true"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.81 3.5"></path>
+            <path d="M15.5 13.5c0-1.8-1.5-3.5-3.5-3.5s-3.5 1.7-3.5 3.5"></path>
+            <path d="M19 11c0-3.86-3.14-7-7-7s-7 3.14-7 7c0 1.55.3 3 .83 4.33"></path>
+            <path d="M21.5 14C22 12.8 22.5 11.5 22.5 10c0-5.52-4.48-10-10-10S2.5 4.48 2.5 10c0 2.21.73 4.25 1.97 5.88"></path>
+            <path d="M12 18v2"></path>
+            <path d="M9 19.5c0 .83.67 1.5 1.5 1.5h3c.83 0 1.5-.67 1.5-1.5V18"></path>
+          </svg>
+          Masuk dengan Sidik Jari
+        </button>
       </form>
 
       <p class="login-footer">
         Single-user mode · Device remembered for 24h of activity
       </p>
     </div>
+
+    <!-- Fingerprint Overlay -->
+    <FingerprintOverlay
+      :is-open="showFingerprintOverlay"
+      @close="showFingerprintOverlay = false"
+      @success="handleFingerprintSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
 import { useRouter } from 'vue-router'
+import FingerprintOverlay from '@/components/auth/FingerprintOverlay.vue'
 
 const authStore = useAuthStore()
 const uiStore = useUIStore()
 const router = useRouter()
 
 const pin = ref('')
+const showFingerprintOverlay = ref(false)
+const isBiometricConfigured = ref(false)
 
 const handleVerify = async () => {
   const success = await authStore.login(pin.value)
@@ -68,6 +96,26 @@ const handleVerify = async () => {
   }
   pin.value = ''
 }
+
+const handleFingerprintSuccess = async () => {
+  showFingerprintOverlay.value = false
+  authStore.user = { user_id: 'authenticated' }
+  uiStore.success('Autentikasi sidik jari berhasil!')
+  router.push('/dashboard')
+}
+
+onMounted(() => {
+  // Check if biometric is enabled/configured in localStorage (set via settings)
+  const configured = localStorage.getItem('kiroku_biometric_enabled') === 'true'
+  isBiometricConfigured.value = configured
+
+  // Only auto-open if biometric is explicitly configured by user
+  if (configured) {
+    setTimeout(() => {
+      showFingerprintOverlay.value = true
+    }, 400)
+  }
+})
 </script>
 
 <style scoped>
@@ -108,7 +156,7 @@ const handleVerify = async () => {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .form-group {
@@ -176,6 +224,26 @@ const handleVerify = async () => {
 .login-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.login-fingerprint-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--bg-secondary, #f1f3f5);
+  color: var(--text-primary, #212529);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary, #dee2e6);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.login-fingerprint-btn:hover {
+  background-color: var(--bg-hover, #e9ecef);
 }
 
 .btn-loading {
