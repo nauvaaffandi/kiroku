@@ -1,9 +1,7 @@
 <template>
   <div class="fab-wrapper">
-    <!-- Backdrop -->
     <div v-if="isOpen" class="fab-backdrop" @click="toggleMenu"></div>
 
-    <!-- Exploding child buttons (Dynamically renders exactly 5 items, easily expandable to 6+) -->
     <div class="fab-children-container" :class="{ open: isOpen }">
       <button
         v-for="(child, index) in children"
@@ -17,7 +15,6 @@
       </button>
     </div>
 
-    <!-- Main button / Close button -->
     <button
       class="fab-main"
       :class="{ open: isOpen }"

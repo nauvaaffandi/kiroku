@@ -24,18 +24,17 @@
             :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
             @click="closeMobileSidebar"
           >
-            <component :is="item.icon" class="nav-icon" />
+            <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
             <span>{{ item.label }}</span>
           </router-link>
         </li>
 
-        <!-- Analytics Collapsible Section -->
         <li class="nav-group">
           <button
             @click="toggleAnalytics"
             :class="['nav-link nav-group-toggle w-full text-zinc-700 dark:text-white font-medium font-semibold', { active: isAnalyticsActive && !isAnalyticsOpen }]"
           >
-            <AnalyticsIcon class="nav-icon" />
+            <AnalyticsIcon class="nav-icon" style="color:#6366f1" />
             <span class="flex-1 text-left">{{ t('nav.analytics') }}</span>
             <svg
               width="16"
@@ -58,7 +57,7 @@
                   :class="['sub-nav-link', { active: route.path === sub.path }, 'text-zinc-600 dark:text-zinc-300 font-medium']"
                   @click="closeMobileSidebar"
                 >
-                  <component :is="sub.icon" class="sub-nav-icon" v-if="sub.icon" />
+                  <component :is="sub.icon" class="sub-nav-icon" v-if="sub.icon" :style="{ color: sub.color }" />
                   <span>{{ sub.label }}</span>
                 </router-link>
               </li>
@@ -72,7 +71,7 @@
             :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
             @click="closeMobileSidebar"
           >
-            <component :is="item.icon" class="nav-icon" />
+            <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
             <span>{{ item.label }}</span>
           </router-link>
         </li>
@@ -104,7 +103,7 @@
         </div>
       </div>
       <router-link to="/settings" class="footer-link text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold" @click="closeMobileSidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #64748b">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
@@ -143,26 +142,26 @@ const { t } = useI18n()
 const isMobile = computed(() => window.innerWidth < 768)
 
 const mainNavItems = [
-  { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon },
-  { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon },
-  { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon }
+  { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, color: '#3b82f6' }, // blue-500
+  { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon, color: '#10b981' }, // emerald-500
+  { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' } // amber-500
 ]
 
 const analyticsItems = [
-  { path: '/analytics/balance', label: t('nav.analyticsBalance') },
-  { path: '/analytics/outlook', label: t('nav.analyticsOutlook') },
-  { path: '/analytics/cashflow', label: t('nav.analyticsCashflow') },
-  { path: '/analytics/spending', label: t('nav.analyticsSpending') },
-  { path: '/analytics/budget', label: t('nav.analyticsBudget'), icon: BudgetIcon },
-  { path: '/analytics/goals', label: t('nav.analyticsGoals'), icon: GoalsIcon }
+  { path: '/analytics/balance', label: t('nav.analyticsBalance'), color: '#6366f1' }, // indigo-500
+  { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), color: '#8b5cf6' }, // violet-500
+  { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), color: '#ec4899' }, // pink-500
+  { path: '/analytics/spending', label: t('nav.analyticsSpending'), color: '#f43f5e' }, // rose-500
+  { path: '/analytics/budget', label: t('nav.analyticsBudget'), icon: BudgetIcon, color: '#14b8a6' }, // teal-500
+  { path: '/analytics/goals', label: t('nav.analyticsGoals'), icon: GoalsIcon, color: '#eab308' } // yellow-500
 ]
 
 const bottomMainNavItems = [
-  { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon },
-  { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon },
-  { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon },
-  { path: '/reports', label: t('nav.reports'), icon: ReportsIcon },
-  { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon }
+  { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon, color: '#06b6d4' }, // cyan-500
+  { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon, color: '#84cc16' }, // lime-500
+  { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon, color: '#0ea5e9' }, // sky-500
+  { path: '/reports', label: t('nav.reports'), icon: ReportsIcon, color: '#a855f7' }, // purple-500
+  { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon, color: '#f97316' } // orange-500
 ]
 
 const settingsItems = [

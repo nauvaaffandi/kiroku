@@ -9,7 +9,6 @@
         <span class="bottom-nav-label">{{ item.label }}</span>
       </router-link>
 
-      <!-- Insert the Add Transaction button right in the exact center (after index 1) -->
       <button v-if="index === 1" @click="handleFABClick" class="bottom-add-btn" aria-label="Add transaction">
         <div class="bottom-add-circle">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

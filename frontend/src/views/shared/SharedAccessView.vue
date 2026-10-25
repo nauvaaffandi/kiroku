@@ -70,7 +70,6 @@
       </div>
     </div>
 
-    <!-- Create Share Modal -->
     <Transition name="modal">
       <div v-if="showCreateModal" class="modal-overlay" @click.self="closeCreateModal">
         <div class="modal" @click.stop>
@@ -115,7 +114,6 @@
       </div>
     </Transition>
 
-    <!-- Share Created Modal -->
     <Transition name="modal">
       <div v-if="createdShare" class="modal-overlay" @click.self="closeCreatedModal">
         <div class="modal" @click.stop>

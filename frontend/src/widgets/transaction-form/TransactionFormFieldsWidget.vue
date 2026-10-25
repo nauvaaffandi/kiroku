@@ -1,6 +1,5 @@
 <template>
   <form @submit.prevent="handleSubmit" class="transaction-form">
-    <!-- Template Selector -->
     <div class="form-group" v-if="templates.length > 0 && !isEditing">
       <label>{{ $t('common.loadFromTemplate') }}</label>
       <select @change="applyTemplate($event)" class="form-input">

@@ -41,7 +41,6 @@
           <span v-else>Sign In</span>
         </button>
 
-        <!-- Only show fingerprint login button if biometric is set/enabled in settings -->
         <button
           v-if="isBiometricConfigured"
           type="button"
@@ -65,7 +64,6 @@
       </p>
     </div>
 
-    <!-- Fingerprint Overlay -->
     <FingerprintOverlay
       :is-open="showFingerprintOverlay"
       @close="showFingerprintOverlay = false"

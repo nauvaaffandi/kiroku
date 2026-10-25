@@ -53,6 +53,7 @@ export default {
     dashboard: 'ダッシュボード',
     transactions: '取引履歴',
     calendar: 'カレンダー',
+    analytics: '分析',
     analyticsBalance: '残高分析',
     analyticsOutlook: '予定分析',
     analyticsCashflow: 'キャッシュフロー分析',
