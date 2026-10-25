@@ -81,10 +81,11 @@ const close = () => {
             <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">New PIN</label>
             <input
               v-model="newPin"
-              type="password"
+              type="number"
               inputmode="numeric"
               pattern="[0-9]{6}"
               maxlength="6"
+              min="0"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -94,10 +95,11 @@ const close = () => {
             <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Confirm New PIN</label>
             <input
               v-model="confirmPin"
-              type="password"
+              type="number"
               inputmode="numeric"
               pattern="[0-9]{6}"
               maxlength="6"
+              min="0"
               required
               class="w-full px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />

@@ -16,10 +16,11 @@
           <input
             id="pin"
             v-model="pin"
-            type="password"
+            type="number"
             inputmode="numeric"
             pattern="[0-9]{6}"
             maxlength="6"
+            min="0"
             required
             autocomplete="current-password"
             :disabled="authStore.loading"

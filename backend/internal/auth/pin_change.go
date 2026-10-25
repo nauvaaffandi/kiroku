@@ -25,11 +25,11 @@ func (h *Handler) ChangePin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ValidatePIN(req.CurrentPIN); err != nil {
+	if err := ValidatePIN(string(req.CurrentPIN)); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := ValidatePIN(req.NewPIN); err != nil {
+	if err := ValidatePIN(string(req.NewPIN)); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -42,13 +42,13 @@ func (h *Handler) ChangePin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := VerifyPin(req.CurrentPIN, currentHash)
+	ok, err := VerifyPin(string(req.CurrentPIN), currentHash)
 	if err != nil || !ok {
 		http.Error(w, "invalid current pin", http.StatusUnauthorized)
 		return
 	}
 
-	newHash, err := HashPin(req.NewPIN, h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin(string(req.NewPIN), h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: hash new pin")
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -79,7 +79,7 @@ func (h *Handler) RequestPinChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ValidatePIN(req.NewPIN); err != nil {
+	if err := ValidatePIN(string(req.NewPIN)); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -140,7 +140,7 @@ func (h *Handler) VerifyPinChange(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "token required", http.StatusBadRequest)
 		return
 	}
-	if err := ValidatePIN(req.NewPIN); err != nil {
+	if err := ValidatePIN(string(req.NewPIN)); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -166,7 +166,7 @@ func (h *Handler) VerifyPinChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHash, err := HashPin(req.NewPIN, h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin(string(req.NewPIN), h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: hash new pin")
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -254,7 +254,7 @@ func (h *Handler) VerifyPinReset(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "token required", http.StatusBadRequest)
 		return
 	}
-	if err := ValidatePIN(req.NewPIN); err != nil {
+	if err := ValidatePIN(string(req.NewPIN)); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -275,7 +275,7 @@ func (h *Handler) VerifyPinReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHash, err := HashPin(req.NewPIN, h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin(string(req.NewPIN), h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: hash new pin")
 		http.Error(w, "internal error", http.StatusInternalServerError)

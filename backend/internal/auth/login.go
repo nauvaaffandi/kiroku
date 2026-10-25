@@ -15,7 +15,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ValidatePIN(req.PIN); err != nil {
+	if err := ValidatePIN(string(req.PIN)); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -35,7 +35,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    ok, err := VerifyPin(req.PIN, hash)
+	ok, err := VerifyPin(string(req.PIN), hash)
     if err != nil || !ok {
         http.Error(w, "invalid pin", http.StatusUnauthorized)
         return
