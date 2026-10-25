@@ -2,9 +2,9 @@
   <form @submit.prevent="handleSubmit" class="transaction-form">
     <!-- Template Selector -->
     <div class="form-group" v-if="templates.length > 0 && !isEditing">
-      <label>Load from Template</label>
+      <label>{{ $t('common.loadFromTemplate') }}</label>
       <select @change="applyTemplate($event)" class="form-input">
-        <option value="">Select a template...</option>
+        <option value="">{{ $t('common.selectTemplate') }}</option>
         <option v-for="tmpl in templates" :key="tmpl.id" :value="tmpl.id">
           {{ tmpl.name }}
         </option>
@@ -13,25 +13,25 @@
 
     <div class="form-row">
       <div class="form-group">
-        <label>Type</label>
+        <label>{{ $t('common.type') }}</label>
         <select v-model="form.type" class="form-input" required>
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-          <option value="transfer">Transfer</option>
+          <option value="expense">{{ $t('transactions.typeExpense') }}</option>
+          <option value="income">{{ $t('transactions.typeIncome') }}</option>
+          <option value="transfer">{{ $t('transactions.typeTransfer') }}</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Date & Time</label>
+        <label>{{ $t('common.date') }}</label>
         <input v-model="form.date_time" type="datetime-local" class="form-input" required />
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group amount-group">
-        <label>Amount</label>
+        <label>{{ $t('common.amount') }}</label>
         <div class="amount-input-wrapper">
           <input v-model.number="form.amount" type="number" step="1" min="1" class="form-input" required />
-          <button type="button" @click="showCalculator = true" class="calc-btn" title="Open Calculator">
+          <button type="button" @click="showCalculator = true" class="calc-btn" :title="$t('common.openCalculator')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="4" y="2" width="16" height="20" rx="2"></rect>
               <line x1="8" y1="6" x2="16" y2="6"></line>
@@ -46,15 +46,15 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Currency</label>
+        <label>{{ $t('common.currency') }}</label>
         <input v-model="form.currency" type="text" class="form-input" required maxlength="3" />
       </div>
     </div>
 
     <div class="form-group">
-      <label>Category</label>
+      <label>{{ $t('common.category') }}</label>
       <select v-model="form.category_id" class="form-input">
-        <option value="">Select Category</option>
+        <option value="">{{ $t('common.selectCategory') }}</option>
         <option v-for="cat in categories" :key="cat.id" :value="cat.id" :disabled="cat.children && cat.children.length > 0">
           {{ cat.path }}
         </option>
@@ -63,9 +63,9 @@
 
     <div class="form-row" v-if="form.type === 'expense' || form.type === 'transfer'">
       <div class="form-group">
-        <label>From Account</label>
+        <label>{{ $t('common.fromAccount') }}</label>
         <select v-model="form.from_account_id" class="form-input" required>
-          <option value="">Select Account</option>
+          <option value="">{{ $t('common.selectAccount') }}</option>
           <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
             {{ acc.name }} ({{ acc.currency }}) - Bal: ¥{{ acc.balance }}
           </option>
@@ -75,9 +75,9 @@
 
     <div class="form-row" v-if="form.type === 'income' || form.type === 'transfer'">
       <div class="form-group">
-        <label>To Account</label>
+        <label>{{ $t('common.toAccount') }}</label>
         <select v-model="form.to_account_id" class="form-input" required>
-          <option value="">Select Account</option>
+          <option value="">{{ $t('common.selectAccount') }}</option>
           <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
             {{ acc.name }} ({{ acc.currency }}) - Bal: ¥{{ acc.balance }}
           </option>
@@ -86,12 +86,12 @@
     </div>
 
     <div class="form-group">
-      <label>Note</label>
+      <label>{{ $t('common.note') }}</label>
       <input
         v-model="form.note"
         type="text"
         class="form-input"
-        placeholder="Optional note"
+        :placeholder="$t('common.optionalNote')"
         list="notes-autocomplete"
       />
       <datalist id="notes-autocomplete">
@@ -100,12 +100,12 @@
     </div>
 
     <div class="form-group">
-      <label>Payee / Payer</label>
+      <label>{{ $t('common.optionalPayee') }}</label>
       <input
         v-model="form.payee_payer"
         type="text"
         class="form-input"
-        placeholder="Optional payee or payer"
+        :placeholder="$t('common.optionalPayee')"
         list="payee-autocomplete"
       />
       <datalist id="payee-autocomplete">
@@ -115,35 +115,35 @@
 
     <div class="form-row">
       <div class="form-group">
-        <label>Payment Type</label>
+        <label>{{ $t('common.paymentType') }}</label>
         <select v-model="form.payment_type" class="form-input">
-          <option value="">Select payment type</option>
-          <option value="cash">Cash</option>
-          <option value="card">Card</option>
-          <option value="qr">QR Code</option>
-          <option value="bank">Bank Transfer</option>
+          <option value="">{{ $t('common.selectPaymentType') }}</option>
+          <option value="cash">{{ $t('common.cash') }}</option>
+          <option value="card">{{ $t('common.card') }}</option>
+          <option value="qr">{{ $t('common.qrCode') }}</option>
+          <option value="bank">{{ $t('common.bankTransfer') }}</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Status</label>
+        <label>{{ $t('common.status') }}</label>
         <select v-model="form.status" class="form-input">
-          <option value="cleared">Cleared</option>
-          <option value="pending">Pending</option>
-          <option value="reconciled">Reconciled</option>
+          <option value="cleared">{{ $t('transactions.statusCleared') }}</option>
+          <option value="pending">{{ $t('transactions.statusPending') }}</option>
+          <option value="reconciled">{{ $t('common.reconciled') }}</option>
         </select>
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label>Warranty Until</label>
+        <label>{{ $t('common.warrantyUntil') }}</label>
         <input v-model="form.warranty_until" type="date" class="form-input" />
       </div>
       <div class="form-group">
-        <label>Place Name</label>
+        <label>{{ $t('common.placeName') }}</label>
         <div class="place-input-wrapper">
-          <input v-model="form.place_name" type="text" class="form-input" placeholder="Location name" />
-          <button type="button" @click="showMapModal = true" class="btn-secondary map-btn">Map</button>
+          <input v-model="form.place_name" type="text" class="form-input" :placeholder="$t('common.locationName')" />
+          <button type="button" @click="showMapModal = true" class="btn-secondary map-btn">{{ $t('common.map') }}</button>
         </div>
       </div>
     </div>
@@ -151,15 +151,15 @@
     <div class="form-group" v-if="!isEditing">
       <label class="checkbox-label">
         <input type="checkbox" v-model="saveAsTemplate" />
-        Save as template
+        {{ $t('common.saveAsTemplate') }}
       </label>
-      <input v-if="saveAsTemplate" v-model="templateName" type="text" class="form-input mt-2" placeholder="Template name" required />
+      <input v-if="saveAsTemplate" v-model="templateName" type="text" class="form-input mt-2" :placeholder="$t('common.templateName')" required />
     </div>
 
     <div class="modal-actions">
-      <button type="button" @click="$emit('cancel')" class="btn-secondary">Cancel</button>
+      <button type="button" @click="$emit('cancel')" class="btn-secondary">{{ $t('common.cancel') }}</button>
       <button type="submit" :disabled="loading" class="btn-primary">
-        {{ loading ? 'Saving...' : (isEditing ? 'Update Transaction' : 'Create Transaction') }}
+        {{ loading ? $t('common.loading') : (isEditing ? $t('common.updateTransaction') : $t('common.createTransaction')) }}
       </button>
     </div>
   </form>
@@ -168,7 +168,10 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { api } from '@/api/client'
+import { useI18n } from '@/locales'
 import type { Category, Account } from '@/types'
+
+const { t: $t } = useI18n()
 
 const props = defineProps<{
   initialData?: any
