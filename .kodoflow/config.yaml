@@ -1,0 +1,14 @@
+agents:
+  explorer: explore
+  planner: planner
+  test_architect: qa-expert
+  coder: fullstack-developer
+  tester: qa-expert
+  reviewer: reviewer
+workflow:
+  max_retries: 3
+  default_mode: auto
+  timeout_per_stage_seconds: 600
+  auto_approve_verification: false
+  warn_git_uncommitted: true
+  opencode_binary: opencode

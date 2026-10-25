@@ -86,8 +86,8 @@ import { useCategoriesStore } from '@/stores/categories'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
 import { api } from '@/api/client'
-import type { Transaction, TransactionFilters } from '@/types'
-import { TransactionTable, TransactionFormModal } from '@/widgets/transactions'
+import type { Transaction, TransactionFilters as ITransactionFilters } from '@/types'
+import { TransactionTable, TransactionFormModal, TransactionFilters } from '@/widgets/transactions'
 import { BaseButton, BaseModal } from '@/components/ui'
 
 const router = useRouter()
@@ -109,7 +109,7 @@ const editingTransaction = ref<Transaction | null>(null)
 const showDeleteConfirm = ref(false)
 const deleteId = ref<string | null>(null)
 
-const localFilters = ref<TransactionFilters>({
+const localFilters = ref<ITransactionFilters>({
   account_id: '',
   category_id: '',
   type: '',

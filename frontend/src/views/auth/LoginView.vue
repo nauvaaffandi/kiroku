@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
 import { useRouter } from 'vue-router'
@@ -89,14 +89,27 @@ const pin = ref('')
 const showFingerprintOverlay = ref(false)
 const isBiometricConfigured = ref(false)
 
+const submitting = ref(false)
+
 const handleVerify = async () => {
+  if (submitting.value) return
+  submitting.value = true
   const success = await authStore.login(pin.value)
   if (success) {
     uiStore.success('Welcome back!')
     router.push('/dashboard')
   }
   pin.value = ''
+  submitting.value = false
 }
+
+watch(pin, (newVal) => {
+  const strVal = String(newVal || '')
+  if (strVal.length >= 6) {
+    pin.value = strVal.slice(0, 6)
+    handleVerify()
+  }
+})
 
 const handleFingerprintSuccess = async () => {
   showFingerprintOverlay.value = false

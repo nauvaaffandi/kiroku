@@ -18,7 +18,55 @@
     
     <nav class="sidebar-nav">
       <ul class="nav-list">
-        <li v-for="item in navItems" :key="item.path">
+        <li v-for="item in mainNavItems" :key="item.path">
+          <router-link
+            :to="item.path"
+            :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
+            @click="closeMobileSidebar"
+          >
+            <component :is="item.icon" class="nav-icon" />
+            <span>{{ item.label }}</span>
+          </router-link>
+        </li>
+
+        <!-- Analytics Collapsible Section -->
+        <li class="nav-group">
+          <button
+            @click="toggleAnalytics"
+            :class="['nav-link nav-group-toggle w-full text-zinc-700 dark:text-white font-medium font-semibold', { active: isAnalyticsActive && !isAnalyticsOpen }]"
+          >
+            <AnalyticsIcon class="nav-icon" />
+            <span class="flex-1 text-left">{{ t('nav.analytics') }}</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              :class="['transition-transform duration-200', { 'rotate-180': isAnalyticsOpen }]"
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          
+          <div class="expandable-wrapper" :style="{ height: isAnalyticsOpen ? analyticsHeight + 'px' : '0px' }" ref="expandableRef">
+            <ul class="sub-nav-list" ref="subNavRef">
+              <li v-for="sub in analyticsItems" :key="sub.path">
+                <router-link
+                  :to="sub.path"
+                  :class="['sub-nav-link', { active: route.path === sub.path }, 'text-zinc-600 dark:text-zinc-300 font-medium']"
+                  @click="closeMobileSidebar"
+                >
+                  <component :is="sub.icon" class="sub-nav-icon" v-if="sub.icon" />
+                  <span>{{ sub.label }}</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li v-for="item in bottomMainNavItems" :key="item.path">
           <router-link
             :to="item.path"
             :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
@@ -62,31 +110,16 @@
         </svg>
         <span>Settings</span>
       </router-link>
-      <label class="inline-flex items-center gap-2 font-semibold text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 cursor-pointer" aria-label="Toggle theme">
-        <span class="text-sm">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
-        <button
-          @click="toggleTheme"
-          class="relative inline-block w-10 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 transition-colors duration-200"
-        >
-          <span
-            :class="[
-              'absolute inline-block w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200',
-              isDark ? 'translate-x-4' : 'translate-x-1'
-            ]"
-            aria-hidden="true"
-          />
-        </button>
-      </label>
+      <ThemeToggle />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
-import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/locales'
 
 import DashboardIcon from '@/components/icons/DashboardIcon.vue'
@@ -100,41 +133,31 @@ import AnalyticsIcon from '@/components/icons/AnalyticsIcon.vue'
 import SharedAccessIcon from '@/components/icons/SharedAccessIcon.vue'
 import BudgetIcon from '@/components/icons/BudgetIcon.vue'
 import GoalsIcon from '@/components/icons/GoalsIcon.vue'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
 const uiStore = useUIStore()
-const settingsStore = useSettingsStore()
 const { t } = useI18n()
-
-const isDark = computed(() => {
-  return document.documentElement.classList.contains('dark') || settingsStore.theme === 'dark'
-})
-
-const toggleTheme = () => {
-  const newTheme = isDark.value ? 'light' : 'dark'
-  document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  if (newTheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark')
-  } else {
-    document.documentElement.setAttribute('data-theme', 'light')
-  }
-  localStorage.setItem('theme', newTheme)
-  settingsStore.updateSettings({ theme: newTheme })
-}
 
 const isMobile = computed(() => window.innerWidth < 768)
 
-const navItems = [
+const mainNavItems = [
   { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon },
   { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon },
-  { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon },
-  { path: '/analytics/balance', label: t('nav.analyticsBalance'), icon: AnalyticsIcon },
-  { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), icon: AnalyticsIcon },
-  { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), icon: AnalyticsIcon },
-  { path: '/analytics/spending', label: t('nav.analyticsSpending'), icon: AnalyticsIcon },
+  { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon }
+]
+
+const analyticsItems = [
+  { path: '/analytics/balance', label: t('nav.analyticsBalance') },
+  { path: '/analytics/outlook', label: t('nav.analyticsOutlook') },
+  { path: '/analytics/cashflow', label: t('nav.analyticsCashflow') },
+  { path: '/analytics/spending', label: t('nav.analyticsSpending') },
   { path: '/analytics/budget', label: t('nav.analyticsBudget'), icon: BudgetIcon },
-  { path: '/analytics/goals', label: t('nav.analyticsGoals'), icon: GoalsIcon },
+  { path: '/analytics/goals', label: t('nav.analyticsGoals'), icon: GoalsIcon }
+]
+
+const bottomMainNavItems = [
   { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon },
   { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon },
   { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon },
@@ -145,6 +168,42 @@ const navItems = [
 const settingsItems = [
   { path: '/settings', label: t('nav.settings') }
 ]
+
+const isAnalyticsActive = computed(() => route.path.startsWith('/analytics'))
+const isAnalyticsOpen = ref(isAnalyticsActive.value)
+const analyticsHeight = ref(0)
+const subNavRef = ref<HTMLElement | null>(null)
+
+const updateHeight = () => {
+  if (subNavRef.value) {
+    analyticsHeight.value = subNavRef.value.scrollHeight
+  }
+}
+
+watch(isAnalyticsActive, (val) => {
+  if (val) {
+    isAnalyticsOpen.value = true
+  }
+})
+
+watch(isAnalyticsOpen, () => {
+  nextTick(() => {
+    updateHeight()
+  })
+})
+
+onMounted(() => {
+  if (isAnalyticsActive.value) {
+    isAnalyticsOpen.value = true
+  }
+  nextTick(() => {
+    updateHeight()
+  })
+})
+
+const toggleAnalytics = () => {
+  isAnalyticsOpen.value = !isAnalyticsOpen.value
+}
 
 const isActive = (path: string) => {
   return route.path.startsWith(path)
@@ -216,8 +275,14 @@ defineEmits(['close'])
   border-radius: var(--radius-sm);
   color: var(--color-neutral-600);
   text-decoration: none;
-  margin: 0 0.5rem;
+  margin: 0.125rem 0.5rem;
   transition: background-color 0.2s ease, color 0.2s ease;
+  width: auto;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 
 .nav-link:hover {
@@ -231,9 +296,59 @@ defineEmits(['close'])
   font-weight: 500;
 }
 
+.nav-group-toggle {
+  margin: 0.125rem 0.5rem;
+  width: calc(100% - 1rem);
+}
+
+.expandable-wrapper {
+  overflow: hidden;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 0.5rem;
+}
+
+.sub-nav-list {
+  list-style: none;
+  padding: 0.25rem 0 0.25rem 2rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.sub-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-neutral-600);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sub-nav-link:hover {
+  background-color: var(--color-neutral-200);
+  color: var(--color-neutral-900);
+}
+
+.sub-nav-link.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 .nav-icon {
   width: 1.25rem;
   height: 1.25rem;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.sub-nav-icon {
+  width: 1rem;
+  height: 1rem;
   flex-shrink: 0;
   color: currentColor;
 }
