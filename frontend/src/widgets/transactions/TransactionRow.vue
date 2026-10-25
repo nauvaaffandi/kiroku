@@ -94,7 +94,7 @@ const formatAmount = (amount: number) => {
 
 .cell-date {
   white-space: nowrap;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--color-text);
 }
 
@@ -105,7 +105,7 @@ const formatAmount = (amount: number) => {
 .type-badge {
   display: inline-block;
   padding: 0.125rem 0.5rem;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
   text-transform: uppercase;
   border-radius: var(--radius-full);
@@ -130,6 +130,7 @@ const formatAmount = (amount: number) => {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  font-size: 0.8125rem;
 }
 
 .cell-amount.positive {
@@ -145,7 +146,8 @@ const formatAmount = (amount: number) => {
 }
 
 .cell-category {
-  max-width: 180px;
+  max-width: 140px;
+  font-size: 0.75rem;
 }
 
 .category-badge {
@@ -153,7 +155,7 @@ const formatAmount = (amount: number) => {
   align-items: center;
   gap: 0.375rem;
   padding: 0.125rem 0.5rem;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   border-radius: var(--radius);
   white-space: nowrap;
   overflow: hidden;
@@ -161,18 +163,18 @@ const formatAmount = (amount: number) => {
 }
 
 .category-icon {
-  width: 1rem;
-  height: 1rem;
+  width: 0.875rem;
+  height: 0.875rem;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
 }
 
 .cell-account {
-  font-size: 0.8125rem;
-  max-width: 160px;
+  font-size: 0.75rem;
+  max-width: 130px;
 }
 
 .transfer-arrow {
@@ -182,8 +184,8 @@ const formatAmount = (amount: number) => {
 }
 
 .cell-note {
-  max-width: 200px;
-  font-size: 0.8125rem;
+  max-width: 160px;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -197,7 +199,7 @@ const formatAmount = (amount: number) => {
 .status-badge {
   display: inline-block;
   padding: 0.125rem 0.5rem;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
   text-transform: uppercase;
   border-radius: var(--radius-full);
@@ -215,7 +217,7 @@ const formatAmount = (amount: number) => {
 
 .cell-actions {
   white-space: nowrap;
-  width: 80px;
+  width: 60px;
 }
 
 .action-buttons {
@@ -228,8 +230,8 @@ const formatAmount = (amount: number) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
   border-radius: var(--radius);
@@ -250,5 +252,18 @@ const formatAmount = (amount: number) => {
 
 .text-muted {
   color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+  .cell-date { font-size: 0.6875rem; }
+  .cell-amount { font-size: 0.75rem; }
+  .cell-category { max-width: 100px; }
+  .cell-account { max-width: 90px; }
+  .cell-note { max-width: 120px; }
+  .type-badge { font-size: 0.5625rem; padding: 0.125rem 0.375rem; }
+  .status-badge { font-size: 0.5625rem; padding: 0.125rem 0.375rem; }
+  .category-badge { font-size: 0.6875rem; }
+  .category-icon { width: 0.75rem; height: 0.75rem; font-size: 0.625rem; }
+  .btn-icon { width: 22px; height: 22px; }
 }
 </style>

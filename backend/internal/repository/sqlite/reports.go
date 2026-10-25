@@ -39,10 +39,10 @@ func (r *ReportsRepo) Spending(ctx context.Context, filter domain.SpendingFilter
 
 	var query string
 	if groupBy == "parent_category" {
-		query = `SELECT COALESCE(pc.id, c.id), COALESCE(pc.name, c.name), COALESCE(pc.color, c.color), SUM(t.amount * COALESCE(r.rate, 1)), COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN categories pc ON c.parent_id = pc.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY group_id, group_name, group_color ORDER BY total_amount DESC`
+		query = `SELECT COALESCE(pc.id, c.id), COALESCE(pc.name, c.name), COALESCE(pc.color, c.color), SUM(t.amount * COALESCE(r.rate, 1)), COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN categories pc ON c.parent_id = pc.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY 1, 2, 3 ORDER BY total_amount DESC`
 		args = append(args, baseCurrency, baseCurrency)
 	} else {
-		query = `SELECT c.id, c.name, c.color, c.kind, SUM(t.amount * COALESCE(r.rate, 1)), COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY group_id, group_name, group_color, kind ORDER BY total_amount DESC`
+		query = `SELECT c.id, c.name, c.color, c.kind, SUM(t.amount * COALESCE(r.rate, 1)), COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY 1, 2, 3, 4 ORDER BY total_amount DESC`
 		args = append(args, baseCurrency, baseCurrency)
 	}
 

@@ -40,8 +40,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAccountsStore } from '@/stores/accounts'
 import { useI18n } from '@/locales'
-import type { Account, AccountFilters } from '@/types'
-import { AccountList, AccountFormModal } from '@/widgets/accounts'
+import type { Account, AccountFilters as AccountFiltersType } from '@/types'
+import { AccountList, AccountFormModal, AccountFilters } from '@/widgets/accounts'
 import { BaseButton } from '@/components/ui'
 
 const accountsStore = useAccountsStore()
@@ -52,7 +52,7 @@ const accounts = computed(() => accountsStore.accounts)
 const showFormModal = ref(false)
 const editingAccount = ref<Account | null>(null)
 
-const localFilters = ref<AccountFilters>({
+const localFilters = ref<AccountFiltersType>({
   q: '',
   type: '',
   currency: '',

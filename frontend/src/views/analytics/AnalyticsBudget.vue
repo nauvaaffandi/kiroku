@@ -1,17 +1,17 @@
 <template>
   <div class="analytics-budget-view">
     <div class="page-header">
-      <h1>予算分析</h1>
-      <p class="page-subtitle">予算 vs 実績の比較</p>
+      <h1>{{ t('budgetAnalysis.title') }}</h1>
+      <p class="page-subtitle">{{ t('budgetAnalysis.subtitle') }}</p>
     </div>
 
     <DateFilterBar @change="onDateChange" />
 
     <div class="controls-bar">
       <select v-model="budgetPeriod" @change="fetchData" class="period-select">
-        <option value="weekly">週次</option>
-        <option value="monthly">月次</option>
-        <option value="yearly">年次</option>
+        <option value="weekly">{{ t('budgetAnalysis.weekly') }}</option>
+        <option value="monthly">{{ t('budgetAnalysis.monthly') }}</option>
+        <option value="yearly">{{ t('budgetAnalysis.yearly') }}</option>
       </select>
     </div>
 
@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from 'vue'
 import { api } from '@/api/client'
+import { useI18n } from '@/locales'
 import { useUIStore } from '@/stores/ui'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import BudgetSummaryCardsWidget from '@/widgets/analytics/BudgetSummaryCardsWidget.vue'
@@ -60,6 +61,7 @@ const props = defineProps<{
 }>()
 
 const uiStore = useUIStore()
+const { t } = useI18n()
 const loading = ref(true)
 const budgetPeriod = ref('monthly')
 
@@ -86,7 +88,7 @@ async function fetchData() {
     summary.value = res.data.summary
   } catch (e) {
     console.error('Failed to fetch budget analysis:', e)
-    uiStore.error('予算分析の取得に失敗しました')
+    uiStore.error('Failed to fetch budget analysis')
   } finally {
     loading.value = false
   }
@@ -101,10 +103,10 @@ function exportCSV() {
     }).format(val)
   }
   function statusLabel(status: string): string {
-    const labels: Record<string, string> = { under: '未達', over: '超過', on_track: '順調' }
+    const labels: Record<string, string> = { under: 'Below Budget', over: 'Over Budget', on_track: 'On Track' }
     return labels[status] || status
   }
-  const headers = ['カテゴリ', '予算', '実績', '差額', '差額%', 'ステータス']
+  const headers = ['Category', 'Budget', 'Actual', 'Variance', 'Variance%', 'Status']
   const rows = budgets.value.map(b => [
     b.category_name,
     formatCurrency(b.budget_amount),

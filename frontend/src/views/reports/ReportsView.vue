@@ -1,12 +1,12 @@
 <template>
-  <div class="reports-page">
-    <header class="page-header">
-      <h1>Reports</h1>
-      <div class="header-actions">
-        <select v-model="selectedCurrency" @change="fetchSpending" class="form-input" style="width: auto;">
+  <div class="min-h-screen flex flex-col pb-20">
+    <header class="p-4 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+      <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">{{ t('reports.title') }}</h1>
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3">
+        <select v-model="selectedCurrency" @change="fetchSpending" class="w-full sm:w-auto px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
           <option v-for="c of currencies" :key="c" :value="c">{{ c }}</option>
         </select>
-        <button @click="exportCSV" class="btn-secondary">
+        <button @click="exportCSV" class="flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -14,96 +14,105 @@
           </svg>
           Export CSV
         </button>
+        <button @click="exportExcel" class="flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          {{ t('reports.exportExcel') }}
+        </button>
       </div>
     </header>
 
-    <div class="reports-content">
-      <aside class="reports-sidebar">
-        <section class="sidebar-section">
-          <h3>Spending Report</h3>
-          <div class="form-group">
-            <label>Period</label>
-            <select v-model="spendingParams.period" @change="fetchSpending" class="form-input">
-              <option value="this_week">This Week</option>
-              <option value="this_month">This Month</option>
-              <option value="this_year">This Year</option>
-              <option value="last_month">Last Month</option>
-              <option value="last_year">Last Year</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Group By</label>
-            <select v-model="spendingParams.group_by" @change="fetchSpending" class="form-input">
-              <option value="category">Category</option>
-              <option value="parent_category">Parent Category</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Account (optional)</label>
-            <select v-model="spendingParams.account_id" @change="fetchSpending" class="form-input">
-              <option value="">All Accounts</option>
-              <option v-for="acc in accountsStore.accounts" :key="acc.id" :value="acc.id">
-                {{ acc.name }}
-              </option>
-            </select>
+    <div class="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 p-4 flex-1">
+      <aside class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm h-fit">
+        <section class="mb-6">
+          <h3 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">{{ t('reports.spendingReport') }}</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.period') }}</label>
+              <select v-model="spendingParams.period" @change="fetchSpending" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <option value="this_week">This Week</option>
+                <option value="this_month">This Month</option>
+                <option value="this_year">This Year</option>
+                <option value="last_month">Last Month</option>
+                <option value="last_year">Last Year</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.groupBy') }}</label>
+              <select v-model="spendingParams.group_by" @change="fetchSpending" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <option value="category">{{ t('reports.category') }}</option>
+                <option value="parent_category">{{ t('reports.parentCategory') }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.accountOptional') }}</label>
+              <select v-model="spendingParams.account_id" @change="fetchSpending" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <option value="">{{ t('reports.allAccounts') }}</option>
+                <option v-for="acc in accountsStore.accounts" :key="acc.id" :value="acc.id">
+                  {{ acc.name }}
+                </option>
+              </select>
+            </div>
           </div>
         </section>
 
-        <section class="sidebar-section">
-          <h3>Trend Report</h3>
-          <div class="form-group">
-            <label>Months</label>
-            <select v-model="trendParams.months" @change="fetchTrend" class="form-input">
-              <option value="6">6 Months</option>
-              <option value="12" selected>12 Months</option>
-              <option value="24">24 Months</option>
+        <section>
+          <h3 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">{{ t('reports.trendReport') }}</h3>
+          <div>
+            <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.months') }}</label>
+            <select v-model="trendParams.months" @change="fetchTrend" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+              <option value="6">{{ 6 }} {{ t('reports.months') }}</option>
+              <option value="12" selected>{{ 12 }} {{ t('reports.months') }}</option>
+              <option value="24">{{ 24 }} {{ t('reports.months') }}</option>
             </select>
           </div>
         </section>
       </aside>
 
-      <main class="reports-main">
-        <div class="report-tabs">
-          <div class="tab-buttons">
-            <button :class="['tab-btn', { active: activeTab === 'spending' }]" @click="activeTab = 'spending'">支出レポート</button>
-            <button :class="['tab-btn', { active: activeTab === 'trend' }]" @click="activeTab = 'trend'">月次トレンド</button>
-            <button :class="['tab-btn', { active: activeTab === 'cashflow' }]" @click="activeTab = 'cashflow'">キャッシュフローテーブル</button>
+      <main class="flex flex-col gap-4">
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+          <div class="flex bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 overflow-x-auto">
+            <button :class="['flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2', activeTab === 'spending' ? 'text-sky-500 border-sky-500 bg-white dark:bg-zinc-900' : 'text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100']" @click="activeTab = 'spending'">{{ t('reports.spendingReport') }}</button>
+            <button :class="['flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2', activeTab === 'trend' ? 'text-sky-500 border-sky-500 bg-white dark:bg-zinc-900' : 'text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100']" @click="activeTab = 'trend'">{{ t('reports.trendReport') }}</button>
+            <button :class="['flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2', activeTab === 'cashflow' ? 'text-sky-500 border-sky-500 bg-white dark:bg-zinc-900' : 'text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100']" @click="activeTab = 'cashflow'">{{ t('reports.cashflowTable') }}</button>
           </div>
 
-          <div v-if="activeTab === 'spending'" class="tab-panel">
-            <section class="report-section">
-              <div class="section-header">
-                <h2>Spending by Category</h2>
-                <span class="period-label">{{ spendingParams.period }}</span>
+          <div v-if="activeTab === 'spending'" class="p-4">
+            <section class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 mb-4 border border-zinc-200 dark:border-zinc-700">
+              <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{{ t('reports.spendingByCategory') }}</h2>
+                <span class="text-xs text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-700">{{ spendingParams.period }}</span>
               </div>
-              <div class="chart-container" ref="spendingChart"></div>
-              <div class="spending-table" v-if="spendingReport.groups">
-                <table>
+              <div class="w-full h-[300px] sm:h-[350px] mb-4" ref="spendingChart"></div>
+              <div class="overflow-x-auto" v-if="spendingReport.groups">
+                <table class="w-full text-left text-sm border-collapse">
                   <thead>
-                    <tr>
-                      <th>Category</th>
-                      <th class="text-right">Amount</th>
-                      <th class="text-right">Count</th>
-                      <th class="text-right">%</th>
+                    <tr class="border-b border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800">
+                      <th class="p-3 font-semibold">Category</th>
+                      <th class="p-3 font-semibold text-right">Amount</th>
+                      <th class="p-3 font-semibold text-right">Count</th>
+                      <th class="p-3 font-semibold text-right">%</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr v-for="group in spendingReport.groups" :key="group.id">
-                      <td>
-                        <div class="category-cell">
-                          <span class="category-dot" :style="{ backgroundColor: group.color }"></span>
-                          {{ group.name }}
+                  <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <tr v-for="group in spendingReport.groups" :key="group.id" class="hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
+                      <td class="p-3">
+                        <div class="flex items-center gap-2">
+                          <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ backgroundColor: group.color }"></span>
+                          <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ group.name }}</span>
                         </div>
-                        <div class="subcategories" v-if="group.children && group.children.length > 0">
-                          <div v-for="child in group.children" :key="child.id" class="subcategory-row">
-                            <span class="category-dot" :style="{ backgroundColor: child.color }"></span>
-                            {{ child.name }}: {{ formatDisplayNumber(child.amount, 'expense') }}
+                        <div class="ml-4 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700 mt-1 space-y-1" v-if="group.children && group.children.length > 0">
+                          <div v-for="child in group.children" :key="child.id" class="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 py-0.5">
+                            <span class="w-2 h-2 rounded-full flex-shrink-0" :style="{ backgroundColor: child.color }"></span>
+                            <span>{{ child.name }}: {{ formatDisplayNumber(child.amount, 'expense') }}</span>
                           </div>
                         </div>
                       </td>
-                      <td class="text-right">{{ formatDisplayNumber(group.amount, 'expense') }}</td>
-                      <td class="text-right">{{ group.count }}</td>
-                      <td class="text-right">{{ totalAmount > 0 ? ((group.amount / totalAmount) * 100).toFixed(1) : 0 }}%</td>
+                      <td class="p-3 text-right font-medium text-zinc-900 dark:text-zinc-100">{{ formatDisplayNumber(group.amount, 'expense') }}</td>
+                      <td class="p-3 text-right text-zinc-600 dark:text-zinc-400">{{ group.count }}</td>
+                      <td class="p-3 text-right text-zinc-600 dark:text-zinc-400">{{ totalAmount > 0 ? ((group.amount / totalAmount) * 100).toFixed(1) : 0 }}%</td>
                     </tr>
                   </tbody>
                 </table>
@@ -111,14 +120,14 @@
             </section>
           </div>
 
-          <div v-if="activeTab === 'trend'" class="tab-panel">
-            <section class="report-section">
-              <h2>Monthly Trend</h2>
-              <div class="chart-container" ref="trendChart"></div>
+          <div v-if="activeTab === 'trend'" class="p-4">
+            <section class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700">
+              <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4">{{ t('reports.monthlyTrend') }}</h2>
+              <div class="w-full h-[300px] sm:h-[350px]" ref="trendChart"></div>
             </section>
           </div>
 
-          <div v-if="activeTab === 'cashflow'" class="tab-panel">
+          <div v-if="activeTab === 'cashflow'" class="p-4">
             <CashflowTable :date-from="spendingParams.date_from" :date-to="spendingParams.date_to" />
           </div>
         </div>
@@ -129,6 +138,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from '@/locales'
 import { useReportsStore } from '@/stores/reports'
 import { useAccountsStore } from '@/stores/accounts'
 import { useUIStore } from '@/stores/ui'
@@ -136,6 +146,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useCurrencies } from '@/composables/useCurrencies'
 import { formatAmountForDisplay, formatNumber as formatBaseNumber } from '@/utils/amountDisplay'
 import { api } from '@/api/client'
+import { exportToExcel } from '@/utils/exportExcel'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
@@ -148,6 +159,7 @@ const reportsStore = useReportsStore()
 const accountsStore = useAccountsStore()
 const uiStore = useUIStore()
 const settingsStore = useSettingsStore()
+const { t } = useI18n()
 
 const spendingChart = ref<HTMLElement | null>(null)
 const trendChart = ref<HTMLElement | null>(null)
@@ -198,10 +210,11 @@ const fetchTrend = async () => {
 
 const updateSpendingChart = () => {
   if (!spendingChart.value) return
+  if (spendingChartInstance) spendingChartInstance.dispose()
   spendingChartInstance = echarts.init(spendingChart.value)
   const data = spendingReport.value.groups.slice(0, 10).reverse()
   spendingChartInstance.setOption({
-    title: { text: 'Top Categories', left: 'center' },
+    title: { text: 'Top Categories', left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
     tooltip: { trigger: 'item', formatter: '{b}: ¥{c} ({d}%)' },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
@@ -212,12 +225,13 @@ const updateSpendingChart = () => {
 
 const updateTrendChart = () => {
   if (!trendChart.value) return
+  if (trendChartInstance) trendChartInstance.dispose()
   trendChartInstance = echarts.init(trendChart.value)
   const data = trendReport.value.series
   trendChartInstance.setOption({
-    title: { text: 'Monthly Income vs Expense', left: 'center' },
+    title: { text: 'Monthly Income vs Expense', left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
     tooltip: { trigger: 'axis' },
-    legend: { data: ['Income', 'Expense', 'Net'], bottom: 0 },
+    legend: { data: ['Income', 'Expense', 'Net'], bottom: 0, textStyle: { fontSize: 11 } },
     grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
     xAxis: { type: 'category', data: data.map(d => d.month) },
     yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
@@ -249,10 +263,29 @@ const exportCSV = async () => {
   }
 }
 
+const exportExcel = async () => {
+  try {
+    const params = { ...spendingParams.value, currency: selectedCurrency.value }
+    const response = await reportsStore.getSpending(params)
+    const groups = Array.isArray(response.groups) ? response.groups : []
+    const headers = ['Category', 'Amount', 'Count', '%']
+    const totalAmount = groups.reduce((sum, g) => sum + (g.amount || 0), 0)
+    const rows = groups.map((g: any) => [
+      g.name || '',
+      g.amount || 0,
+      g.count || 0,
+      totalAmount > 0 ? (((g.amount || 0) / totalAmount) * 100).toFixed(1) + '%' : '0%'
+    ])
+    exportToExcel(headers, rows, `spending-report-${spendingParams.value.period}-${new Date().toISOString().split('T')[0]}`)
+    uiStore.success('Excel exported successfully')
+  } catch (e) {
+    uiStore.error('Failed to export Excel')
+  }
+}
+
 onMounted(async () => {
   await accountsStore.fetchAccounts()
   
-  // Set default date range for cashflow table
   const now = new Date()
   spendingParams.value.date_to = now.toISOString().split('T')[0]
   const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
@@ -268,95 +301,3 @@ onMounted(() => {
   })
 })
 </script>
-
-<style scoped>
-.reports-page { min-height: 100vh; display: flex; flex-direction: column; }
-
-.page-header { padding: 1.5rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-primary); }
-.page-header h1 { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.reports-content { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; padding: 1.5rem; flex: 1; }
-
-.reports-sidebar { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; height: fit-content; position: sticky; top: 1.5rem; }
-
-.sidebar-section { margin-bottom: 1.5rem; }
-.sidebar-section h3 { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
-
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.375rem; }
-.form-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border-primary); border-radius: var(--radius-sm); background-color: var(--bg-card); color: var(--text-primary); font-size: 0.875rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-.form-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
-
-.reports-main { display: flex; flex-direction: column; gap: 1.5rem; }
-
-.report-tabs {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.tab-buttons {
-  display: flex;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.2s ease, background-color 0.2s ease;
-  border-bottom: 3px solid transparent;
-}
-
-.tab-btn:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-hover);
-}
-
-.tab-btn.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  background-color: var(--bg-card);
-}
-
-.tab-panel {
-  padding: 1.5rem;
-}
-
-.report-section { background-color: var(--bg-secondary); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
-
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.section-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.period-label { font-size: 0.875rem; color: var(--text-secondary); background-color: var(--bg-card); padding: 0.25rem 0.75rem; border-radius: 9999px; }
-
-.chart-container { width: 100%; height: 350px; margin-bottom: 1.5rem; }
-
-.spending-table { overflow-x: auto; }
-.spending-table table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-.spending-table th, .spending-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border-primary); }
-.spending-table th { font-weight: 600; color: var(--text-secondary); background-color: var(--bg-card); }
-.spending-table .text-right { text-align: right; }
-.category-cell { display: flex; flex-direction: column; gap: 0.25rem; }
-.subcategories { margin-left: 1.5rem; padding-left: 0.75rem; border-left: 2px solid var(--border-primary); }
-.subcategory-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--text-secondary); padding: 0.25rem 0; }
-.category-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex-shrink: 0; }
-
-@media (max-width: 1024px) {
-  .reports-content { grid-template-columns: 1fr; }
-  .reports-sidebar { position: static; }
-}
-</style>

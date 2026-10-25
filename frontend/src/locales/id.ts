@@ -95,6 +95,7 @@ export default {
     typeExpense: 'Pengeluaran',
     typeTransfer: 'Transfer',
     exportCsv: 'Ekspor CSV',
+    exportExcel: 'Ekspor Excel',
     batchDelete: 'Hapus Terpilih',
     searchPlaceholder: 'Cari transaksi...',
     allTypes: 'Semua Jenis',
@@ -126,6 +127,7 @@ export default {
   },
   accounts: {
     title: 'Akun',
+    subtitle: 'Kelola semua akun dan saldo Anda',
     addAccount: 'Tambah Akun',
     balance: 'Saldo',
     type: 'Tipe',
@@ -143,11 +145,29 @@ export default {
     budgetAmount: 'Jumlah Anggaran',
     budgetPeriod: 'Periode Anggaran'
   },
+  budgetAnalysis: {
+    title: 'Analisis Anggaran',
+    subtitle: 'Perbandingan Anggaran vs Aktual',
+    weekly: 'Mingguan',
+    monthly: 'Bulanan',
+    yearly: 'Tahunan'
+  },
   reports: {
     title: 'Laporan',
     spendingReport: 'Laporan Pengeluaran',
     trendReport: 'Tren Bulanan',
-    cashflowTable: 'Tabel Arus Kas'
+    cashflowTable: 'Tabel Arus Kas',
+    exportCsv: 'Ekspor CSV',
+    exportExcel: 'Ekspor Excel',
+    period: 'Periode',
+    groupBy: 'Kelompokkan Berdasarkan',
+    category: 'Kategori',
+    parentCategory: 'Kategori Induk',
+    accountOptional: 'Akun (opsional)',
+    allAccounts: 'Semua Akun',
+    months: 'Bulan',
+    spendingByCategory: 'Pengeluaran per Kategori',
+    monthlyTrend: 'Tren Bulanan'
   },
   settings: {
     title: 'Pengaturan',

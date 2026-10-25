@@ -120,12 +120,12 @@ const emitChange = () => {
 
 <style scoped>
 .filters-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
   background: var(--color-surface);
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
 }
@@ -133,5 +133,16 @@ const emitChange = () => {
 .filter-group {
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .filters-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    padding: 1rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 }
 </style>

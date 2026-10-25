@@ -87,10 +87,11 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const fetchSummary = async () => {
     try {
       const response = await api.get('/api/v1/transactions/summary', { params: filters.value })
-      summary.value = response.data.reduce((acc: TransactionSummary, item: any) => {
+      const data = response.data || []
+      summary.value = Array.isArray(data) ? data.reduce((acc: TransactionSummary, item: any) => {
         acc[item.currency] = { income: item.income, expense: item.expense, net: item.net }
         return acc
-      }, {})
+      }, {}) : {}
     } catch (e) {
       console.error('Failed to fetch summary:', e)
     }

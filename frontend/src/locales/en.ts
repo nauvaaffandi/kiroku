@@ -95,6 +95,7 @@ export default {
     typeExpense: 'Expense',
     typeTransfer: 'Transfer',
     exportCsv: 'Export CSV',
+    exportExcel: 'Export Excel',
     batchDelete: 'Delete Selected',
     searchPlaceholder: 'Search transactions...',
     allTypes: 'All Types',
@@ -126,6 +127,7 @@ export default {
   },
   accounts: {
     title: 'Accounts',
+    subtitle: 'Manage all your accounts and balances',
     addAccount: 'Add Account',
     balance: 'Balance',
     type: 'Type',
@@ -143,11 +145,29 @@ export default {
     budgetAmount: 'Budget Amount',
     budgetPeriod: 'Budget Period'
   },
+  budgetAnalysis: {
+    title: 'Budget Analysis',
+    subtitle: 'Budget vs Actual Comparison',
+    weekly: 'Weekly',
+    monthly: 'Monthly',
+    yearly: 'Yearly'
+  },
   reports: {
     title: 'Reports',
     spendingReport: 'Spending Report',
     trendReport: 'Monthly Trend',
-    cashflowTable: 'Cashflow Table'
+    cashflowTable: 'Cashflow Table',
+    exportCsv: 'Export CSV',
+    exportExcel: 'Export Excel',
+    period: 'Period',
+    groupBy: 'Group By',
+    category: 'Category',
+    parentCategory: 'Parent Category',
+    accountOptional: 'Account (optional)',
+    allAccounts: 'All Accounts',
+    months: 'Months',
+    spendingByCategory: 'Spending by Category',
+    monthlyTrend: 'Monthly Trend'
   },
   settings: {
     title: 'Settings',

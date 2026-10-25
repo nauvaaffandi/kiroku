@@ -95,6 +95,7 @@ export default {
     typeExpense: '支出',
     typeTransfer: '振替',
     exportCsv: 'CSVエクスポート',
+    exportExcel: 'Excelエクスポート',
     batchDelete: '選択を削除',
     searchPlaceholder: '取引を検索...',
     allTypes: 'すべての種類',
@@ -126,6 +127,7 @@ export default {
   },
   accounts: {
     title: '口座管理',
+    subtitle: 'すべての口座と残高を管理',
     addAccount: '口座を追加',
     balance: '残高',
     type: '種類',
@@ -143,11 +145,29 @@ export default {
     budgetAmount: '予算額',
     budgetPeriod: '予算期間'
   },
+  budgetAnalysis: {
+    title: '予算分析',
+    subtitle: '予算 vs 実績の比較',
+    weekly: '週次',
+    monthly: '月次',
+    yearly: '年次'
+  },
   reports: {
     title: 'レポート',
     spendingReport: '支出レポート',
     trendReport: '月次トレンド',
-    cashflowTable: 'キャッシュフローテーブル'
+    cashflowTable: 'キャッシュフローテーブル',
+    exportCsv: 'CSVエクスポート',
+    exportExcel: 'Excelエクスポート',
+    period: '期間',
+    groupBy: 'グループ化',
+    category: 'カテゴリ',
+    parentCategory: '親カテゴリ',
+    accountOptional: '口座（オプション）',
+    allAccounts: 'すべての口座',
+    months: 'ヶ月',
+    spendingByCategory: 'カテゴリ別支出',
+    monthlyTrend: '月次トレンド'
   },
   settings: {
     title: '設定',

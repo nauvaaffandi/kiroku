@@ -14,6 +14,13 @@
           </svg>
           {{ t('transactions.exportCsv') }}
         </BaseButton>
+        <BaseButton variant="secondary" @click="exportExcel" :disabled="transactionsStore.loading">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          {{ t('transactions.exportExcel') }}
+        </BaseButton>
         <BaseButton variant="secondary" @click="openScanReceipt">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
             <path d="M17 18a5 5 0 0 0-10 0"></path>
@@ -40,12 +47,14 @@
       @search="handleSearch"
     />
 
-    <TransactionTable
-      :transactions="transactions"
-      :loading="transactionsStore.loading"
-      @edit="handleEdit"
-      @delete="handleDelete"
-    />
+    <div class="table-wrap">
+      <TransactionTable
+        :transactions="transactions"
+        :loading="transactionsStore.loading"
+        @edit="handleEdit"
+        @delete="handleDelete"
+      />
+    </div>
 
     <div class="pagination" v-if="totalPages > 1">
       <BaseButton variant="secondary" @click="prevPage" :disabled="currentPage === 1">
@@ -86,6 +95,7 @@ import { useCategoriesStore } from '@/stores/categories'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
 import { api } from '@/api/client'
+import { exportToExcel } from '@/utils/exportExcel'
 import type { Transaction, TransactionFilters as ITransactionFilters } from '@/types'
 import { TransactionTable, TransactionFormModal, TransactionFilters } from '@/widgets/transactions'
 import { BaseButton, BaseModal } from '@/components/ui'
@@ -222,6 +232,28 @@ const exportCSV = async () => {
   }
 }
 
+const exportExcel = async () => {
+  try {
+    const params = { page: 1, limit: 10000, ...transactionsStore.filters }
+    const response = await api.get('/api/v1/transactions', { params })
+    const data = Array.isArray(response.data) ? response.data : []
+    const headers = ['Date', 'Type', 'Amount', 'Category', 'Account', 'Note', 'Status']
+    const rows = data.map((tx: any) => [
+      tx.date_time,
+      tx.type,
+      tx.amount,
+      tx.category_name || '',
+      tx.from_account_name || '',
+      tx.note || '',
+      tx.status
+    ])
+    exportToExcel(headers, rows, `transactions-${new Date().toISOString().split('T')[0]}`)
+    uiStore.success('Excel exported successfully')
+  } catch (e) {
+    uiStore.error('Failed to export Excel')
+  }
+}
+
 const prevPage = () => {
   if (currentPage.value > 1) {
     fetchTransactions(currentPage.value - 1)
@@ -259,15 +291,15 @@ onMounted(async () => {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 1rem;
   background-color: var(--color-neutral-100);
   border-bottom: 1px solid var(--color-neutral-200);
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-neutral-900);
 }
@@ -280,7 +312,14 @@ onMounted(async () => {
 
 .header-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1rem;
 }
 
 .pagination {
@@ -288,7 +327,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 1rem 1.5rem;
+  padding: 1rem;
   border-top: 1px solid var(--color-neutral-200);
 }
 
@@ -301,9 +340,30 @@ onMounted(async () => {
   .page-header {
     flex-direction: column;
     align-items: stretch;
+    padding: 0.75rem;
   }
   .header-actions {
-    justify-content: flex-end;
+    justify-content: stretch;
+    flex-direction: column;
+  }
+  .header-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+  .table-wrap {
+    margin: 0.75rem 0;
+  }
+  .pagination {
+    padding: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .pagination button {
+    flex: 1;
+  }
+  .page-info {
+    flex: 1;
+    text-align: center;
   }
 }
 </style>
