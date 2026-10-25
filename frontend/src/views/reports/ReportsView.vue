@@ -4,10 +4,7 @@
       <h1>Reports</h1>
       <div class="header-actions">
         <select v-model="selectedCurrency" @change="fetchSpending" class="form-input" style="width: auto;">
-          <option value="JPY">JPY ¥</option>
-          <option value="USD">USD $</option>
-          <option value="EUR">EUR €</option>
-          <option value="GBP">GBP £</option>
+          <option v-for="c of currencies" :key="c" :value="c">{{ c }}</option>
         </select>
         <button @click="exportCSV" class="btn-secondary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -136,6 +133,7 @@ import { useReportsStore } from '@/stores/reports'
 import { useAccountsStore } from '@/stores/accounts'
 import { useUIStore } from '@/stores/ui'
 import { useSettingsStore } from '@/stores/settings'
+import { useCurrencies } from '@/composables/useCurrencies'
 import { formatAmountForDisplay, formatNumber as formatBaseNumber } from '@/utils/amountDisplay'
 import { api } from '@/api/client'
 import * as echarts from 'echarts/core'
@@ -167,7 +165,8 @@ const spendingParams = ref({
 })
 const trendParams = ref({ months: '12', account_id: '', category_id: '' })
 
-const selectedCurrency = ref('JPY')
+const { currencies } = useCurrencies()
+const selectedCurrency = ref(settingsStore.baseCurrency)
 
 const spendingReport = ref({ period: '', groups: [] as any[] })
 const trendReport = ref({ series: [] as any[] })

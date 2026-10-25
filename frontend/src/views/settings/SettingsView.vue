@@ -22,11 +22,22 @@
         :label="t('settings.currency')"
         :description="t('settings.currencyDesc')"
       >
-        <BaseSelect
-          v-model="settings.base_currency"
-          :options="currencyOptions"
-          @change="saveSettings"
-        />
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+          <BaseSelect
+            v-model="settings.base_currency"
+            :options="currencyOptions"
+            @change="saveSettings"
+          />
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <input
+              v-model="newCurrencyCode"
+              placeholder="Add Currency (e.g. IDR)"
+              style="padding: 0.5rem; border: 1px solid var(--border-primary); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-size: 0.875rem;"
+              maxlength="5"
+            />
+            <BaseButton variant="secondary" @click="handleAddCurrency">Add</BaseButton>
+          </div>
+        </div>
       </SettingItem>
 
       <SettingItem
@@ -198,6 +209,7 @@ import { SettingItem, SettingSection, TotpSetupModal, SettingsBackupModal } from
 import { BaseSelect, BaseButton } from '@/components/ui'
 import TelegramPinModal from '@/components/auth/TelegramPinModal.vue'
 import TelegramRegisterModal from '@/components/auth/TelegramRegisterModal.vue'
+import { useCurrencies } from '@/composables/useCurrencies'
 
 const settingsStore = useSettingsStore()
 const uiStore = useUIStore()
@@ -275,12 +287,24 @@ const themeOptions = [
   { value: 'dark', label: 'Dark' }
 ]
 
-const currencyOptions = [
-  { value: 'JPY', label: 'JPY (¥)' },
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'GBP', label: 'GBP (£)' }
-]
+const { currencies, addCurrency } = useCurrencies()
+
+const currencyOptions = computed(() => 
+  currencies.value.map(c => ({ value: c, label: c }))
+)
+
+const newCurrencyCode = ref('')
+const handleAddCurrency = async () => {
+  const code = newCurrencyCode.value.trim().toUpperCase()
+  if (!code) return
+  const success = await addCurrency(code)
+  if (success) {
+    uiStore.success(`Currency ${code} added`)
+    newCurrencyCode.value = ''
+  } else {
+    uiStore.error('Failed to add currency')
+  }
+}
 
 const dateFormatOptions = [
   { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },

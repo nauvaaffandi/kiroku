@@ -158,6 +158,8 @@
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
 import type { Transaction, Category, Account, TransactionType, TransactionStatus } from '@/types'
+import { useCurrencies } from '@/composables/useCurrencies'
+import { useSettingsStore } from '@/stores/settings'
 
 interface Props {
   modelValue: boolean
@@ -171,6 +173,12 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   submit: [data: Partial<Transaction>]
 }>()
+
+const settingsStore = useSettingsStore()
+const { currencies } = useCurrencies()
+const currencyOptions = computed(() => currencies.value.map(c => ({ value: c, label: c })))
+
+const defaultCurrency = computed(() => settingsStore.baseCurrency)
 
 const isOpen = ref(props.modelValue)
 const isEditing = computed(() => !!props.transaction)
@@ -196,7 +204,7 @@ const defaultForm = (): FormData => ({
   type: 'expense',
   date_time: new Date().toISOString().slice(0, 16),
   amount: '0',
-  currency: 'JPY',
+  currency: defaultCurrency.value,
   from_account_id: '',
   to_account_id: '',
   category_id: '',
@@ -220,13 +228,6 @@ const typeOptions = [
 const statusOptions = [
   { value: 'cleared', label: 'Cleared' },
   { value: 'pending', label: 'Pending' }
-]
-
-const currencyOptions = [
-  { value: 'JPY', label: 'JPY (¥)' },
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'GBP', label: 'GBP (£)' }
 ]
 
 const accountOptions = computed(() => (props.accounts || []).map(a => ({

@@ -20,9 +20,57 @@ func (h *SettingsHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", h.GetAll)
 	r.Put("/", h.UpdateAll)
+	r.Get("/currencies", h.GetCurrencies)
+	r.Post("/currencies", h.AddCurrency)
 	r.Get("/{key}", h.GetOne)
 	r.Put("/{key}", h.SetOne)
 	return r
+}
+
+func (h *SettingsHandler) GetCurrencies(w http.ResponseWriter, r *http.Request) {
+	val, err := h.repo.GetOne(r.Context(), "active_currencies")
+	var currencies []string
+	if err != nil || val == "" {
+		currencies = []string{"USD"}
+	} else {
+		_ = json.Unmarshal([]byte(val), &currencies)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(currencies)
+}
+
+func (h *SettingsHandler) AddCurrency(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Code string `json:"code"`
+	}
+	if json.NewDecoder(r.Body).Decode(&req) != nil || req.Code == "" {
+		http.Error(w, "invalid request", http.StatusBadRequest)
+		return
+	}
+	val, err := h.repo.GetOne(r.Context(), "active_currencies")
+	var currencies []string
+	if err != nil || val == "" {
+		currencies = []string{"USD"}
+	} else {
+		_ = json.Unmarshal([]byte(val), &currencies)
+	}
+	
+	// Check if already exists
+	exists := false
+	for _, c := range currencies {
+		if c == req.Code {
+			exists = true
+			break
+		}
+	}
+	if !exists {
+		currencies = append(currencies, req.Code)
+		b, _ := json.Marshal(currencies)
+		_ = h.repo.SetOne(r.Context(), "active_currencies", string(b))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(currencies)
 }
 
 func (h *SettingsHandler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +82,7 @@ func (h *SettingsHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	defaults := map[string]string{
 		"theme":                  "system",
 		"language":               "ja",
-		"base_currency":          "JPY",
+		"base_currency":          "USD",
 		"date_format":            "YYYY-MM-DD",
 		"number_format":          "ja-JP",
 		"week_start":             "1",
@@ -69,7 +117,7 @@ func (h *SettingsHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 	val, err := h.repo.GetOne(r.Context(), key)
 	if err != nil {
 		defaults := map[string]string{
-			"theme": "system", "language": "ja", "base_currency": "JPY",
+			"theme": "system", "language": "ja", "base_currency": "USD",
 			"date_format": "YYYY-MM-DD", "number_format": "ja-JP", "week_start": "1",
 		}
 		if v, ok := defaults[key]; ok {

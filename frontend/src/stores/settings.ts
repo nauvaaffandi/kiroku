@@ -7,7 +7,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<Settings>({
     theme: 'system',
     language: 'ja',
-    base_currency: 'JPY',
+    base_currency: 'USD',
     date_format: 'YYYY-MM-DD',
     number_format: 'ja-JP',
     week_start: 1,
@@ -18,7 +18,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   const theme = computed<Theme>(() => settings.value.theme || 'system')
   const language = computed<Language>(() => settings.value.language || 'ja')
-  const baseCurrency = computed(() => settings.value.base_currency || 'JPY')
+  const baseCurrency = computed(() => settings.value.base_currency || 'USD')
   const dateFormat = computed<DateFormat>(() => settings.value.date_format || 'YYYY-MM-DD')
   const numberFormat = computed<NumberFormat>(() => settings.value.number_format || 'ja-JP')
   const weekStart = computed<WeekStart>(() => {

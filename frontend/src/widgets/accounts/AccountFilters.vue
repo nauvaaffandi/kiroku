@@ -36,9 +36,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { BaseInput, BaseSelect } from '@/components/ui'
 import type { AccountFilters } from '@/types'
+import { useCurrencies } from '@/composables/useCurrencies'
+
+const { currencies } = useCurrencies()
+const currencyOptions = computed(() => currencies.value.map(c => ({ value: c, label: c })))
 
 interface Props {
   modelValue: AccountFilters
@@ -65,13 +69,6 @@ const typeOptions = [
   { value: 'investment', label: 'Investment' },
   { value: 'ewallet', label: 'E-Wallet' },
   { value: 'other', label: 'Other' }
-]
-
-const currencyOptions = [
-  { value: 'JPY', label: 'JPY (¥)' },
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'GBP', label: 'GBP (£)' }
 ]
 
 const archivedOptions = [

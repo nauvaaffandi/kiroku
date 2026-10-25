@@ -13,11 +13,8 @@
     
     <div class="header-right">
       <div class="currency-selector">
-        <select :value="settingsStore.settings.base_currency || 'JPY'" @change="changeCurrency" aria-label="Base currency">
-          <option value="JPY">JPY ¥</option>
-          <option value="USD">USD $</option>
-          <option value="EUR">EUR €</option>
-          <option value="GBP">GBP £</option>
+        <select :value="settingsStore.settings.base_currency || 'USD'" @change="changeCurrency" aria-label="Base currency">
+          <option v-for="c of currencies" :key="c" :value="c">{{ c }}</option>
         </select>
       </div>
       
@@ -74,12 +71,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/locales'
+import { useCurrencies } from '@/composables/useCurrencies'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
+const { currencies } = useCurrencies()
 
 const showMoreMenu = ref(false)
 const isDark = ref(false)
