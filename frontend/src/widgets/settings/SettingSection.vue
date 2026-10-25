@@ -12,6 +12,7 @@ defineProps<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .settings-section {
   margin-bottom: 2rem;
 }

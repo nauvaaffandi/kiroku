@@ -1,25 +1,21 @@
 <template>
-  <div class="fixed bottom-[calc(72px+env(safe-area-inset-bottom))] right-6 flex flex-col gap-2 z-[400] pointer-events-none md:bottom-8">
+  <div class="toast-container">
     <div
       v-for="toast in uiStore.toasts"
       :key="toast.id"
-      class="relative flex items-center gap-3 py-3 px-4 pl-10 rounded-xl shadow-lg min-w-[18rem] max-w-[24rem] pointer-events-auto bg-[#fcfbf9] dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 animate-[slideIn_0.3s_ease]"
+      class="toast"
+      :class="`toast-${toast.type}`"
     >
       <div
-        class="absolute top-0 left-6 w-3.5 h-7 shadow-xs transition-colors z-10 [clip-path:polygon(0_0,100%_0,100%_100%,50%_75%,0_100%)]"
-        :class="{
-          'bg-emerald-500 dark:bg-emerald-400': toast.type === 'success',
-          'bg-rose-500 dark:bg-rose-400': toast.type === 'error',
-          'bg-amber-500 dark:bg-amber-400': toast.type === 'warning',
-          'bg-sky-500 dark:bg-sky-400': toast.type === 'info'
-        }"
+        class="toast-accent"
+        :class="`toast-accent-${toast.type}`"
       ></div>
 
-      <span class="flex-1 text-sm font-semibold overflow-hidden text-ellipsis whitespace-nowrap pl-4">{{ toast.message }}</span>
+      <span class="toast-message">{{ toast.message }}</span>
 
       <button
         @click="removeToast(toast.id)"
-        class="p-1 rounded-md bg-transparent border-none text-current opacity-60 hover:opacity-100 cursor-pointer transition-opacity"
+        class="toast-dismiss"
         aria-label="Dismiss"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -42,6 +38,7 @@ const removeToast = (id: number) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -51,5 +48,45 @@ const removeToast = (id: number) => {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.toast-container {
+  @apply fixed bottom-[calc(72px+env(safe-area-inset-bottom))] right-6 flex flex-col gap-2 z-[400] pointer-events-none md:bottom-8;
+}
+
+.toast {
+  @apply relative flex items-center gap-3 py-3 px-4 pl-10 rounded-xl shadow-lg min-w-[18rem] max-w-[24rem] pointer-events-auto border animate-[slideIn_0.3s_ease];
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+.toast-accent {
+  @apply absolute top-0 left-6 w-3.5 h-7 shadow-xs transition-colors z-10;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
+}
+
+.toast-accent-success {
+  background-color: var(--success);
+}
+
+.toast-accent-error {
+  background-color: var(--error);
+}
+
+.toast-accent-warning {
+  background-color: var(--warning);
+}
+
+.toast-accent-info {
+  background-color: var(--info);
+}
+
+.toast-message {
+  @apply flex-1 text-sm font-semibold overflow-hidden text-ellipsis whitespace-nowrap pl-4;
+}
+
+.toast-dismiss {
+  @apply p-1 rounded-md border-0 bg-transparent text-current opacity-60 hover:opacity-100 cursor-pointer transition-opacity;
 }
 </style>

@@ -131,138 +131,94 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-neutral-50);
-  padding: 1rem;
+  @apply min-h-screen flex items-center justify-center p-4;
+  background-color: var(--bg-secondary);
 }
 
 .login-card {
-  width: 100%;
-  max-width: 28rem;
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2rem;
+  @apply w-full max-w-[28rem] rounded-xl shadow-sm p-8;
+  background-color: var(--bg-card);
 }
 
 .login-header {
-  text-align: center;
-  margin-bottom: 2rem;
+  @apply text-center mb-8;
 }
 
 .login-header h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: var(--color-primary);
+  @apply text-3xl font-bold m-0;
+  color: var(--accent);
 }
 
 .login-header p {
-  color: var(--color-neutral-500);
-  margin-top: 0.5rem;
+  @apply mt-2;
+  color: var(--text-secondary);
 }
 
 .login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  @apply flex flex-col gap-5;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @apply flex flex-col gap-0.5;
 }
 
 .form-group label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-neutral-700);
+  @apply text-sm font-medium;
+  color: var(--text-secondary);
 }
 
 .form-group input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-900);
-  font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  @apply w-full px-4 py-3 rounded-sm border text-lg transition-colors;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
 }
 
 .form-group input:focus {
   outline: none;
   border-color: transparent;
-  box-shadow: 0 0 0 2px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .form-group input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  @apply opacity-50 cursor-not-allowed;
 }
 
 .form-error {
-  padding: 0.75rem 1rem;
-  background-color: var(--color-red-50);
-  color: var(--color-red-600);
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
+  @apply px-4 py-3 rounded-sm text-sm;
+  background-color: var(--error-light);
+  color: var(--error);
 }
 
 .login-submit {
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: white;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  @apply w-full px-6 py-3 font-medium rounded-sm border-0 cursor-pointer flex items-center justify-center gap-2 transition-colors;
+  background-color: var(--accent);
+  color: var(--text-inverse);
 }
 
 .login-submit:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--accent-hover);
 }
 
 .login-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  @apply opacity-50 cursor-not-allowed;
 }
 
 .login-fingerprint-btn {
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--bg-secondary, #f1f3f5);
-  color: var(--text-primary, #212529);
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-primary, #dee2e6);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  @apply w-full px-6 py-3 font-medium rounded-sm border cursor-pointer flex items-center justify-center gap-2 transition-colors;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
 }
 
 .login-fingerprint-btn:hover {
-  background-color: var(--bg-hover, #e9ecef);
+  background-color: var(--bg-hover);
 }
 
 .btn-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  @apply flex items-center justify-center gap-2;
 }
 
 .spinner {
@@ -270,7 +226,7 @@ onMounted(() => {
   height: 1.25rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
-  border-radius: 50%;
+  @apply rounded-full;
   animation: spin 0.8s linear infinite;
 }
 
@@ -279,9 +235,7 @@ onMounted(() => {
 }
 
 .login-footer {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-neutral-400);
+  @apply mt-6 text-center text-[0.75rem];
+  color: var(--text-muted);
 }
 </style>

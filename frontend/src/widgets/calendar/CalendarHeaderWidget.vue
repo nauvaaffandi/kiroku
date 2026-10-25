@@ -31,6 +31,7 @@ defineEmits(['prev', 'next', 'today', 'update:selectedAccount'])
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .calendar-header {
   display: flex;
   flex-wrap: wrap;

@@ -46,6 +46,7 @@ const formatSize = (bytes: number) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .processing-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

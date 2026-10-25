@@ -1,20 +1,16 @@
 <template>
   <div
     @click="toggleTheme"
-    class="flex items-center justify-between gap-3 font-semibold text-zinc-600 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg px-3 py-2 cursor-pointer w-full select-none"
+    class="theme-toggle"
     role="button"
     tabindex="0"
     aria-label="Toggle theme"
   >
-    <span class="text-sm pointer-events-none">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
-    <div
-      class="relative inline-flex items-center h-6 w-11 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-700 transition-colors duration-200 pointer-events-none"
-    >
+    <span class="theme-toggle-label">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
+    <div class="theme-switch">
       <div
-        :class="[
-          'absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200',
-          isDark ? 'translate-x-5' : 'translate-x-0'
-        ]"
+        class="theme-switch-thumb"
+        :class="{ 'translate-x-5': isDark }"
       />
     </div>
   </div>
@@ -42,3 +38,32 @@ const toggleTheme = () => {
   settingsStore.updateSettings({ theme: newTheme })
 }
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+
+.theme-toggle {
+  @apply flex items-center justify-between gap-3 font-semibold px-3 py-2 cursor-pointer w-full select-none rounded-lg;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-hover);
+}
+
+.theme-toggle-label {
+  @apply text-sm pointer-events-none;
+}
+
+.theme-switch {
+  @apply relative inline-flex items-center h-6 w-11 shrink-0 rounded-full;
+  background-color: var(--border-primary);
+  transition: background-color 0.2s ease;
+}
+
+.theme-switch-thumb {
+  @apply absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200;
+}
+</style>

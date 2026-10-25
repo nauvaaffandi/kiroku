@@ -275,7 +275,8 @@ watch([dateFrom, dateTo, selectedAccount, selectedCurrency], () => {
 @reference "tailwindcss";
 
 .cashflow-chart-container {
-  @apply bg-card border border-border-primary rounded-xl p-4;
+  @apply bg-card border rounded-xl p-4;
+  border-color: var(--border-primary);
 }
 
 .chart-controls {

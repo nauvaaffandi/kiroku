@@ -119,6 +119,7 @@ const emitChange = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .filters-bar {
   display: flex;
   flex-direction: column;

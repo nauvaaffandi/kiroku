@@ -300,6 +300,7 @@ watch(() => props.initialData, (newData) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .transaction-form { display: flex; flex-direction: column; gap: 1rem; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .form-group { display: flex; flex-direction: column; gap: 0.375rem; }

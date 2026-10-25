@@ -169,6 +169,7 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .account-form {
   display: flex;
   flex-direction: column;

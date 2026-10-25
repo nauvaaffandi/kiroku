@@ -125,6 +125,7 @@ function formatCurrency(val: number): string {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; }
 .widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-primary); }
 .widget-header h2 { font-size: 1rem; font-weight: 600; color: var(--text-primary); }

@@ -70,6 +70,7 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .totp-setup {
   display: flex;
   flex-direction: column;

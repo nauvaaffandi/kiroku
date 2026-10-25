@@ -199,6 +199,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .scan-receipt-page {
   min-height: 100vh;
   display: flex;

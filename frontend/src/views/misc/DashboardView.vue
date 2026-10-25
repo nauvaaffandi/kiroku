@@ -144,11 +144,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.dashboard-page { min-height: 100vh; display: flex; flex-direction: column; }
-.dashboard-main { flex: 1; padding: 1.5rem; max-width: 1200px; width: 100%; margin: 0 auto; }
-.charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-.chart-card { background-color: var(--color-neutral-100); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem; }
-.chart-card h2 { font-size: 1rem; font-weight: 600; color: var(--color-neutral-900); margin-bottom: 1rem; }
-.chart-container { width: 100%; height: 300px; }
-@media (max-width: 768px) { .charts-section { grid-template-columns: 1fr; } }
+@reference "tailwindcss";
+.dashboard-page { @apply min-h-screen flex flex-col; }
+.dashboard-main { @apply flex-1 p-[1.5rem] mx-auto w-full max-w-[1200px]; }
+.charts-section { @apply grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6 mb-6; }
+@media (max-width: 768px) { .charts-section { @apply grid-cols-1; } }
+.chart-card { @apply rounded-xl shadow-sm p-[1.5rem]; background-color: var(--bg-card); }
+.chart-card h2 { @apply text-base font-semibold mb-4; color: var(--text-primary); }
+.chart-container { @apply w-full h-[300px]; }
 </style>

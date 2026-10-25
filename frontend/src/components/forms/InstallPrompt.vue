@@ -76,6 +76,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .install-banner {
   position: fixed;
   bottom: 1rem;

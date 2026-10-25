@@ -74,6 +74,7 @@ const formatFrequency = (freq: string) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .scheduled-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

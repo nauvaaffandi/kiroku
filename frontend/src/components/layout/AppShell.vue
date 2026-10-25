@@ -40,15 +40,12 @@ const authStore = useAuthStore()
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .app-shell {
+  @apply flex flex-col m-auto w-full max-w-[480px];
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   position: relative;
   background-color: var(--bg-primary);
-  max-width: 480px;
-  margin: 0 auto;
-  width: 100%;
   box-shadow: var(--shadow-xl);
 }
 
@@ -56,18 +53,14 @@ const authStore = useAuthStore()
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 200;
-  display: flex;
-  justify-content: flex-start;
+  @apply z-[200] flex justify-start;
 }
 
 .sidebar {
-  width: 280px;
+  @apply w-[280px] h-full flex flex-col border-r;
   height: 100vh;
   background-color: var(--bg-card);
-  border-right: 1px solid var(--border-primary);
-  display: flex;
-  flex-direction: column;
+  border-right-color: var(--border-primary);
   animation: slideRight 0.3s ease;
 }
 
@@ -77,10 +70,7 @@ const authStore = useAuthStore()
 }
 
 .main-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  @apply flex-1 flex flex-col min-h-[100vh];
 }
 
 .app-header {
@@ -106,8 +96,6 @@ const authStore = useAuthStore()
 }
 
 .app-main {
-  flex: 1;
-  padding: 1rem;
-  width: 100%;
+  @apply flex-1 p-4 w-full;
 }
 </style>

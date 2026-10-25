@@ -79,5 +79,6 @@ watch(() => props.initialData, (newData) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .transaction-form-container { display: flex; flex-direction: column; gap: 1rem; }
 </style>

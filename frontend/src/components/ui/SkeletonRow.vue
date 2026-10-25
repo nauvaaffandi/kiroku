@@ -21,20 +21,14 @@ defineProps<Props>()
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .skeleton-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  @apply flex items-center gap-4 p-4 rounded border shadow-sm;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
+  border-color: var(--border-primary);
 }
 
 .skeleton-row-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  @apply flex-1 flex flex-col gap-2;
 }
 </style>

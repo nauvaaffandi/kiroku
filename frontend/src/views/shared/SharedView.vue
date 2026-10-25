@@ -116,6 +116,7 @@ onMounted(fetchSharedData)
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .shared-view-page {
   min-height: 100vh;
   background-color: var(--color-neutral-50);

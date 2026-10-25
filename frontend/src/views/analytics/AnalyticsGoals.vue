@@ -137,6 +137,7 @@ watchEffect(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .analytics-goals-view {
   display: flex;
   flex-direction: column;

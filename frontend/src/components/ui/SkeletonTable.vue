@@ -35,36 +35,21 @@ const rows = computed(() => props.rows || 5)
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .skeleton-table {
+  @apply rounded border overflow-hidden shadow-sm;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  overflow: hidden;
+  border-color: var(--border-primary);
 }
 
 .skeleton-table-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
+  @apply grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 p-4 border-b;
   background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.skeleton-table-body {
-  display: flex;
-  flex-direction: column;
+  border-color: var(--border-primary);
 }
 
 .skeleton-table-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.skeleton-table-row:last-child {
-  border-bottom: none;
+  @apply grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 p-4 border-b;
+  border-color: var(--border-primary);
 }
 </style>

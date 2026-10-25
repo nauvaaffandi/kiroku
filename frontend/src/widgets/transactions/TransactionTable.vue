@@ -54,6 +54,7 @@ defineEmits<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .table-container {
   width: 100%;
   overflow-x: auto;

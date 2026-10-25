@@ -5,12 +5,8 @@
 import { CheckCircle2 } from '@lucide/vue'
 </script>
 <style scoped>
+@reference "tailwindcss";
 .lucide-icon {
-  width: 1.25em;
-  height: 1.25em;
-  flex-shrink: 0;
-  display: inline-block;
-  color: currentColor;
-  vertical-align: middle;
+  @apply inline-block h-[1.25em] w-[1.25em] shrink-0 align-middle text-current;
 }
 </style>

@@ -170,6 +170,7 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .category-form {
   display: flex;
   flex-direction: column;

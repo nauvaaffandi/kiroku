@@ -89,6 +89,7 @@ const initMap = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .map-modal { max-width: 600px; width: 90vw; }
 .map-body { padding: 1rem; }
 .map-container { width: 100%; height: 350px; border-radius: var(--radius-sm); z-index: 1; }

@@ -33,67 +33,59 @@ defineEmits<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
+
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  border-radius: var(--radius);
-  border: none;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  @apply inline-flex items-center justify-center gap-2 font-medium rounded border-0 cursor-pointer transition-all font-sans whitespace-nowrap;
   font-family: inherit;
-  white-space: nowrap;
 }
 
 .btn:disabled,
 .btn.loading {
-  opacity: 0.6;
-  cursor: not-allowed;
+  @apply opacity-60 cursor-not-allowed;
 }
 
 .btn-primary {
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  background: var(--accent);
+  color: var(--text-inverse);
 }
 
 .btn-primary:hover:not(:disabled):not(.loading) {
-  background: var(--color-primary-hover);
+  background: var(--accent-hover);
 }
 
 .btn-secondary {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
 }
 
 .btn-secondary:hover:not(:disabled):not(.loading) {
-  background: var(--color-surface-hover);
+  background: var(--bg-hover);
 }
 
 .btn-danger {
-  background: var(--color-danger);
-  color: var(--color-danger-contrast);
+  background: var(--error);
+  color: var(--text-inverse);
 }
 
 .btn-danger:hover:not(:disabled):not(.loading) {
-  background: var(--color-danger-hover);
+  background: var(--error);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .btn-ghost:hover:not(:disabled):not(.loading) {
-  background: var(--color-surface);
+  background: var(--bg-card);
 }
 
 .btn-link {
   background: transparent;
-  color: var(--color-primary);
-  padding: 0;
+  color: var(--accent);
+  @apply p-0;
 }
 
 .btn-link:hover:not(:disabled):not(.loading) {
@@ -101,21 +93,15 @@ defineEmits<{
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
-  height: 32px;
+  @apply px-3 py-1 text-sm h-[32px];
 }
 
 .btn-md {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  height: 40px;
+  @apply px-4 py-2 text-sm h-[40px];
 }
 
 .btn-lg {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  height: 48px;
+  @apply px-6 py-3 text-base h-[48px];
 }
 
 .btn-spinner {
@@ -123,7 +109,7 @@ defineEmits<{
   height: 1em;
   border: 2px solid currentColor;
   border-right-color: transparent;
-  border-radius: 50%;
+  @apply rounded-full;
   animation: spin 0.6s linear infinite;
 }
 

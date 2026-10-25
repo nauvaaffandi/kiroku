@@ -40,6 +40,7 @@ defineEmits<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .categories-list {
   display: flex;
   flex-direction: column;

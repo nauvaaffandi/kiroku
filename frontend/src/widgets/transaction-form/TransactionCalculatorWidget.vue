@@ -100,6 +100,7 @@ const calcEvaluate = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .calculator-modal { max-width: 300px; }
 .calc-body { padding: 1rem; }
 .calc-display {

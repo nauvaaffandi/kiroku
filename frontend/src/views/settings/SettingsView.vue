@@ -530,6 +530,7 @@ const confirmClearData = async () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .page-header {
   margin-bottom: 2rem;
 }

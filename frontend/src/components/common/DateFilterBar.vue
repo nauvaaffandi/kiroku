@@ -126,98 +126,52 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
+
 .date-filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 1rem;
+  @apply flex flex-wrap items-center justify-between gap-3 p-4 rounded;
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .date-filter-bar {
-  background-color: #18181b;
-  border-color: #27272a;
 }
 
 .preset-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
+  @apply flex flex-wrap gap-1.5;
 }
 
 .preset-btn {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-primary);
+  @apply px-3 py-1.5 text-sm font-semibold rounded border whitespace-nowrap transition-colors;
   background-color: var(--bg-card);
   color: var(--text-primary);
-  transition: background-color 0.2s ease, color 0.2s ease;
-  white-space: nowrap;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .preset-btn {
-  background-color: #18181b;
-  border-color: #27272a;
-  color: #f4f4f5;
+  border-color: var(--border-primary);
 }
 
 .preset-btn:hover {
   background-color: var(--bg-hover);
 }
 
-:where([data-theme="dark"], [data-theme="dark"] *) .preset-btn:hover {
-  background-color: #27272a;
-}
-
 .preset-btn.active {
   background-color: var(--accent);
-  color: white;
+  color: var(--text-inverse);
   border-color: var(--accent);
 }
 
 .custom-range {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  @apply flex items-center gap-3 flex-wrap;
 }
 
 .date-input-group {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
+  @apply flex items-center gap-1.5;
 }
 
 .date-input-group label {
-  font-size: 0.875rem;
-  font-weight: 600;
+  @apply text-sm font-semibold whitespace-nowrap;
   color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .date-input-group label {
-  color: #d4d4d8;
 }
 
 .date-input {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-primary);
+  @apply px-3 py-1.5 text-sm font-medium rounded border;
   background-color: var(--bg-card);
   color: var(--text-primary);
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .date-input {
-  background-color: #121212;
-  border-color: #27272a;
-  color: #f4f4f5;
+  border-color: var(--border-primary);
 }
 </style>

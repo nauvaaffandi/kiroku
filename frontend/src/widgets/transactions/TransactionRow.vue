@@ -88,6 +88,7 @@ const formatAmount = (amount: number) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .transaction-row:hover {
   background: var(--color-surface-hover);
 }

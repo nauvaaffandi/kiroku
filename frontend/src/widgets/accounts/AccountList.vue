@@ -38,6 +38,7 @@ defineEmits<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .accounts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

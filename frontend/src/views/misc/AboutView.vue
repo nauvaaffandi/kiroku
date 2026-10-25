@@ -122,121 +122,88 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .about-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  @apply min-h-screen flex flex-col;
 }
 
 .page-header {
-  padding: 1.5rem;
-  background-color: var(--color-neutral-100);
-  border-bottom: 1px solid var(--color-neutral-200);
+  @apply px-6 py-[1.5rem];
+  border-bottom: 1px solid var(--border-primary);
+  background-color: var(--bg-card);
 }
-.page-header h1 { font-size: 1.5rem; font-weight: 600; color: var(--color-neutral-900); }
+.page-header h1 {
+  @apply text-2xl font-semibold m-0;
+  color: var(--text-primary);
+}
 
 .about-content {
-  flex: 1;
-  padding: 1.5rem;
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  @apply flex-1 p-[1.5rem] flex flex-col gap-6 mx-auto w-full max-w-[800px];
 }
 
 .about-section {
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
+  @apply rounded-xl shadow-sm p-[1.5rem];
+  background-color: var(--bg-card);
 }
 
 .about-section h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-neutral-900);
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-neutral-200);
+  @apply text-base font-semibold mb-4 pb-[0.75rem];
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .app-info {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  @apply flex items-center gap-6;
 }
 
 .app-icon {
   width: 80px;
   height: 80px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply rounded-lg flex items-center justify-center shrink-0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
   color: white;
-  flex-shrink: 0;
 }
 
 .app-details h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-neutral-900);
-  margin: 0 0 0.25rem;
+  @apply text-2xl font-bold m-[0_0_0.25rem_0];
+  color: var(--text-primary);
 }
 
 .app-version {
-  font-size: 1rem;
-  color: var(--color-neutral-600);
-  margin: 0 0 0.25rem;
+  @apply text-base m-[0_0_0.25rem_0];
+  color: var(--text-secondary);
 }
 
 .app-build {
-  font-size: 0.875rem;
-  color: var(--color-neutral-500);
-  margin: 0 0 0.5rem;
+  @apply text-sm m-[0_0_0.5rem_0];
+  color: var(--text-muted);
 }
 
 .app-desc {
-  font-size: 0.875rem;
-  color: var(--color-neutral-500);
-  margin: 0;
+  @apply text-sm m-0;
+  color: var(--text-muted);
 }
 
 .links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
+  @apply grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4;
 }
 
 .link-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1.25rem 1rem;
-  background-color: var(--color-neutral-50);
-  border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius);
-  color: var(--color-neutral-700);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  @apply flex flex-col items-center gap-2 px-4 py-[1.25rem] rounded-xl border no-underline text-sm font-medium transition-all;
+  background-color: var(--bg-hover);
+  border-color: var(--border-primary);
+  color: var(--text-secondary);
 }
 
 .link-card:hover {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
+  @apply -translate-y-[2px] shadow-sm;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-inverse);
 }
 
 .link-card svg {
-  color: var(--color-neutral-400);
+  color: var(--text-muted);
   transition: color 0.2s ease;
 }
 
@@ -245,37 +212,27 @@ onMounted(() => {
 }
 
 .sys-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.75rem;
+  @apply grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3;
 }
 
 .sys-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--color-neutral-50);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-neutral-200);
+  @apply flex flex-col gap-0.5 px-4 py-[0.75rem] rounded-sm border;
+  background-color: var(--bg-hover);
+  border-color: var(--border-primary);
 }
 
 .sys-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-neutral-500);
+  @apply text-[0.75rem] font-semibold uppercase tracking-[0.05em];
+  color: var(--text-muted);
 }
 
 .sys-value {
-  font-size: 0.875rem;
-  color: var(--color-neutral-900);
+  @apply text-sm;
+  color: var(--text-primary);
 }
 
 .acknowledgment {
-  font-size: 0.875rem;
-  color: var(--color-neutral-600);
-  line-height: 1.6;
+  @apply text-sm leading-6;
+  color: var(--text-muted);
 }
 </style>

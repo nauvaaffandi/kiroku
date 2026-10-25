@@ -16,6 +16,7 @@ defineProps<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .setting-item {
   display: flex;
   justify-content: space-between;

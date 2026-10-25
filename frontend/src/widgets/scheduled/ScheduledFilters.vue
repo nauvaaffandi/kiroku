@@ -90,6 +90,7 @@ const emitSearch = (event: Event) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .filters-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

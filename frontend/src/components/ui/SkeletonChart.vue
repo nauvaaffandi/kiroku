@@ -14,10 +14,10 @@ defineProps<Props>()
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .skeleton-chart {
+  @apply w-full rounded border;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  width: 100%;
+  border-color: var(--border-primary);
 }
 </style>

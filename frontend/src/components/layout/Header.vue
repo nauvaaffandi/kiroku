@@ -112,75 +112,41 @@ defineEmits(['toggle-sidebar'])
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  height: 64px;
+  @apply flex items-center justify-between px-4 h-[64px];
 }
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  @apply flex items-center gap-3;
 }
 .menu-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neutral-600);
-  background: none;
-  border: none;
-  cursor: pointer;
+  @apply flex items-center justify-center p-2 rounded border-0 bg-transparent cursor-pointer transition-colors;
+  color: var(--text-secondary);
 }
-:where([data-theme="dark"], [data-theme="dark"] *) .menu-btn {
-  color: #d4d4d8;
+.menu-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 .page-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-neutral-900);
-  margin: 0;
-}
-:where([data-theme="dark"], [data-theme="dark"] *) .page-title {
-  color: #f4f4f5;
+  @apply text-xl font-bold m-0;
+  color: var(--text-primary);
 }
 .header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  @apply flex items-center gap-3;
 }
 .currency-selector select {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid var(--color-neutral-300);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-900);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-:where([data-theme="dark"], [data-theme="dark"] *) .currency-selector select {
-  background-color: #121212;
-  border-color: #27272a;
-  color: #f4f4f5;
+  @apply px-3 py-1.5 rounded text-sm font-medium cursor-pointer border;
+  border-color: var(--border-primary);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
 }
 .icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: none;
-  border: none;
-  color: var(--color-neutral-600);
-  cursor: pointer;
+  @apply flex items-center justify-center w-10 h-10 rounded-full border-0 bg-transparent cursor-pointer transition-colors;
+  color: var(--text-secondary);
 }
-:where([data-theme="dark"], [data-theme="dark"] *) .icon-btn {
-  color: #d4d4d8;
+.icon-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 .more-menu-container {
   position: relative;
@@ -190,56 +156,29 @@ defineEmits(['toggle-sidebar'])
   top: calc(100% + 0.5rem);
   right: 0;
   width: 14rem;
-  background-color: var(--color-neutral-100);
-  border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius);
+  @apply rounded-lg py-2;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-lg);
-  padding: 0.5rem 0;
   z-index: 300;
 }
-:where([data-theme="dark"], [data-theme="dark"] *) .more-dropdown {
-  background-color: #18181b;
-  border-color: #27272a;
-}
 .dropdown-section {
-  padding: 0.25rem 0;
+  @apply py-1;
 }
 .dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0.625rem 1rem;
-  text-align: left;
-  background: none;
-  border: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-neutral-700);
-  cursor: pointer;
-}
-:where([data-theme="dark"], [data-theme="dark"] *) .dropdown-item {
-  color: #d4d4d8;
+  @apply flex items-center gap-3 w-full px-4 py-2.5 text-left bg-transparent border-0 text-sm font-medium cursor-pointer transition-colors;
+  color: var(--text-secondary);
 }
 .dropdown-item:hover {
-  background-color: var(--color-neutral-200);
-}
-:where([data-theme="dark"], [data-theme="dark"] *) .dropdown-item:hover {
-  background-color: #27272a;
-  color: #f4f4f5;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 .dropdown-item.danger {
-  color: var(--color-danger);
+  color: var(--error);
 }
 .dropdown-divider {
   height: 1px;
-  background-color: var(--color-neutral-200);
-  margin: 0.25rem 0;
-}
-:where([data-theme="dark"], [data-theme="dark"] *) .dropdown-divider {
-  background-color: #27272a;
-}
-@media (min-width: 768px) {
-  /* Removed desktop hiding of menu button */
+  background-color: var(--border-primary);
+  @apply my-1;
 }
 </style>

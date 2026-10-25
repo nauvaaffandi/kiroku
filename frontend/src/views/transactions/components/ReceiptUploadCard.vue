@@ -36,6 +36,7 @@ const handleFileSelect = (e: Event) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .upload-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

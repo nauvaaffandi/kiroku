@@ -64,6 +64,7 @@ function formatCurrency(val: number): string {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .calendar-grid-wrapper {
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);

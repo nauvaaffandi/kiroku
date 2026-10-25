@@ -258,6 +258,7 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .scheduled-form {
   display: flex;
   flex-direction: column;

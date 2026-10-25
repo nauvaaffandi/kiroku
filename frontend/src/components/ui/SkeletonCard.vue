@@ -19,10 +19,10 @@ defineProps<Props>()
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .skeleton-card {
+  @apply rounded border shadow-sm;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-color: var(--border-primary);
 }
 </style>

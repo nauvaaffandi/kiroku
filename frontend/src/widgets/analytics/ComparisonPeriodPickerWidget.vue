@@ -37,6 +37,7 @@ defineEmits<{
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .comparison-periods { display: flex; flex-wrap: wrap; gap: 1.5rem; padding: 1rem; background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); }
 .period-picker { display: flex; flex-direction: column; gap: 0.5rem; min-width: 250px; }
 .period-picker label { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); }

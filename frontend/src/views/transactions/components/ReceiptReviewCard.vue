@@ -93,6 +93,7 @@ defineEmits(['confirm', 'reset'])
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .review-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

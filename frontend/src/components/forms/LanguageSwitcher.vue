@@ -26,6 +26,7 @@ function changeLocale() {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .language-switcher {
   display: flex;
   flex-direction: column;

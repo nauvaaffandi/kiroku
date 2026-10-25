@@ -106,6 +106,7 @@ const formatDate = (date: Date) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .date-range-picker {
   display: flex;
   flex-direction: column;

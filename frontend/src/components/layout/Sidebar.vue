@@ -218,46 +218,33 @@ defineEmits(['close'])
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  @apply flex flex-col h-full;
 }
 
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--color-neutral-200);
+  @apply flex items-center justify-between px-6 py-4 border-b;
+  border-color: var(--border-primary);
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 1.125rem;
-  text-decoration: none;
+  @apply flex items-center gap-3 font-bold text-lg no-underline;
+  color: var(--accent);
 }
 
 .sidebar-close {
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neutral-500);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  @apply p-2 rounded-sm cursor-pointer transition-colors;
+  color: var(--text-muted);
 }
 
 .sidebar-close:hover {
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-900);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 0.5rem;
+  @apply flex-1 overflow-y-auto px-2 py-2;
 }
 
 .nav-list {
@@ -267,74 +254,52 @@ defineEmits(['close'])
 }
 
 .nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neutral-600);
-  text-decoration: none;
-  margin: 0.125rem 0.5rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  width: auto;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  @apply flex items-center gap-3 px-4 py-3 rounded-sm no-underline mx-[0.125rem] my-[0.125rem] w-auto bg-transparent border-0 cursor-pointer text-left transition-colors;
+  color: var(--text-secondary);
   font: inherit;
-  text-align: left;
 }
 
 .nav-link:hover {
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-900);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .nav-link.active {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  background-color: var(--accent-light);
+  color: var(--accent);
   font-weight: 500;
 }
 
 .nav-group-toggle {
-  margin: 0.125rem 0.5rem;
-  width: calc(100% - 1rem);
+  @apply mx-[0.125rem] my-[0.125rem] w-[calc(100%-1rem)];
 }
 
 .expandable-wrapper {
   overflow: hidden;
   transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin: 0 0.5rem;
+  @apply mx-[0.5rem];
 }
 
 .sub-nav-list {
   list-style: none;
   padding: 0.25rem 0 0.25rem 2rem;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
+  @apply flex flex-col gap-0.5;
 }
 
 .sub-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neutral-600);
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  @apply flex items-center gap-2 px-3 py-2 rounded-sm text-sm transition-colors no-underline;
+  color: var(--text-secondary);
 }
 
 .sub-nav-link:hover {
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-900);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .sub-nav-link.active {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  background-color: var(--accent-light);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -354,73 +319,51 @@ defineEmits(['close'])
 
 .nav-divider {
   height: 1px;
-  background-color: var(--color-neutral-200);
-  margin: 1rem 0.5rem;
+  background-color: var(--border-primary);
+  @apply my-[1rem] mx-[0.5rem];
 }
 
 .sidebar-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--color-neutral-200);
+  @apply px-6 py-4 border-t;
+  border-color: var(--border-primary);
 }
 
 .user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-neutral-50);
-  margin-bottom: 1rem;
+  @apply flex items-center gap-3 p-2 rounded-sm mb-4;
+  background-color: var(--bg-card);
 }
 
 .user-avatar {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--accent);
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.875rem;
+  @apply flex items-center justify-center font-semibold text-sm;
 }
 
 .user-details {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+  @apply flex-1 min-w-0 flex flex-col;
 }
 
 .user-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-neutral-900);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @apply text-sm font-medium truncate;
+  color: var(--text-primary);
 }
 
 .user-role {
-  font-size: 0.75rem;
-  color: var(--color-neutral-500);
+  @apply text-xs;
+  color: var(--text-muted);
 }
 
 .footer-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neutral-600);
-  text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  @apply flex items-center gap-3 px-4 py-3 rounded-sm no-underline transition-colors;
+  color: var(--text-secondary);
 }
 
 .footer-link:hover {
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-900);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .footer-link svg {

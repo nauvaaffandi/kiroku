@@ -46,6 +46,7 @@ const formatNumber = (num: number) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .account-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

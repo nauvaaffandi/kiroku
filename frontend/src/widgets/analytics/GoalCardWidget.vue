@@ -96,6 +96,7 @@ function strokeOffset(progressPct: number): number {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .goal-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
 .goal-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
 .goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }

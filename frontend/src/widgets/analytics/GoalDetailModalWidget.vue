@@ -155,6 +155,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal-container { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); width: 100%; max-width: 500px; max-height: 90vh; overflow: hidden; animation: slideUp 0.2s ease; }

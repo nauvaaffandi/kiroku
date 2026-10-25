@@ -123,30 +123,22 @@ const handleFormSubmit = async (data: Partial<ScheduledTransaction>) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
+  @apply flex justify-between items-start mb-6 gap-4;
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0;
+  @apply text-2xl font-bold m-0;
+  color: var(--text-primary);
 }
 
 .page-subtitle {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  margin: 0.25rem 0 0;
+  @apply text-sm mt-1 mb-0;
+  color: var(--text-muted);
 }
 
 .header-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-shrink: 0;
+  @apply flex gap-3 shrink-0;
 }
 </style>

@@ -180,6 +180,7 @@ watchEffect(fetchData)
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .cashflow-table-widget { display: flex; flex-direction: column; gap: 1rem; }
 .widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius) var(--radius) 0 0; }
 .widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }

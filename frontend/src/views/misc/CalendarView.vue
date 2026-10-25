@@ -161,12 +161,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .calendar-view {
+  @apply mx-auto p-4 flex flex-col gap-4;
   max-width: 80rem;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 </style>

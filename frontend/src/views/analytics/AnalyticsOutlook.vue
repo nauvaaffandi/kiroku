@@ -142,6 +142,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .analytics-outlook-view {
   max-width: 80rem;
   margin: 0 auto;

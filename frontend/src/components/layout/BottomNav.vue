@@ -55,6 +55,7 @@ const handleFABClick = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -62,42 +63,20 @@ const handleFABClick = () => {
   right: 0;
   width: 100%;
   height: 60px;
-  background-color: var(--color-neutral-100);
-  border-top: 1px solid var(--color-neutral-200);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .bottom-nav {
-  background-color: #18181b;
-  border-top-color: #27272a;
+  @apply flex items-center justify-around z-[100] pb-[env(safe-area-inset-bottom)];
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-primary);
 }
 
 .bottom-nav-item {
   position: static;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
-  color: var(--color-neutral-500);
+  @apply flex flex-col items-center justify-center flex-1 h-full;
+  color: var(--text-secondary);
   text-decoration: none;
 }
 
-:where([data-theme="dark"], [data-theme="dark"] *) .bottom-nav-item {
-  color: #a1a1aa;
-}
-
 .bottom-nav-item.active {
-  color: var(--color-primary);
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .bottom-nav-item.active {
-  color: var(--color-primary);
+  color: var(--accent);
 }
 
 .bottom-nav-icon {
@@ -113,25 +92,15 @@ const handleFABClick = () => {
 
 .bottom-add-btn {
   position: static;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
-  background: none;
-  border: none;
-  cursor: pointer;
+  @apply flex items-center justify-center flex-1 h-full border-0 bg-transparent cursor-pointer;
 }
 
 .bottom-add-circle {
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--accent);
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
+  @apply flex items-center justify-center shadow-md;
 }
 </style>

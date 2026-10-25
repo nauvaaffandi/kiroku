@@ -177,6 +177,7 @@ const importCSV = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .backup-modal {
   display: flex;
   flex-direction: column;

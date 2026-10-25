@@ -55,6 +55,7 @@ function formatCurrency(val: number): string {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .modal-backdrop {
   position: fixed;
   inset: 0;

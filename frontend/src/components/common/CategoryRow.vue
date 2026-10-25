@@ -77,53 +77,29 @@ const expanded = ref(true)
 </script>
 
 <style scoped>
+@reference "tailwindcss";
+
 .category-row {
-  border-radius: var(--radius-sm);
+  @apply rounded;
 }
 
 .tree-row {
-  display: grid;
-  grid-template-columns: 1fr 120px 80px 120px;
-  gap: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius-sm);
-  align-items: center;
-  transition: background-color 0.2s ease;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .tree-row {
-  background-color: #18181b;
-  border: 1px solid #27272a;
+  @apply grid grid-cols-[1fr_120px_80px_120px] gap-4 px-4 py-2 rounded items-center transition-colors;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
 }
 
 .tree-row:hover {
-  background-color: var(--color-neutral-200);
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .tree-row:hover {
-  background-color: #27272a;
+  background-color: var(--bg-hover);
 }
 
 .category-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  @apply flex items-center gap-2;
 }
 
 .tree-toggle {
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-neutral-500);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .tree-toggle {
-  color: #a1a1aa;
+  @apply w-6 h-6 flex items-center justify-center cursor-pointer shrink-0;
+  color: var(--text-muted);
 }
 
 .tree-toggle.placeholder {
@@ -131,105 +107,70 @@ const expanded = ref(true)
 }
 
 .category-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply w-6 h-6 rounded flex items-center justify-center text-sm shrink-0;
   color: white;
-  font-size: 0.875rem;
-  flex-shrink: 0;
 }
 
 .category-icon.default {
-  color: var(--color-neutral-400);
+  color: var(--text-muted);
   background-color: transparent;
 }
 
-:where([data-theme="dark"], [data-theme="dark"] *) .category-icon.default {
-  color: #a1a1aa;
-}
-
 .category-name {
-  font-weight: 600;
-  color: var(--color-neutral-900);
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .category-name {
-  color: #f4f4f5;
+  @apply font-semibold;
+  color: var(--text-primary);
 }
 
 .kind-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-transform: capitalize;
+  @apply inline-block px-2 py-0.5 rounded-full text-[0.625rem] font-bold capitalize;
 }
 
 .kind-badge.must {
-  background-color: rgba(220, 53, 69, 0.15);
-  color: var(--color-danger);
+  background-color: var(--error-light);
+  color: var(--error);
 }
 .kind-badge.have {
-  background-color: rgba(255, 193, 7, 0.15);
-  color: var(--color-warning);
+  background-color: var(--warning-light);
+  color: var(--warning);
 }
 .kind-badge.want {
-  background-color: rgba(23, 162, 184, 0.15);
-  color: var(--color-info);
+  background-color: var(--info-light);
+  color: var(--info);
 }
 
 .color-swatch {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--color-neutral-300);
-  vertical-align: middle;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .color-swatch {
-  border-color: #27272a;
+  @apply inline-block w-4 h-4 rounded border align-middle;
+  border-color: var(--border-primary);
 }
 
 .color-hex {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-neutral-500);
-  font-family: monospace;
-  margin-left: 0.5rem;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .color-hex {
-  color: #a1a1aa;
+  @apply text-xs font-medium font-mono ml-2;
+  color: var(--text-muted);
 }
 
 .btn-icon {
-  padding: 0.375rem;
-  border-radius: var(--radius-sm);
-  color: var(--color-neutral-500);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  @apply p-1.5 rounded transition-colors;
+  color: var(--text-muted);
 }
 
-:where([data-theme="dark"], [data-theme="dark"] *) .btn-icon {
-  color: #a1a1aa;
+.btn-icon:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
-.btn-icon:hover { background-color: var(--color-neutral-200); color: var(--color-neutral-900); }
-:where([data-theme="dark"], [data-theme="dark"] *) .btn-icon:hover { background-color: #27272a; color: #f4f4f5; }
-.btn-icon.text-danger:hover { background-color: rgba(220, 53, 69, 0.15); color: var(--color-danger); }
+.btn-icon.text-danger:hover {
+  background-color: var(--error-light);
+  color: var(--error);
+}
 
 .category-children {
-  margin-top: 0.25rem;
+  @apply mt-1;
 }
 
 @media (max-width: 768px) {
   .tree-row {
     grid-template-columns: 1fr 80px 60px 100px;
-    font-size: 0.875rem;
+    @apply text-sm;
   }
   .color-hex { display: none; }
 }

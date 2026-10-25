@@ -281,6 +281,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .transactions-page {
   min-height: 100vh;
   display: flex;

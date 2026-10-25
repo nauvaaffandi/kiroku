@@ -228,6 +228,7 @@ onMounted(loadData)
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .shared-access-page {
   min-height: 100vh;
   display: flex;

@@ -104,11 +104,9 @@ const getChildStyle = (index: number, total: number) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .fab-wrapper {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 999;
+  @apply fixed bottom-[2rem] right-[2rem] z-[999];
 }
 
 .fab-backdrop {
@@ -126,41 +124,28 @@ const getChildStyle = (index: number, total: number) => {
 }
 
 .fab-main {
-  position: relative;
-  width: 3.75rem;
-  height: 3.75rem;
-  border-radius: 50%;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply relative w-[3.75rem] h-[3.75rem] rounded-full text-white border-0 cursor-pointer flex items-center justify-center z-[1000] transition-transform transition-colors;
+  background-color: var(--accent);
   box-shadow: 0 8px 24px rgba(74, 144, 217, 0.4);
-  z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
 }
 
 .fab-main:hover {
-  background-color: var(--color-primary-hover);
-  transform: scale(1.08);
+  @apply scale-[1.08];
+  background-color: var(--accent-hover);
 }
 
 .fab-main:active {
-  transform: scale(0.92);
+  @apply scale-[0.92];
 }
 
 .fab-main.open {
-  background-color: var(--color-danger, #dc3545);
+  background-color: var(--error);
   box-shadow: 0 8px 24px rgba(220, 53, 69, 0.4);
   transform: rotate(90deg);
 }
 
 .fab-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply flex items-center justify-center;
   transition: transform 0.3s ease;
 }
 
@@ -170,10 +155,7 @@ const getChildStyle = (index: number, total: number) => {
   right: 0;
   width: 0;
   height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
+  @apply flex items-center justify-center z-[999];
 }
 
 .fab-child-btn {
@@ -182,20 +164,16 @@ const getChildStyle = (index: number, total: number) => {
   height: 3rem;
   border-radius: 50%;
   background-color: var(--bg-card);
-  color: var(--color-primary);
+  color: var(--accent);
   border: 1px solid var(--border-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  @apply flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 ease-out;
   box-shadow: var(--shadow-md);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.2s ease, color 0.2s ease;
   transform: translate(0, 0) scale(0);
   opacity: 0;
 }
 
 .fab-child-btn:hover {
-  background-color: var(--color-primary);
+  background-color: var(--accent);
   color: white;
   transform: scale(1.15) !important;
 }

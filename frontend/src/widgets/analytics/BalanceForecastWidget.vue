@@ -102,6 +102,7 @@ watch(() => props.data, () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
 .widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-primary); background-color: var(--bg-secondary); }
 .widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }

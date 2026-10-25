@@ -55,14 +55,13 @@ const handleOverlayClick = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
+
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  @apply flex items-center justify-center p-4;
   z-index: 500;
   animation: fadeIn 0.2s ease;
 }
@@ -73,13 +72,9 @@ const handleOverlayClick = () => {
 }
 
 .modal {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
+  background-color: var(--bg-card);
+  @apply rounded-lg flex flex-col w-full max-h-[90vh];
   box-shadow: var(--shadow-xl);
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
   animation: slideUp 0.2s ease;
 }
 
@@ -101,52 +96,34 @@ const handleOverlayClick = () => {
 .modal-full { max-width: 95vw; max-height: 95vh; }
 
 .modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
+  @apply flex items-center justify-between px-5 py-4 border-b;
+  border-color: var(--border-primary);
 }
 
 .modal-title {
   margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text);
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
 }
 
 .modal-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  @apply flex items-center justify-center w-8 h-8 border-0 bg-transparent rounded cursor-pointer transition-colors;
+  color: var(--text-muted);
 }
 
 .modal-close:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .modal-body {
-  padding: 1.25rem;
-  overflow-y: auto;
-  flex: 1;
+  @apply p-5 overflow-y-auto flex-1;
 }
 
 .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
+  @apply flex justify-end gap-3 px-5 py-4 border-t;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 </style>

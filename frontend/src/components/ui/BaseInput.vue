@@ -71,58 +71,51 @@ const handleFocus = (event: FocusEvent) => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
+
 .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
+  @apply flex flex-col gap-1;
 }
 
 .form-label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-text);
+  @apply text-xs font-medium;
+  color: var(--text-primary);
 }
 
 .input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  @apply flex items-center;
 }
 
 .form-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  @apply w-full px-3 py-2 text-sm font-sans rounded border transition-colors;
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
   font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-focus);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent);
 }
 
 .form-input:disabled {
-  background: var(--color-surface-disabled);
-  color: var(--color-text-muted);
+  background-color: var(--bg-hover);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .form-input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
 }
 
 .input-prefix,
 .input-suffix {
   position: absolute;
-  display: flex;
-  align-items: center;
-  color: var(--color-text-muted);
+  @apply flex items-center;
+  color: var(--text-muted);
   font-size: 0.875rem;
   pointer-events: none;
 }
@@ -135,24 +128,19 @@ const handleFocus = (event: FocusEvent) => {
   right: 0.75rem;
 }
 
-.form-input {
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-}
-
 .form-input:has(+ .input-suffix) {
   padding-right: 2.5rem;
 }
 
 .form-error {
   margin: 0;
-  font-size: 0.75rem;
-  color: var(--color-danger);
+  @apply text-[0.75rem];
+  color: var(--error);
 }
 
 .form-hint {
   margin: 0;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  @apply text-[0.75rem];
+  color: var(--text-muted);
 }
 </style>
