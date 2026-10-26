@@ -259,49 +259,12 @@ const handleSubmit = () => {
 
 <style scoped>
 @reference "tailwindcss";
-.scheduled-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.form-checkbox {
-  flex-direction: row;
-  align-items: center;
-}
-
-.form-checkbox .form-label {
-  margin-bottom: 0;
-}
-
-.form-checkbox-input {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--color-primary);
-}
-
-.form-label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
+.scheduled-form { @apply flex flex-col gap-5; }
+.form-row { @apply grid grid-cols-2 gap-4; }
+.form-group { @apply flex flex-col gap-1.5; }
+.form-checkbox { @apply flex-row items-center; }
+.form-checkbox .form-label { @apply mb-0; }
+.form-checkbox-input { accent-color: var(--accent); @apply w-4 h-4; }
+.form-label { color: var(--text-primary); @apply text-[0.8125rem] font-medium; }
+.modal-actions { @apply flex justify-end gap-3 mt-4; }
 </style>

@@ -84,9 +84,9 @@ const expanded = ref(true)
 }
 
 .tree-row {
-  @apply grid grid-cols-[1fr_120px_80px_120px] gap-4 px-4 py-2 rounded items-center transition-colors;
+  @apply grid grid-cols-[1fr_120px_80px_120px] gap-4 px-4 py-2 rounded items-center transition-colors border;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
+  border-color: var(--border-primary);
 }
 
 .tree-row:hover {
@@ -103,17 +103,16 @@ const expanded = ref(true)
 }
 
 .tree-toggle.placeholder {
-  visibility: hidden;
+  @apply invisible;
 }
 
 .category-icon {
-  @apply w-6 h-6 rounded flex items-center justify-center text-sm shrink-0;
-  color: white;
+  @apply w-6 h-6 rounded flex items-center justify-center text-sm shrink-0 text-white;
 }
 
 .category-icon.default {
   color: var(--text-muted);
-  background-color: transparent;
+  @apply bg-transparent;
 }
 
 .category-name {
@@ -172,6 +171,8 @@ const expanded = ref(true)
     grid-template-columns: 1fr 80px 60px 100px;
     @apply text-sm;
   }
-  .color-hex { display: none; }
+  .color-hex {
+    @apply hidden;
+  }
 }
 </style>

@@ -229,124 +229,246 @@ onMounted(loadData)
 
 <style scoped>
 @reference "tailwindcss";
+
 .shared-access-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  @apply min-h-screen flex flex-col;
 }
 
 .page-header {
-  padding: 1.5rem;
-  background-color: var(--color-neutral-100);
-  border-bottom: 1px solid var(--color-neutral-200);
+  @apply p-6;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  @apply flex items-center justify-between flex-wrap gap-4;
 }
 
-.header-content h1 { font-size: 1.5rem; font-weight: 600; color: var(--color-neutral-900); }
+.header-content h1 { 
+  @apply text-2xl font-semibold; 
+  color: var(--text-primary); 
+}
 
 .shared-access-content {
-  flex: 1;
-  padding: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
+  @apply flex-1 p-6 max-w-[900px] mx-auto w-full;
 }
 
 .shares-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply flex flex-col gap-4;
 }
 
 .share-card {
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  @apply rounded-[var(--radius)] p-6 flex items-start justify-between gap-6 flex-wrap shadow-[var(--shadow)];
+  background-color: var(--bg-card);
 }
 
-.share-info { flex: 1; min-width: 280px; }
+.share-info { 
+  @apply flex-1 min-w-[280px]; 
+}
 
-.share-account { margin-bottom: 1rem; }
+.share-account { 
+  @apply mb-4; 
+}
 
-.account-name { font-weight: 600; color: var(--color-neutral-900); font-size: 1.125rem; }
+.account-name { 
+  @apply font-semibold text-lg; 
+  color: var(--text-primary); 
+}
 
-.account-badge { font-size: 0.75rem; color: var(--color-neutral-500); margin-left: 0.5rem; font-family: monospace; }
+.account-badge { 
+  @apply text-xs ml-2 font-mono; 
+  color: var(--text-muted); 
+}
 
-.share-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; }
+.share-details { 
+  @apply grid gap-3;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
 
-.detail-item { display: flex; flex-direction: column; gap: 0.125rem; }
+.detail-item { 
+  @apply flex flex-col gap-0.5; 
+}
 
-.detail-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-500); }
+.detail-label { 
+  @apply text-xs font-semibold uppercase tracking-wider; 
+  color: var(--text-muted); 
+}
 
-.detail-value { font-size: 0.875rem; color: var(--color-neutral-900); }
+.detail-value { 
+  @apply text-sm; 
+  color: var(--text-primary); 
+}
 
-.detail-value.text-muted { color: var(--color-neutral-400); }
+.detail-value.text-muted { 
+  color: var(--text-muted); 
+}
 
-.token-display { display: flex; align-items: center; gap: 0.5rem; }
+.token-display { 
+  @apply flex items-center gap-2; 
+}
 
-.token { font-family: monospace; font-size: 0.8125rem; color: var(--color-neutral-600); background-color: var(--color-neutral-50); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); flex: 1; word-break: break-all; }
+.token { 
+  @apply font-mono text-[0.8125rem] px-2 py-1 rounded-[var(--radius-sm)] flex-1 break-all; 
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+}
 
-.share-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.share-actions { 
+  @apply flex gap-2 shrink-0; 
+}
 
-.btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
+.btn-sm { 
+  @apply py-1.5 px-3 text-[0.8125rem]; 
+}
 
 .empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  color: var(--color-neutral-500);
+  @apply text-center py-16 px-8 rounded-[var(--radius)] shadow-[var(--shadow)];
+  background-color: var(--bg-card);
+  color: var(--text-muted);
 }
 
-.empty-state svg { margin-bottom: 1rem; opacity: 0.5; }
+.empty-state svg { 
+  @apply mb-4 opacity-50; 
+}
 
-.empty-state h3 { font-size: 1.125rem; font-weight: 600; color: var(--color-neutral-700); margin-bottom: 0.5rem; }
+.empty-state h3 { 
+  @apply text-lg font-semibold mb-2; 
+  color: var(--text-primary); 
+}
 
-.empty-state p { font-size: 0.875rem; margin-bottom: 1.5rem; }
+.empty-state p { 
+  @apply text-sm mb-6; 
+}
 
 /* Modal */
-.modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; animation: fadeIn 0.2s ease; }
-.modal { background-color: var(--color-neutral-100); border-radius: var(--radius); box-shadow: var(--shadow-hover); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.2s ease; }
-.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--color-neutral-200); }
-.modal-header h2 { font-size: 1.125rem; font-weight: 600; }
-.modal-close { padding: 0.25rem; border-radius: var(--radius-sm); color: var(--color-neutral-500); transition: background-color 0.2s ease, color 0.2s ease; background: none; border: none; cursor: pointer; }
-.modal-close:hover { background-color: var(--color-neutral-200); color: var(--color-neutral-900); }
-.modal-form { padding: 1.5rem; }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--color-neutral-700); margin-bottom: 0.375rem; }
-.form-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--color-neutral-300); border-radius: var(--radius-sm); background-color: var(--color-neutral-100); color: var(--color-neutral-900); font-size: 0.875rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-.form-input:focus { outline: none; border-color: transparent; box-shadow: 0 0 0 2px var(--color-primary); }
-.form-hint { font-size: 0.75rem; color: var(--color-neutral-500); margin-top: 0.25rem; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
-.btn-primary, .btn-secondary, .btn-danger { padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: background-color 0.2s ease, opacity 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: none; }
-.btn-primary { background-color: var(--color-primary); color: white; }
-.btn-primary:hover:not(:disabled) { background-color: var(--color-primary-hover); }
-.btn-secondary { background-color: var(--color-neutral-200); color: var(--color-neutral-700); }
-.btn-secondary:hover:not(:disabled) { background-color: var(--color-neutral-300); }
-.btn-danger { background-color: var(--color-danger); color: white; }
-.btn-danger:hover:not(:disabled) { background-color: #c82333; }
-.btn-primary:disabled, .btn-secondary:disabled, .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-icon { padding: 0.375rem; border-radius: var(--radius-sm); background: none; border: none; color: var(--color-neutral-500); cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
-.btn-icon:hover { background-color: var(--color-neutral-200); color: var(--color-neutral-900); }
+.modal-overlay { 
+  @apply fixed inset-0 flex items-center justify-center p-4 z-[1000]; 
+  background-color: rgba(0, 0, 0, 0.5); 
+  animation: fadeIn 0.2s ease; 
+}
 
-.share-result p { color: var(--color-neutral-600); margin-bottom: 0.75rem; }
-.share-url-display { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
-.share-url-display .form-input { flex: 1; background-color: var(--color-neutral-50); }
-.share-warning { font-size: 0.8125rem; color: var(--color-warning); margin: 0; }
+.modal { 
+  @apply rounded-[var(--radius)] w-full max-w-[480px] max-h-[90vh] overflow-y-auto shadow-[var(--shadow-md)]; 
+  background-color: var(--bg-card);
+  animation: slideUp 0.2s ease; 
+}
+
+.modal-header { 
+  @apply flex items-center justify-between py-4 px-6; 
+  border-bottom: 1px solid var(--border-primary); 
+}
+
+.modal-header h2 { 
+  @apply text-lg font-semibold; 
+  color: var(--text-primary);
+}
+
+.modal-close { 
+  @apply p-1 rounded-[var(--radius-sm)] bg-transparent border-none cursor-pointer transition-colors duration-200; 
+  color: var(--text-muted); 
+}
+
+.modal-close:hover { 
+  @apply text-[var(--text-primary)]; 
+  background-color: var(--bg-hover); 
+}
+
+.modal-form { 
+  @apply p-6; 
+}
+
+.form-group { 
+  @apply mb-4; 
+}
+
+.form-group label { 
+  @apply block text-sm font-medium mb-1.5; 
+  color: var(--text-secondary); 
+}
+
+.form-input { 
+  @apply w-full py-2 px-3 text-sm rounded-[var(--radius-sm)] transition-all duration-200; 
+  border: 1px solid var(--border-primary); 
+  background-color: var(--bg-primary); 
+  color: var(--text-primary); 
+}
+
+.form-input:focus { 
+  @apply outline-none border-transparent ring-2 ring-[var(--accent)]; 
+}
+
+.form-hint { 
+  @apply text-xs mt-1; 
+  color: var(--text-muted); 
+}
+
+.modal-actions { 
+  @apply flex justify-end gap-3 mt-6; 
+}
+
+.btn-primary, .btn-secondary, .btn-danger { 
+  @apply py-2 px-4 rounded-[var(--radius-sm)] font-medium text-sm cursor-pointer transition-opacity duration-200 inline-flex items-center justify-center gap-2 border-none; 
+}
+
+.btn-primary { 
+  @apply text-white; 
+  background-color: var(--accent); 
+}
+
+.btn-primary:hover:not(:disabled) { 
+  background-color: var(--accent-hover); 
+}
+
+.btn-secondary { 
+  @apply text-[var(--text-secondary)]; 
+  background-color: var(--bg-tertiary); 
+}
+
+.btn-secondary:hover:not(:disabled) { 
+  background-color: var(--bg-hover); 
+}
+
+.btn-danger { 
+  @apply text-white; 
+  background-color: var(--error); 
+}
+
+.btn-danger:hover:not(:disabled) { 
+  background-color: var(--error-light); 
+}
+
+.btn-primary:disabled, .btn-secondary:disabled, .btn-danger:disabled { 
+  @apply opacity-50 cursor-not-allowed; 
+}
+
+.btn-icon { 
+  @apply p-1.5 rounded-[var(--radius-sm)] bg-transparent border-none cursor-pointer transition-colors duration-200; 
+  color: var(--text-muted); 
+}
+
+.btn-icon:hover { 
+  @apply text-[var(--text-primary)]; 
+  background-color: var(--bg-hover); 
+}
+
+.share-result p { 
+  @apply mb-3; 
+  color: var(--text-secondary); 
+}
+
+.share-url-display { 
+  @apply flex gap-2 mb-3; 
+}
+
+.share-url-display .form-input { 
+  @apply flex-1; 
+  background-color: var(--bg-tertiary); 
+}
+
+.share-warning { 
+  @apply text-[0.8125rem] m-0; 
+  color: var(--warning); 
+}
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

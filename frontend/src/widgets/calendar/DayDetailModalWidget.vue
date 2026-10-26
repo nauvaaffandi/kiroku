@@ -57,44 +57,83 @@ function formatCurrency(val: number): string {
 <style scoped>
 @reference "tailwindcss";
 .modal-backdrop {
-  position: fixed;
-  inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  padding: 1rem;
+  @apply fixed inset-0 flex items-center justify-center z-50 p-4;
 }
 .modal-content {
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  max-width: 28rem;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
   box-shadow: var(--shadow-xl);
+  @apply rounded max-w-md w-full p-6 flex flex-col gap-4;
 }
-.modal-content h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0; }
-.detail-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto; }
-.detail-item { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border-radius: var(--radius-sm); background-color: var(--bg-secondary); gap: 0.75rem; }
-.detail-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-.detail-name { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); }
-.detail-cat { font-size: 0.75rem; color: var(--text-muted); }
-.detail-amt { font-size: 0.875rem; font-weight: 700; }
-.detail-amt.text-success { color: var(--success); }
-.detail-amt.text-danger { color: var(--error); }
-.badge { padding: 0.125rem 0.5rem; font-size: 0.75rem; border-radius: 9999px; font-weight: 500; }
-.badge-success { background-color: var(--success-light); color: var(--success); }
-.badge-danger { background-color: var(--error-light); color: var(--error); }
-.badge-warning { background-color: var(--warning-light); color: var(--warning); }
-.empty-msg { text-align: center; color: var(--text-muted); padding: 1rem; font-size: 0.875rem; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }
-.btn-primary { padding: 0.5rem 1rem; background-color: var(--accent); color: white; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; cursor: pointer; }
-.btn-primary:hover { background-color: var(--accent-hover); }
-.btn-secondary { padding: 0.5rem 1rem; border: 1px solid var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; cursor: pointer; }
-.btn-secondary:hover { background-color: var(--bg-hover); }
+.modal-content h3 {
+  color: var(--text-primary);
+  @apply text-lg font-semibold m-0;
+}
+.detail-list {
+  @apply flex flex-col gap-2 max-h-[300px] overflow-y-auto;
+}
+.detail-item {
+  background-color: var(--bg-secondary);
+  @apply flex items-center justify-between p-2 rounded-sm gap-3;
+}
+.detail-info {
+  @apply flex flex-col flex-1 min-w-0;
+}
+.detail-name {
+  color: var(--text-primary);
+  @apply text-sm font-medium;
+}
+.detail-cat {
+  color: var(--text-muted);
+  @apply text-xs;
+}
+.detail-amt {
+  @apply text-sm font-bold;
+}
+.detail-amt.text-success {
+  color: var(--success);
+}
+.detail-amt.text-danger {
+  color: var(--error);
+}
+.badge {
+  @apply px-2 py-0.5 text-xs rounded-full font-medium;
+}
+.badge-success {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+.badge-danger {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+.badge-warning {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+.empty-msg {
+  color: var(--text-muted);
+  @apply text-center p-4 text-sm;
+}
+.modal-actions {
+  @apply flex justify-end gap-2 mt-2;
+}
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  @apply px-4 py-2 rounded-sm text-sm font-medium cursor-pointer;
+}
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+}
+.btn-secondary {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  @apply px-4 py-2 rounded-sm text-sm font-medium cursor-pointer;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-hover);
+}
 </style>

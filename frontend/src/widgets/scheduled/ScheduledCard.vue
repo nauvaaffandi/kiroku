@@ -76,106 +76,73 @@ const formatFrequency = (freq: string) => {
 <style scoped>
 @reference "tailwindcss";
 .scheduled-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply p-5 flex flex-col gap-4;
 }
 
 .scheduled-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  @apply flex justify-between items-start;
 }
 
 .scheduled-info {
-  flex: 1;
+  @apply flex-1;
 }
 
 .scheduled-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+  @apply text-base font-semibold mb-1 mt-0;
 }
 
 .scheduled-description {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  margin: 0;
+  color: var(--text-muted);
+  @apply text-[0.8125rem] m-0;
 }
 
 .scheduled-badges {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
+  @apply flex gap-2 items-center flex-wrap;
 }
 
 .scheduled-type-badge {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  background: var(--color-background);
-  color: var(--color-text-muted);
-  text-transform: capitalize;
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+  @apply text-xs px-2 py-0.5 rounded-full capitalize;
 }
 
 .scheduled-status-badge {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
+  @apply text-xs px-2 py-0.5 rounded-full;
 }
 
 .scheduled-status-badge.active {
-  background: var(--color-success-bg);
-  color: var(--color-success);
+  background-color: var(--success-light);
+  color: var(--success);
 }
 
 .scheduled-status-badge.inactive {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
+  background-color: var(--warning-light);
+  color: var(--warning);
 }
 
-.scheduled-details {
-  display: flex;
-  gap: 1.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border);
-}
+.scheduled-details { border-top: 1px solid var(--border-primary); @apply flex gap-6 pt-3; }
 
 .detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @apply flex flex-col gap-1;
 }
 
 .detail-label {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  @apply text-xs uppercase tracking-wider;
 }
 
 .detail-value {
-  font-size: 0.875rem;
-  color: var(--color-text);
-  font-weight: 500;
+  color: var(--text-primary);
+  @apply text-sm font-medium;
 }
 
 .detail-value.amount {
-  font-weight: 600;
-  font-size: 1rem;
+  @apply font-semibold text-base;
 }
 
-.scheduled-actions {
-  display: flex;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border);
-  margin-top: 0.5rem;
-}
+.scheduled-actions { border-top: 1px solid var(--border-primary); @apply flex gap-2 pt-3 mt-2; }
 </style>

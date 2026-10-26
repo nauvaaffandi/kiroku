@@ -33,50 +33,24 @@ defineEmits(['prev', 'next', 'today', 'update:selectedAccount'])
 <style scoped>
 @reference "tailwindcss";
 .calendar-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  padding: 1rem;
+  @apply flex flex-wrap justify-between items-center gap-4 p-4 rounded;
 }
-.nav-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
+.nav-controls { @apply flex items-center gap-3; }
 .nav-btn, .today-btn {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-primary);
   background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   color: var(--text-primary);
-  cursor: pointer;
+  @apply px-3 py-1.5 text-sm font-medium cursor-pointer transition-colors duration-200 ease-in-out rounded-sm;
 }
-.nav-btn:hover {
-  background-color: var(--bg-hover);
-}
-.today-btn {
-  background-color: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
-.month-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
+.nav-btn:hover { background-color: var(--bg-hover); }
+.today-btn { background-color: var(--accent); color: white; border-color: var(--accent); }
+.month-title { color: var(--text-primary); @apply text-xl font-black; }
 .filter-select {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-primary);
   background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   color: var(--text-primary);
+  @apply px-3 py-1.5 text-sm cursor-pointer rounded-sm;
 }
 </style>

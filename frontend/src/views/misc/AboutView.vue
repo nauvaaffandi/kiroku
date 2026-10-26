@@ -157,11 +157,8 @@ onMounted(() => {
 }
 
 .app-icon {
-  width: 80px;
-  height: 80px;
-  @apply rounded-lg flex items-center justify-center shrink-0;
+  @apply w-[80px] h-[80px] rounded-lg flex items-center justify-center shrink-0 text-white;
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  color: white;
 }
 
 .app-details h2 {
@@ -208,7 +205,7 @@ onMounted(() => {
 }
 
 .link-card:hover svg {
-  color: white;
+  @apply text-white;
 }
 
 .sys-info {

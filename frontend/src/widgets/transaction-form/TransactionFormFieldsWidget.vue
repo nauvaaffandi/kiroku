@@ -301,18 +301,18 @@ watch(() => props.initialData, (newData) => {
 
 <style scoped>
 @reference "tailwindcss";
-.transaction-form { display: flex; flex-direction: column; gap: 1rem; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.form-group { display: flex; flex-direction: column; gap: 0.375rem; }
-.form-group label { font-size: 0.875rem; font-weight: 500; color: var(--color-neutral-700); }
-.form-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--color-neutral-300); border-radius: var(--radius-sm); background-color: var(--color-neutral-100); color: var(--color-neutral-900); font-size: 0.875rem; }
-.form-input:focus { outline: none; box-shadow: 0 0 0 2px var(--color-primary); }
-.amount-input-wrapper { display: flex; gap: 0.5rem; }
-.calc-btn { padding: 0.5rem 0.75rem; background-color: var(--color-neutral-200); border-radius: var(--radius-sm); color: var(--color-neutral-700); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s ease; }
-.calc-btn:hover { background-color: var(--color-neutral-300); }
-.place-input-wrapper { display: flex; gap: 0.5rem; }
-.map-btn { white-space: nowrap; }
-.checkbox-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--color-neutral-700); cursor: pointer; }
-.mt-2 { margin-top: 0.5rem; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--color-neutral-200); }
+.transaction-form { @apply flex flex-col gap-4; }
+.form-row { @apply grid grid-cols-2 gap-4; }
+.form-group { @apply flex flex-col gap-1.5; }
+.form-group label { color: var(--text-secondary); @apply text-sm font-medium; }
+.form-input { color: var(--text-primary); background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius-sm); @apply w-full px-3 py-2 text-sm; }
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); @apply outline-none; }
+.amount-input-wrapper { @apply flex gap-2; }
+.calc-btn { background-color: var(--bg-secondary); color: var(--text-secondary); border-radius: var(--radius-sm); @apply px-3 py-2 flex items-center justify-center cursor-pointer transition-colors duration-200 ease-in-out; }
+.calc-btn:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+.place-input-wrapper { @apply flex gap-2; }
+.map-btn { @apply whitespace-nowrap; }
+.checkbox-label { color: var(--text-secondary); @apply flex items-center gap-2 text-sm font-medium cursor-pointer; }
+.mt-2 { @apply mt-2; }
+.modal-actions { border-top: 1px solid var(--border-primary); @apply flex justify-end gap-3 pt-4; }
 </style>

@@ -171,74 +171,29 @@ const handleSubmit = () => {
 
 <style scoped>
 @reference "tailwindcss";
-.category-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.form-checkbox {
-  flex-direction: row;
-  align-items: center;
-}
-
-.form-checkbox .form-label {
-  margin-bottom: 0;
-}
-
-.form-checkbox-input {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--color-primary);
-}
-
+.category-form { @apply flex flex-col gap-5; }
+.form-row { @apply grid grid-cols-2 gap-4; }
+.form-group { @apply flex flex-col gap-1.5; }
+.form-checkbox { @apply flex-row items-center; }
+.form-checkbox .form-label { @apply mb-0; }
+.form-checkbox-input { accent-color: var(--accent); @apply w-4 h-4; }
 .form-label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-text);
+  color: var(--text-primary);
+  @apply text-[0.8125rem] font-medium;
 }
-
 .form-input {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  @apply px-3 py-2 text-sm font-sans rounded transition-[border-color,box-shadow] duration-150 ease-in-out;
 }
-
 .form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-focus);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  @apply outline-none;
 }
-
 input[type="color"].form-input {
-  width: 3rem;
-  height: 2.5rem;
-  padding: 0;
-  border-radius: var(--radius);
-  cursor: pointer;
+  @apply w-12 h-10 p-0 cursor-pointer rounded;
 }
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
+.modal-actions { @apply flex justify-end gap-3 mt-4; }
 </style>

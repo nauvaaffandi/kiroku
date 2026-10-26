@@ -90,181 +90,137 @@ const formatAmount = (amount: number) => {
 <style scoped>
 @reference "tailwindcss";
 .transaction-row:hover {
-  background: var(--color-surface-hover);
+  background-color: var(--bg-hover);
 }
 
 .cell-date {
-  white-space: nowrap;
-  font-size: 0.75rem;
-  color: var(--color-text);
+  color: var(--text-primary);
+  @apply whitespace-nowrap text-xs;
 }
 
 .cell-type {
-  white-space: nowrap;
+  @apply whitespace-nowrap;
 }
 
 .type-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  border-radius: var(--radius-full);
+  @apply inline-block px-2 py-0.5 text-[0.625rem] font-semibold uppercase rounded-full;
 }
 
 .type-badge.income {
-  background: var(--color-success-bg);
-  color: var(--color-success);
+  background-color: var(--success-light);
+  color: var(--success);
 }
 
 .type-badge.expense {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
+  background-color: var(--error-light);
+  color: var(--error);
 }
 
 .type-badge.transfer {
-  background: var(--color-primary-bg);
-  color: var(--color-primary);
+  background-color: var(--accent-light);
+  color: var(--accent);
 }
 
 .cell-amount {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  font-size: 0.8125rem;
+  @apply font-semibold whitespace-nowrap text-[0.8125rem] tabular-nums;
 }
 
 .cell-amount.positive {
-  color: var(--color-success);
+  color: var(--success);
 }
 
 .cell-amount.negative {
-  color: var(--color-danger);
+  color: var(--error);
 }
 
 .cell-amount.neutral {
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .cell-category {
-  max-width: 140px;
-  font-size: 0.75rem;
+  @apply max-w-[140px] text-xs;
 }
 
 .category-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.75rem;
   border-radius: var(--radius);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @apply inline-flex items-center gap-1.5 px-2 py-0.5 text-xs whitespace-nowrap overflow-hidden text-ellipsis;
 }
 
 .category-icon {
-  width: 0.875rem;
-  height: 0.875rem;
   border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6875rem;
+  @apply w-3.5 h-3.5 flex items-center justify-center text-[0.6875rem];
 }
 
 .cell-account {
-  font-size: 0.75rem;
-  max-width: 130px;
+  @apply text-xs max-w-[130px];
 }
 
 .transfer-arrow {
-  margin-left: 0.5rem;
-  color: var(--color-primary);
-  font-weight: 500;
+  color: var(--accent);
+  @apply ml-2 font-medium;
 }
 
 .cell-note {
-  max-width: 160px;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--text-secondary);
+  @apply max-w-[160px] text-xs overflow-hidden text-ellipsis whitespace-nowrap;
 }
 
 .cell-status {
-  white-space: nowrap;
+  @apply whitespace-nowrap;
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  border-radius: var(--radius-full);
+  @apply inline-block px-2 py-0.5 text-[0.625rem] font-semibold uppercase rounded-full;
 }
 
 .status-badge.cleared {
-  background: var(--color-success-bg);
-  color: var(--color-success);
+  background-color: var(--success-light);
+  color: var(--success);
 }
 
 .status-badge.pending {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
+  background-color: var(--warning-light);
+  color: var(--warning);
 }
 
 .cell-actions {
-  white-space: nowrap;
-  width: 60px;
+  @apply whitespace-nowrap w-[60px];
 }
 
 .action-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.25rem;
+  @apply flex justify-end gap-1;
 }
 
 .btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
+  color: var(--text-muted);
   border-radius: var(--radius);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  @apply flex items-center justify-center w-6 h-6 border-none bg-transparent cursor-pointer transition-colors duration-150 ease-in-out;
 }
 
 .btn-icon:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text);
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .btn-icon.text-danger:hover {
-  color: var(--color-danger);
-  background: var(--color-danger-bg);
+  color: var(--error);
+  background-color: var(--error-light);
 }
 
 .text-muted {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
 }
 
 @media (max-width: 480px) {
-  .cell-date { font-size: 0.6875rem; }
-  .cell-amount { font-size: 0.75rem; }
-  .cell-category { max-width: 100px; }
-  .cell-account { max-width: 90px; }
-  .cell-note { max-width: 120px; }
-  .type-badge { font-size: 0.5625rem; padding: 0.125rem 0.375rem; }
-  .status-badge { font-size: 0.5625rem; padding: 0.125rem 0.375rem; }
-  .category-badge { font-size: 0.6875rem; }
-  .category-icon { width: 0.75rem; height: 0.75rem; font-size: 0.625rem; }
-  .btn-icon { width: 22px; height: 22px; }
+  .cell-date { @apply text-[0.6875rem]; }
+  .cell-amount { @apply text-xs; }
+  .cell-category { @apply max-w-[100px]; }
+  .cell-account { @apply max-w-[90px]; }
+  .cell-note { @apply max-w-[120px]; }
+  .type-badge { @apply text-[0.5625rem] px-1.5 py-0.5; }
+  .status-badge { @apply text-[0.5625rem] px-1.5 py-0.5; }
+  .category-badge { @apply text-[0.6875rem]; }
+  .category-icon { @apply w-3 h-3 text-[0.625rem]; }
+  .btn-icon { @apply w-[22px] h-[22px]; }
 }
 </style>

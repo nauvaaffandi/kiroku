@@ -41,27 +41,13 @@ defineEmits<{
 
 <style scoped>
 @reference "tailwindcss";
-.categories-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
+.categories-list { @apply flex flex-col gap-2; }
 .empty-state {
-  text-align: center;
-  padding: 3rem 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-muted);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  color: var(--text-muted);
+  @apply text-center py-12 px-6 rounded-2xl;
 }
-
-.empty-icon {
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.empty-state p {
-  margin-bottom: 1rem;
-}
+.empty-icon { @apply mb-4 opacity-50 mx-auto; }
+.empty-state p { @apply mb-4; }
 </style>

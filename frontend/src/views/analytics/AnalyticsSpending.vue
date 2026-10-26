@@ -152,15 +152,20 @@ onMounted(async () => {
 <style scoped>
 @reference "tailwindcss";
 .analytics-spending-view {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply max-w-[80rem] mx-auto p-4 flex flex-col gap-4;
 }
-.page-header { display: flex; flex-direction: column; gap: 0.25rem; }
-.page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-.page-subtitle { color: var(--text-muted); }
-.widgets-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+.page-header { 
+  @apply flex flex-col gap-1; 
+}
+.page-header h1 { 
+  @apply text-xl font-bold; 
+  color: var(--text-primary); 
+}
+.page-subtitle { 
+  color: var(--text-muted); 
+}
+.widgets-grid { 
+  @apply grid gap-4; 
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+}
 </style>

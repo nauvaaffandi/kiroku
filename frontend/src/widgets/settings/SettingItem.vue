@@ -18,37 +18,29 @@ defineProps<{
 <style scoped>
 @reference "tailwindcss";
 .setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius);
-  gap: 1rem;
+  @apply flex justify-between items-center p-4 gap-4;
 }
 
 .setting-info {
-  flex: 1;
-  min-width: 0;
+  @apply flex-1 min-w-0;
 }
 
 .setting-label {
-  display: block;
-  font-weight: 500;
-  color: var(--color-text);
-  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+  @apply block font-medium mb-1;
 }
 
 .setting-desc {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
+  color: var(--text-muted);
+  @apply text-[0.8125rem];
 }
 
 @media (max-width: 600px) {
   .setting-item {
-    flex-direction: column;
-    align-items: flex-start;
+    @apply flex-col items-start;
   }
 }
 </style>

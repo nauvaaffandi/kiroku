@@ -101,9 +101,27 @@ onMounted(() => {
 
 <style scoped>
 @reference "tailwindcss";
-.widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-.widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-primary); background-color: var(--bg-secondary); }
-.widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.widget-content { padding: 1rem; }
-.chart-container { width: 100%; height: 300px; }
+
+.widget-card {
+  @apply border rounded-xl overflow-hidden;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow);
+}
+.widget-header {
+  @apply flex items-center justify-between p-4 border-b;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+.widget-header h2 {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+.widget-content {
+  @apply p-4;
+}
+.chart-container {
+  @apply w-full;
+  height: 300px;
+}
 </style>

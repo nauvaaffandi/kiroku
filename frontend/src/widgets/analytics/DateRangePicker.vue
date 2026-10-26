@@ -107,27 +107,21 @@ const formatDate = (date: Date) => {
 
 <style scoped>
 @reference "tailwindcss";
+
 .date-range-picker {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply flex flex-col gap-4;
 }
 
 .picker-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
+  @apply flex flex-col gap-[0.375rem];
 }
 
 .picker-label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-text);
+  @apply text-[0.8125rem] font-medium;
+  color: var(--text-primary);
 }
 
 .picker-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  @apply flex flex-wrap gap-2;
 }
 </style>

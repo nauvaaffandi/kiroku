@@ -282,89 +282,66 @@ onMounted(async () => {
 
 <style scoped>
 @reference "tailwindcss";
+
 .transactions-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  @apply min-h-screen flex flex-col;
 }
 
 .page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: var(--color-neutral-100);
-  border-bottom: 1px solid var(--color-neutral-200);
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  @apply flex items-start justify-between p-4 flex-wrap gap-3;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .page-header h1 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-neutral-900);
+  @apply text-xl font-semibold;
+  color: var(--text-primary);
 }
 
 .page-subtitle {
-  color: var(--color-neutral-500);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  @apply text-sm mt-1;
+  color: var(--text-muted);
 }
 
 .header-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  @apply flex gap-2 flex-wrap;
 }
 
 .table-wrap {
-  width: 100%;
-  overflow-x: auto;
-  margin: 1rem;
+  @apply w-full overflow-x-auto m-4;
 }
 
 .pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
-  border-top: 1px solid var(--color-neutral-200);
+  @apply flex items-center justify-center gap-4 p-4;
+  border-top: 1px solid var(--border-primary);
 }
 
 .page-info {
-  color: var(--color-neutral-600);
-  font-size: 0.875rem;
+  @apply text-sm;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {
   .page-header {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.75rem;
+    @apply flex-col items-stretch p-3;
   }
   .header-actions {
-    justify-content: stretch;
-    flex-direction: column;
+    @apply justify-stretch flex-col;
   }
   .header-actions button {
-    width: 100%;
-    justify-content: center;
+    @apply w-full justify-center;
   }
   .table-wrap {
-    margin: 0.75rem 0;
+    @apply my-3 mx-0;
   }
   .pagination {
-    padding: 0.75rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    @apply p-3 flex-wrap gap-2;
   }
   .pagination button {
-    flex: 1;
+    @apply flex-1;
   }
   .page-info {
-    flex: 1;
-    text-align: center;
+    @apply flex-1 text-center;
   }
 }
 </style>

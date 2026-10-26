@@ -110,11 +110,9 @@ const getChildStyle = (index: number, total: number) => {
 }
 
 .fab-backdrop {
-  position: fixed;
-  inset: 0;
+  @apply fixed inset-0 z-[998];
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
-  z-index: 998;
   animation: fadeIn 0.25s ease forwards;
 }
 
@@ -150,23 +148,14 @@ const getChildStyle = (index: number, total: number) => {
 }
 
 .fab-children-container {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  @apply flex items-center justify-center z-[999];
+  @apply absolute bottom-0 right-0 w-0 h-0 flex items-center justify-center z-[999];
 }
 
 .fab-child-btn {
-  position: absolute;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
+  @apply absolute w-[3rem] h-[3rem] rounded-full flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 ease-out;
   background-color: var(--bg-card);
   color: var(--accent);
   border: 1px solid var(--border-primary);
-  @apply flex items-center justify-center cursor-pointer shadow-md transition-all duration-300 ease-out;
   box-shadow: var(--shadow-md);
   transform: translate(0, 0) scale(0);
   opacity: 0;

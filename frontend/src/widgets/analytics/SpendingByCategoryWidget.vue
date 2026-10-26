@@ -97,16 +97,54 @@ watch(() => [props.data, props.groupBy], () => {
 
 <style scoped>
 @reference "tailwindcss";
-.widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-.widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-primary); background-color: var(--bg-secondary); }
-.widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.widget-controls { display: flex; gap: 0.5rem; }
-.interval-select { padding: 0.25rem 0.5rem; font-size: 0.875rem; border: 1px solid var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); border-radius: var(--radius-sm); }
-.widget-content { padding: 1rem; }
-.chart-container { width: 100%; height: 300px; }
-.category-legend { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-primary); }
-.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
-.legend-color { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
-.legend-name { flex: 1; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.legend-value { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; }
+
+.widget-card {
+  @apply border rounded-xl overflow-hidden;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow);
+}
+.widget-header {
+  @apply flex items-center justify-between p-4 border-b;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+.widget-header h2 {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+.widget-controls {
+  @apply flex gap-2;
+}
+.interval-select {
+  @apply px-2 py-1 text-sm border rounded-sm;
+  border-color: var(--border-primary);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+.widget-content {
+  @apply p-4;
+}
+.chart-container {
+  @apply w-full;
+  height: 300px;
+}
+.category-legend {
+  @apply flex flex-col gap-2 mt-4 pt-4 border-t;
+  border-color: var(--border-primary);
+}
+.legend-item {
+  @apply flex items-center gap-2 text-sm;
+}
+.legend-color {
+  @apply w-[12px] h-[12px] rounded-[2px] shrink-0;
+}
+.legend-name {
+  @apply flex-1 truncate;
+  color: var(--text-primary);
+}
+.legend-value {
+  @apply text-xs whitespace-nowrap;
+  color: var(--text-secondary);
+}
 </style>

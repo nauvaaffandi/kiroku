@@ -48,75 +48,49 @@ const formatNumber = (num: number) => {
 <style scoped>
 @reference "tailwindcss";
 .account-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  @apply rounded-2xl p-5 flex flex-col gap-3;
 }
 
 .account-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @apply flex justify-between items-center;
 }
 
 .account-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
+  @apply w-10 h-10 rounded flex items-center justify-center text-white text-xl;
 }
 
 .account-badges {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  @apply flex gap-2 items-center;
 }
 
 .account-type-badge {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  background: var(--color-background);
-  color: var(--color-text-muted);
-  text-transform: capitalize;
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+  @apply text-xs px-2 py-0.5 rounded-full capitalize;
 }
 
 .account-type-badge.archived {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
+  color: var(--error);
 }
 
 .account-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0;
+  color: var(--text-primary);
+  @apply text-base font-semibold m-0;
 }
 
 .account-balance {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0;
+  color: var(--text-primary);
+  @apply text-[1.5rem] font-bold m-0;
 }
 
 .account-currency {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  margin: 0;
+  color: var(--text-muted);
+  @apply text-[0.8125rem] m-0;
 }
 
 .account-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  @apply flex gap-2 mt-2;
 }
 </style>

@@ -59,97 +59,18 @@ defineEmits<{
 
 <style scoped>
 @reference "tailwindcss";
-.category-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.category-card.has-children {
-  padding-bottom: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.category-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.25rem;
-}
-
-.category-badges {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.category-type-badge {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  background: var(--color-background);
-  color: var(--color-text-muted);
-  text-transform: capitalize;
-}
-
-.category-type-badge.income {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-}
-
-.category-type-badge.expense {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-}
-
-.category-type-badge.transfer {
-  background: var(--color-primary-bg);
-  color: var(--color-primary);
-}
-
-.category-type-badge.archived {
-  background: var(--color-warning-bg);
-  color: var(--color-warning);
-}
-
-.category-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0.5rem 0 0.25rem;
-}
-
-.category-count {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-.category-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.category-children {
-  margin-left: 1.5rem;
-  border-left: 2px solid var(--color-border);
-  padding-left: 1rem;
-  margin-top: 0.5rem;
-}
+.category-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); @apply p-4 mb-2 rounded-2xl; }
+.category-card.has-children { @apply pb-0 rounded-b-none; }
+.category-header { @apply flex justify-between items-center; }
+.category-icon { @apply w-10 h-10 rounded flex items-center justify-center text-white text-xl; }
+.category-badges { @apply flex gap-2 items-center; }
+.category-type-badge { background-color: var(--bg-primary); color: var(--text-muted); @apply text-xs px-2 py-0.5 rounded-full capitalize; }
+.category-type-badge.income { background-color: var(--success-light); color: var(--success); }
+.category-type-badge.expense { background-color: var(--error-light); color: var(--error); }
+.category-type-badge.transfer { background-color: var(--accent-light); color: var(--accent); }
+.category-type-badge.archived { background-color: var(--warning-light); color: var(--warning); }
+.category-name { color: var(--text-primary); @apply text-base font-semibold mt-2 mb-1; }
+.category-count { color: var(--text-muted); @apply text-[0.8125rem] m-0; }
+.category-actions { @apply flex gap-2 mt-3 pt-3 border-t; border-color: var(--border-primary); }
+.category-children { @apply ml-6 border-l-2 pl-4 mt-2; border-color: var(--border-primary); }
 </style>

@@ -65,54 +65,99 @@ function formatCurrency(val: number): string {
 
 <style scoped>
 @reference "tailwindcss";
+
 .calendar-grid-wrapper {
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow);
+  @apply overflow-hidden rounded shadow;
 }
+
 .weekdays-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-primary);
-  text-align: center;
-  font-weight: 600;
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  padding: 0.5rem 0;
+  @apply grid grid-cols-7 text-center font-semibold text-sm px-0 py-2;
 }
+
 .days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 1fr;
+  @apply grid grid-cols-7 grid-rows-[1fr];
 }
+
 .day-cell {
-  min-height: 110px;
-  padding: 0.375rem;
-  border-bottom: 1px solid var(--border-primary);
-  border-right: 1px solid var(--border-primary);
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  border-color: var(--border-primary);
+  @apply min-h-[110px] p-1.5 flex flex-col gap-1 cursor-pointer transition-colors duration-200 ease-in-out border-b border-r;
 }
-.day-cell:hover { background-color: var(--bg-hover); }
-.day-cell.other-month { opacity: 0.4; background-color: var(--bg-secondary); }
-.day-cell.today { background-color: rgba(74, 144, 217, 0.1); border: 2px solid var(--accent); }
-.day-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; }
-.day-number { font-weight: 700; color: var(--text-primary); }
-.day-balance { font-size: 0.625rem; font-weight: 500; }
-.day-balance.text-success { color: var(--success); }
-.day-balance.text-danger { color: var(--error); }
-.day-content { display: flex; flex-direction: column; gap: 0.25rem; overflow: hidden; flex: 1; }
-.txn-pill { padding: 0.125rem 0.375rem; border-radius: var(--radius-sm); font-size: 0.625rem; display: flex; justify-content: space-between; align-items: center; gap: 0.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.txn-pill.pill-income { background-color: var(--success-light); color: var(--success); }
-.txn-pill.pill-expense { background-color: var(--error-light); color: var(--error); }
-.txn-pill.pill-scheduled { background-color: var(--warning-light); color: var(--warning); border: 1px dashed var(--warning); }
-.txn-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-.txn-amt { font-weight: 600; white-space: nowrap; }
-.more-indicator { font-size: 0.625rem; color: var(--text-muted); text-align: center; font-weight: 500; }
+
+.day-cell:hover {
+  background-color: var(--bg-hover);
+}
+
+.day-cell.other-month {
+  background-color: var(--bg-secondary);
+  @apply opacity-40;
+}
+
+.day-cell.today {
+  border-color: var(--accent);
+  @apply border-2;
+  background-color: rgba(74, 144, 217, 0.1);
+}
+
+.day-header {
+  @apply flex justify-between items-center text-xs;
+}
+
+.day-number {
+  color: var(--text-primary);
+  @apply font-bold;
+}
+
+.day-balance {
+  @apply text-[0.625rem] font-medium;
+}
+
+.day-balance.text-success {
+  color: var(--success);
+}
+
+.day-balance.text-danger {
+  color: var(--error);
+}
+
+.day-content {
+  @apply flex flex-col gap-2 overflow-hidden flex-1;
+}
+
+.txn-pill {
+  @apply px-1.5 py-0.5 text-[0.625rem] flex items-center justify-between gap-1 rounded-sm overflow-hidden whitespace-nowrap text-ellipsis;
+}
+
+.txn-pill.pill-income {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+.txn-pill.pill-expense {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+
+.txn-pill.pill-scheduled {
+  background-color: var(--warning-light);
+  color: var(--warning);
+  border: 1px dashed var(--warning);
+}
+
+.txn-name {
+  @apply overflow-hidden text-ellipsis whitespace-nowrap flex-1;
+}
+
+.txn-amt {
+  @apply font-semibold whitespace-nowrap;
+}
+
+.more-indicator {
+  color: var(--text-muted);
+  @apply text-[0.625rem] font-medium text-center;
+}
 </style>

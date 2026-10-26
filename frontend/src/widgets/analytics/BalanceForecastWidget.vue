@@ -103,16 +103,51 @@ watch(() => props.data, () => {
 
 <style scoped>
 @reference "tailwindcss";
-.widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-.widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-primary); background-color: var(--bg-secondary); }
-.widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.confidence-toggles { display: flex; gap: 0.5rem; }
-.toggle-label { display: flex; align-items: center; gap: 0.25rem; cursor: pointer; }
-.toggle-label input[type="checkbox"] { accent-color: var(--accent); }
-.confidence-badge { padding: 0.125rem 0.5rem; font-size: 0.75rem; border-radius: 9999px; font-weight: 500; }
-.confidence-badge.high { background-color: var(--success-light); color: var(--success); }
-.confidence-badge.medium { background-color: var(--warning-light); color: var(--warning); }
-.confidence-badge.low { background-color: var(--error-light); color: var(--error); }
-.widget-content { padding: 1rem; }
-.chart-container { width: 100%; height: 300px; }
+
+.widget-card {
+  @apply border rounded-xl overflow-hidden;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow);
+}
+.widget-header {
+  @apply flex items-center justify-between p-4 border-b;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+.widget-header h2 {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+.confidence-toggles {
+  @apply flex gap-2;
+}
+.toggle-label {
+  @apply flex items-center gap-1 cursor-pointer;
+}
+.toggle-label input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+.confidence-badge {
+  @apply px-2 py-[0.125rem] text-xs rounded-full font-medium;
+}
+.confidence-badge.high {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+.confidence-badge.medium {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+.confidence-badge.low {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+.widget-content {
+  @apply p-4;
+}
+.chart-container {
+  @apply w-full;
+  height: 300px;
+}
 </style>

@@ -72,44 +72,34 @@ const handleSubmit = () => {
 <style scoped>
 @reference "tailwindcss";
 .totp-setup {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  @apply flex flex-col gap-6;
 }
 
 .totp-qr {
-  text-align: center;
+  @apply text-center;
 }
 
 .totp-qr img {
-  max-width: 200px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius);
+  @apply max-w-[200px] mx-auto;
 }
 
 .totp-secret {
-  font-family: monospace;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  margin-top: 0.5rem;
-  word-break: break-all;
+  color: var(--text-muted);
+  @apply font-mono text-sm mt-2 break-all;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
+  @apply flex flex-col gap-1.5;
 }
 
 .form-group label {
-  font-weight: 500;
-  color: var(--color-text);
+  color: var(--text-primary);
+  @apply font-medium;
 }
 
 .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  @apply flex justify-end gap-3 mt-4;
 }
 </style>

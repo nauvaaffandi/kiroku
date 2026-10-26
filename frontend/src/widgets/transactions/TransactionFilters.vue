@@ -121,29 +121,20 @@ const emitChange = () => {
 <style scoped>
 @reference "tailwindcss";
 .filters-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  background: var(--color-surface);
-  padding: 0.75rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  @apply flex flex-col gap-3 p-3 mb-4;
 }
 
 .filter-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  @apply flex flex-col w-full;
 }
 
 @media (min-width: 640px) {
   .filters-bar {
-    display: grid;
+    @apply grid p-4 gap-4 mb-6;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    padding: 1rem;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
   }
 }
 </style>

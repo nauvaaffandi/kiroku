@@ -179,109 +179,86 @@ const importCSV = () => {
 <style scoped>
 @reference "tailwindcss";
 .backup-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  @apply flex flex-col gap-6;
 }
 
 .backup-tabs {
-  display: flex;
-  gap: 0.5rem;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-primary);
+  @apply flex gap-2 pb-2;
 }
 
 .tab-btn {
-  padding: 0.5rem 1rem;
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-weight: 500;
-  cursor: pointer;
+  color: var(--text-muted);
   border-radius: var(--radius);
-  transition: all 0.15s ease;
+  @apply px-4 py-2 bg-transparent border-none font-medium cursor-pointer transition-all duration-150 ease-in-out;
 }
 
 .tab-btn:hover {
-  color: var(--color-text);
-  background: var(--color-background);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
 
 .tab-btn.active {
-  color: var(--color-primary);
-  background: var(--color-primary-bg);
+  color: var(--accent);
+  background-color: var(--accent-light);
 }
 
 .tab-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply flex flex-col gap-4;
 }
 
 .backup-options,
 .restore-options,
 .export-options,
 .import-options {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply flex flex-col gap-4;
 }
 
 .backup-options h3,
 .restore-options h3,
 .export-options h3,
 .import-options h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0;
+  color: var(--text-primary);
+  @apply text-base font-semibold m-0;
 }
 
 .backup-options p,
 .restore-options p,
 .export-options p,
 .import-options p {
-  color: var(--color-text-muted);
-  margin: 0;
-  font-size: 0.875rem;
+  color: var(--text-muted);
+  @apply text-sm m-0;
 }
 
 .warning {
-  color: var(--color-danger) !important;
-  font-weight: 500;
+  color: var(--error) !important;
+  @apply font-medium;
 }
 
 .export-formats {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  @apply flex flex-col gap-3;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
+  @apply flex flex-col gap-1.5;
 }
 
 .form-group label {
-  font-weight: 500;
-  color: var(--color-text);
+  color: var(--text-primary);
+  @apply font-medium;
 }
 
 .form-input {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  @apply px-3 py-2 text-sm font-sans transition-[border-color,box-shadow] duration-150 ease-in-out;
 }
 
 .form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-focus);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  @apply outline-none;
 }
 </style>

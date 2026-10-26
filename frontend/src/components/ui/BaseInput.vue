@@ -83,8 +83,7 @@ const handleFocus = (event: FocusEvent) => {
 }
 
 .input-wrapper {
-  position: relative;
-  @apply flex items-center;
+  @apply relative flex items-center;
 }
 
 .form-input {
@@ -96,15 +95,15 @@ const handleFocus = (event: FocusEvent) => {
 }
 
 .form-input:focus {
-  outline: none;
+  @apply outline-none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent);
 }
 
 .form-input:disabled {
+  @apply cursor-not-allowed;
   background-color: var(--bg-hover);
   color: var(--text-muted);
-  cursor: not-allowed;
 }
 
 .form-input::placeholder {
@@ -113,34 +112,29 @@ const handleFocus = (event: FocusEvent) => {
 
 .input-prefix,
 .input-suffix {
-  position: absolute;
-  @apply flex items-center;
+  @apply absolute flex items-center pointer-events-none text-[0.875rem];
   color: var(--text-muted);
-  font-size: 0.875rem;
-  pointer-events: none;
 }
 
 .input-prefix {
-  left: 0.75rem;
+  @apply left-[0.75rem];
 }
 
 .input-suffix {
-  right: 0.75rem;
+  @apply right-[0.75rem];
 }
 
 .form-input:has(+ .input-suffix) {
-  padding-right: 2.5rem;
+  @apply pr-[2.5rem];
 }
 
 .form-error {
-  margin: 0;
-  @apply text-[0.75rem];
+  @apply m-0 text-[0.75rem];
   color: var(--error);
 }
 
 .form-hint {
-  margin: 0;
-  @apply text-[0.75rem];
+  @apply m-0 text-[0.75rem];
   color: var(--text-muted);
 }
 </style>

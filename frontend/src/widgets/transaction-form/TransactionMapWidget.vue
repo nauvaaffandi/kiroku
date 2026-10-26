@@ -90,8 +90,8 @@ const initMap = () => {
 
 <style scoped>
 @reference "tailwindcss";
-.map-modal { max-width: 600px; width: 90vw; }
-.map-body { padding: 1rem; }
-.map-container { width: 100%; height: 350px; border-radius: var(--radius-sm); z-index: 1; }
-.map-hint { font-size: 0.75rem; color: var(--color-neutral-500); margin-top: 0.5rem; text-align: center; }
+.map-modal { @apply max-w-[600px] w-[90vw]; }
+.map-body { @apply p-4; }
+.map-container { border-radius: var(--radius-sm); @apply w-full h-[350px] relative z-[1]; }
+.map-hint { color: var(--text-muted); @apply text-xs mt-2 text-center; }
 </style>

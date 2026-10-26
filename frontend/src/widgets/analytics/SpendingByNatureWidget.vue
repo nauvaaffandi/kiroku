@@ -134,20 +134,66 @@ onMounted(() => {
 
 <style scoped>
 @reference "tailwindcss";
-.widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-.widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-primary); background-color: var(--bg-secondary); }
-.widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.widget-content { padding: 1rem; }
-.nature-charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-.nature-donut { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-.donut-container { width: 120px; height: 120px; }
-.nature-summary { text-align: center; }
-.nature-title { font-size: 0.875rem; font-weight: 600; margin: 0 0 0.25rem; }
-.nature-title.must { color: #28a745; }
-.nature-title.have { color: #ffc107; }
-.nature-title.want { color: #dc3545; }
-.nature-title.unclassified { color: #6c757d; }
-.nature-amount { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin: 0; }
-.nature-pct { font-size: 0.875rem; color: var(--text-secondary); margin: 0; }
-.nature-count { font-size: 0.75rem; color: var(--text-muted); margin: 0.25rem 0 0; }
+
+.widget-card {
+  @apply border rounded-xl overflow-hidden;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  box-shadow: var(--shadow);
+}
+.widget-header {
+  @apply flex items-center justify-between p-4 border-b;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+.widget-header h2 {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+.widget-content {
+  @apply p-4;
+}
+.nature-charts {
+  @apply grid grid-cols-2 gap-4;
+}
+.nature-donut {
+  @apply flex flex-col items-center gap-2;
+}
+.donut-container {
+  @apply w-[120px] h-[120px];
+}
+.nature-summary {
+  @apply text-center;
+}
+.nature-title {
+  @apply text-sm font-semibold mb-1;
+  margin: 0 0 0.25rem 0;
+}
+.nature-title.must {
+  color: #28a745;
+}
+.nature-title.have {
+  color: #ffc107;
+}
+.nature-title.want {
+  color: #dc3545;
+}
+.nature-title.unclassified {
+  color: #6c757d;
+}
+.nature-amount {
+  @apply text-lg font-bold;
+  color: var(--text-primary);
+  margin: 0;
+}
+.nature-pct {
+  @apply text-sm;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.nature-count {
+  @apply text-xs;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
 </style>

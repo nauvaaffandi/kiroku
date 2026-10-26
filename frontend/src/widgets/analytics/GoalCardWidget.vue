@@ -97,23 +97,76 @@ function strokeOffset(progressPct: number): number {
 
 <style scoped>
 @reference "tailwindcss";
-.goal-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-.goal-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
-.goal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-.goal-icon { width: 2.5rem; height: 2.5rem; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.goal-status { padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; }
-.goal-status.on_track { background-color: var(--success-bg); color: var(--success); }
-.goal-status.behind { background-color: var(--warning-bg); color: var(--warning); }
-.goal-status.achieved { background-color: var(--accent-bg); color: var(--accent); }
-.goal-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem; }
-.goal-progress-ring { position: relative; width: 100px; height: 100px; margin: 0 auto 1rem; }
-.progress-svg { width: 100%; height: 100%; }
-.progress-fill { transition: stroke-dashoffset 0.5s ease; }
-.progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
-.progress-pct { display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
-.progress-amount { display: block; font-size: 0.6875rem; color: var(--text-secondary); }
-.goal-details { display: flex; flex-direction: column; gap: 0.375rem; padding-top: 0.75rem; border-top: 1px solid var(--border-primary); }
-.detail-row { display: flex; justify-content: space-between; font-size: 0.75rem; }
-.detail-label { color: var(--text-secondary); }
-.detail-value { font-weight: 500; color: var(--text-primary); }
+
+.goal-card {
+  @apply border rounded-xl p-[1.25rem] cursor-pointer;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.goal-card:hover {
+  @apply -translate-y-[2px];
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+.goal-header {
+  @apply flex items-center justify-between mb-3;
+}
+.goal-icon {
+  @apply w-[2.5rem] h-[2.5rem] rounded-xl flex items-center justify-center text-xl;
+}
+.goal-status {
+  @apply px-[0.625rem] py-[0.25rem] rounded-full text-[0.6875rem] font-semibold uppercase;
+}
+.goal-status.on_track {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+.goal-status.behind {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+.goal-status.achieved {
+  background-color: var(--accent-light);
+  color: var(--accent);
+}
+.goal-name {
+  @apply text-base font-semibold mb-4;
+  color: var(--text-primary);
+}
+.goal-progress-ring {
+  @apply relative w-[100px] h-[100px] mx-auto mb-4;
+}
+.progress-svg {
+  @apply w-full h-full;
+}
+.progress-fill {
+  transition: stroke-dashoffset 0.5s ease;
+}
+.progress-text {
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center;
+  pointer-events: none;
+}
+.progress-pct {
+  @apply block text-xl font-bold;
+  color: var(--text-primary);
+}
+.progress-amount {
+  @apply block text-[0.6875rem];
+  color: var(--text-secondary);
+}
+.goal-details {
+  @apply flex flex-col gap-[0.375rem] pt-3 border-t;
+  border-color: var(--border-primary);
+}
+.detail-row {
+  @apply flex justify-between text-xs;
+}
+.detail-label {
+  color: var(--text-secondary);
+}
+.detail-value {
+  @apply font-medium;
+  color: var(--text-primary);
+}
 </style>

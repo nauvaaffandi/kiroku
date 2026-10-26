@@ -73,3 +73,7 @@ const formatCurrency = (num: number) => {
   return new Intl.NumberFormat('ja-JP').format(Math.abs(num))
 }
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+</style>

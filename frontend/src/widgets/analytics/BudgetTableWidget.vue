@@ -126,28 +126,101 @@ function formatCurrency(val: number): string {
 
 <style scoped>
 @reference "tailwindcss";
-.widget-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); overflow: hidden; }
-.widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-primary); }
-.widget-header h2 { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
-.widget-content { padding: 1rem; }
-.budget-table-container { overflow-x: auto; }
-.budget-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
-.budget-table th { padding: 0.75rem 0.5rem; text-align: left; font-weight: 600; color: var(--text-secondary); border-bottom: 2px solid var(--border-primary); white-space: nowrap; }
-.budget-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border-primary); color: var(--text-primary); white-space: nowrap; }
-.budget-table td.text-right { text-align: right; font-family: monospace; font-size: 0.75rem; }
-.budget-table td.positive { color: var(--success); }
-.budget-table td.negative { color: var(--error); }
-.budget-table tbody tr:hover { background-color: var(--bg-hover); }
-.category-cell { display: flex; align-items: center; gap: 0.5rem; }
-.category-dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; flex-shrink: 0; }
-.status-badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; }
-.status-badge.under { background-color: var(--warning-bg); color: var(--warning); }
-.status-badge.over { background-color: var(--error-bg); color: var(--error); }
-.status-badge.on_track { background-color: var(--success-bg); color: var(--success); }
-.budget-bar-container { position: relative; width: 200px; height: 1.5rem; }
-.budget-bar-bg { width: 100%; height: 100%; background-color: var(--bg-tertiary); border-radius: 9999px; overflow: hidden; }
-.budget-bar-fill { height: 100%; border-radius: 9999px; transition: width 0.3s ease; }
-.budget-bar-target { position: absolute; top: -2px; bottom: -2px; width: 2px; background-color: var(--text-primary); z-index: 1; }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.375rem; border: 1px solid var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); border-radius: var(--radius-sm); font-weight: 500; transition: background-color 0.2s ease; }
-.btn-secondary:hover { background-color: var(--bg-hover); }
+
+.widget-card {
+  @apply border rounded-xl overflow-hidden;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+}
+.widget-header {
+  @apply flex items-center justify-between p-4 border-b;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+.widget-header h2 {
+  @apply text-base font-semibold;
+  color: var(--text-primary);
+}
+.widget-content {
+  @apply p-4;
+}
+.budget-table-container {
+  @apply overflow-x-auto;
+}
+.budget-table {
+  @apply w-full border-collapse;
+  font-size: 0.8125rem;
+}
+.budget-table th {
+  @apply text-left py-3 px-2 font-semibold border-b-2 whitespace-nowrap;
+  color: var(--text-secondary);
+  border-color: var(--border-primary);
+}
+.budget-table td {
+  @apply py-3 px-2 border-b whitespace-nowrap;
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+.budget-table td.text-right {
+  @apply text-right font-mono text-xs;
+}
+.budget-table td.positive {
+  color: var(--success);
+}
+.budget-table td.negative {
+  color: var(--error);
+}
+.budget-table tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+.category-cell {
+  @apply flex items-center gap-2;
+}
+.category-dot {
+  @apply w-[0.625rem] h-[0.625rem] rounded-full shrink-0;
+}
+.status-badge {
+  @apply inline-block px-2 py-[0.125rem] rounded-full text-[0.6875rem] font-medium uppercase;
+}
+.status-badge.under {
+  background-color: var(--warning-light);
+  color: var(--warning);
+}
+.status-badge.over {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+.status-badge.on_track {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+.budget-bar-container {
+  @apply relative;
+  width: 200px;
+  height: 1.5rem;
+}
+.budget-bar-bg {
+  @apply w-full h-full rounded-full overflow-hidden;
+  background-color: var(--bg-tertiary);
+}
+.budget-bar-fill {
+  @apply h-full rounded-full;
+  transition: width 0.3s ease;
+}
+.budget-bar-target {
+  @apply absolute w-[2px] z-[1];
+  top: -2px;
+  bottom: -2px;
+  background-color: var(--text-primary);
+}
+.btn-secondary {
+  @apply inline-flex items-center gap-[0.375rem] border rounded-sm font-medium;
+  border-color: var(--border-primary);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-hover);
+}
 </style>

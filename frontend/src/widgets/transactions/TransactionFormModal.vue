@@ -301,56 +301,42 @@ const handleSubmit = () => {
 <style scoped>
 @reference "tailwindcss";
 .transaction-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  @apply flex flex-col gap-6;
 }
 
 .form-grid {
-  display: grid;
+  @apply grid gap-4;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
+  @apply flex flex-col gap-1.5;
 }
 
 .form-label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-text);
+  color: var(--text-primary);
+  @apply text-[0.8125rem] font-medium;
 }
 
 .form-textarea {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius);
-  resize: vertical;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  @apply w-full px-3 py-2 text-sm font-sans resize-y transition-[border-color,box-shadow] duration-150 ease-in-out;
 }
 
 .form-textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-focus);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  @apply outline-none;
 }
 
 .form-textarea::placeholder {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
 }
 
 .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  @apply flex justify-end gap-3 mt-4;
 }
 </style>

@@ -74,3 +74,7 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
 }
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+</style>

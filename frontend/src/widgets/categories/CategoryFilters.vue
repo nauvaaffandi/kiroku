@@ -76,18 +76,10 @@ const emitSearch = (event: Event) => {
 <style scoped>
 @reference "tailwindcss";
 .filters-bar {
-  display: grid;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  @apply grid gap-4 mb-6 p-4 rounded-2xl;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  background: var(--color-surface);
-  padding: 1rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
 }
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-}
+.filter-group { @apply flex flex-col; }
 </style>

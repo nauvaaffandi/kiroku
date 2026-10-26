@@ -532,31 +532,25 @@ const confirmClearData = async () => {
 <style scoped>
 @reference "tailwindcss";
 .page-header {
-  margin-bottom: 2rem;
+  @apply mb-8;
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0;
+  @apply text-2xl font-bold m-0;
+  color: var(--text-primary);
 }
 
 .biometric-toggle {
-  padding: 0.5rem 1rem;
+  @apply px-4 py-2 font-medium text-sm cursor-pointer transition-all duration-200 border;
   border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 0.875rem;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-  border: 1px solid var(--border-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  border-color: var(--border-primary);
 }
 
 .biometric-toggle.active {
+  @apply text-white;
   background-color: var(--success);
-  color: white;
   border-color: var(--success);
 }
 </style>

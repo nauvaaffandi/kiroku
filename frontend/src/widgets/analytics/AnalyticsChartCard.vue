@@ -20,32 +20,23 @@ defineProps<{
 
 <style scoped>
 @reference "tailwindcss";
+
 .analytics-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply flex flex-col rounded-2xl p-5 gap-4;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
 }
 
 .card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @apply flex justify-between items-center;
 }
 
 .card-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0;
+  @apply text-base font-semibold m-0;
+  color: var(--text-primary);
 }
 
 .card-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  @apply flex flex-col flex-1;
 }
 </style>

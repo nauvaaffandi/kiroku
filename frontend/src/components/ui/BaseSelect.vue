@@ -92,7 +92,7 @@ const handleFocus = (event: FocusEvent) => {
 }
 
 .select-wrapper {
-  position: relative;
+  @apply relative;
 }
 
 .form-select {
@@ -104,37 +104,30 @@ const handleFocus = (event: FocusEvent) => {
 }
 
 .form-select:focus {
-  outline: none;
+  @apply outline-none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent);
 }
 
 .form-select:disabled {
+  @apply cursor-not-allowed;
   background-color: var(--bg-hover);
   color: var(--text-muted);
-  cursor: not-allowed;
 }
 
 .select-icon {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
+  @apply absolute right-[0.75rem] top-[50%] w-[1rem] h-[1rem] pointer-events-none;
   transform: translateY(-50%);
-  width: 1rem;
-  height: 1rem;
   color: var(--text-muted);
-  pointer-events: none;
 }
 
 .form-error {
-  margin: 0;
-  @apply text-[0.75rem];
+  @apply m-0 text-[0.75rem];
   color: var(--error);
 }
 
 .form-hint {
-  margin: 0;
-  @apply text-[0.75rem];
+  @apply m-0 text-[0.75rem];
   color: var(--text-muted);
 }
 </style>

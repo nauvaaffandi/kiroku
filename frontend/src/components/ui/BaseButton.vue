@@ -46,50 +46,50 @@ defineEmits<{
 }
 
 .btn-primary {
-  background: var(--accent);
+  background-color: var(--accent);
   color: var(--text-inverse);
 }
 
 .btn-primary:hover:not(:disabled):not(.loading) {
-  background: var(--accent-hover);
+  background-color: var(--accent-hover);
 }
 
 .btn-secondary {
-  background: var(--bg-card);
+  @apply border;
+  background-color: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid var(--border-primary);
+  border-color: var(--border-primary);
 }
 
 .btn-secondary:hover:not(:disabled):not(.loading) {
-  background: var(--bg-hover);
+  background-color: var(--bg-hover);
 }
 
 .btn-danger {
-  background: var(--error);
+  background-color: var(--error);
   color: var(--text-inverse);
 }
 
 .btn-danger:hover:not(:disabled):not(.loading) {
-  background: var(--error);
+  background-color: var(--error);
 }
 
 .btn-ghost {
-  background: transparent;
+  @apply bg-transparent;
   color: var(--text-primary);
 }
 
 .btn-ghost:hover:not(:disabled):not(.loading) {
-  background: var(--bg-card);
+  background-color: var(--bg-card);
 }
 
 .btn-link {
-  background: transparent;
+  @apply bg-transparent p-0;
   color: var(--accent);
-  @apply p-0;
 }
 
 .btn-link:hover:not(:disabled):not(.loading) {
-  text-decoration: underline;
+  @apply underline;
 }
 
 .btn-sm {
@@ -105,11 +105,7 @@ defineEmits<{
 }
 
 .btn-spinner {
-  width: 1em;
-  height: 1em;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  @apply rounded-full;
+  @apply w-[1em] h-[1em] border-2 border-current border-r-transparent rounded-full;
   animation: spin 0.6s linear infinite;
 }
 

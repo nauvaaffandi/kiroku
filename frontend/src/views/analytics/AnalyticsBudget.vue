@@ -137,45 +137,34 @@ watchEffect(() => {
 <style scoped>
 @reference "tailwindcss";
 .analytics-budget-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
+  @apply flex flex-col gap-4 p-6;
 }
 
 .page-header {
-  padding: 1rem 0;
+  @apply pb-4;
   border-bottom: 1px solid var(--border-primary);
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  @apply text-xl font-semibold;
   color: var(--text-primary);
 }
 
 .page-subtitle {
+  @apply text-[0.875rem] mt-1;
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
 }
 
 .controls-bar {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem;
+  @apply flex gap-4 items-center p-4 rounded-xl;
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
 }
 
 .period-select {
-  padding: 0.5rem 1rem;
+  @apply px-4 py-2 rounded-sm text-sm;
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-sm);
   background-color: var(--bg-card);
   color: var(--text-primary);
-  font-size: 0.875rem;
 }
 </style>

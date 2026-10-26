@@ -156,22 +156,73 @@ onMounted(() => {
 
 <style scoped>
 @reference "tailwindcss";
-.modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; animation: fadeIn 0.2s ease; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.modal-container { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); width: 100%; max-width: 500px; max-height: 90vh; overflow: hidden; animation: slideUp 0.2s ease; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-primary); }
-.modal-title { display: flex; align-items: center; gap: 0.75rem; }
-.modal-title h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.goal-icon { width: 2.5rem; height: 2.5rem; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.modal-close { padding: 0.5rem; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; border: none; transition: background-color 0.2s ease, color 0.2s ease; }
-.modal-close:hover { background-color: var(--bg-hover); color: var(--text-primary); }
-.modal-body { padding: 1.5rem; }
-.detail-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-.summary-item { display: flex; flex-direction: column; gap: 0.25rem; }
-.summary-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-.summary-value { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
-.summary-value.positive { color: var(--success); }
-.summary-value.negative { color: var(--error); }
-.projection-chart { width: 100%; }
+
+.modal-overlay {
+  @apply fixed inset-0 flex items-center justify-center p-4 z-[1000];
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-container {
+  @apply border rounded-xl w-full max-w-[500px] max-h-[90vh] overflow-hidden;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-header {
+  @apply flex items-center justify-between py-4 px-6 border-b;
+  border-color: var(--border-primary);
+}
+.modal-title {
+  @apply flex items-center gap-3;
+}
+.modal-title h2 {
+  @apply text-lg font-semibold;
+  color: var(--text-primary);
+}
+.goal-icon {
+  @apply w-[2.5rem] h-[2.5rem] rounded-xl flex items-center justify-center text-xl;
+}
+.modal-close {
+  @apply p-2 rounded-sm bg-transparent border-none;
+  color: var(--text-secondary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.modal-close:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+.modal-body {
+  @apply p-6;
+}
+.detail-summary {
+  @apply grid grid-cols-2 gap-4 mb-6;
+}
+.summary-item {
+  @apply flex flex-col gap-1;
+}
+.summary-label {
+  @apply text-xs uppercase tracking-wider;
+  color: var(--text-secondary);
+}
+.summary-value {
+  @apply text-base font-semibold;
+  color: var(--text-primary);
+}
+.summary-value.positive {
+  color: var(--success);
+}
+.summary-value.negative {
+  color: var(--error);
+}
+.projection-chart {
+  @apply w-full;
+}
 </style>

@@ -10,7 +10,7 @@
     <div class="theme-switch">
       <div
         class="theme-switch-thumb"
-        :class="{ 'translate-x-5': isDark }"
+        :class="{ active: isDark }"
       />
     </div>
   </div>
@@ -58,12 +58,15 @@ const toggleTheme = () => {
 }
 
 .theme-switch {
-  @apply relative inline-flex items-center h-6 w-11 shrink-0 rounded-full;
+  @apply relative inline-flex items-center h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ease-in-out;
   background-color: var(--border-primary);
-  transition: background-color 0.2s ease;
 }
 
 .theme-switch-thumb {
   @apply absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200;
+}
+
+.theme-switch-thumb.active {
+  @apply translate-x-5;
 }
 </style>

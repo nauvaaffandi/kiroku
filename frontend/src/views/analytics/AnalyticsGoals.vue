@@ -139,118 +139,83 @@ watchEffect(() => {
 <style scoped>
 @reference "tailwindcss";
 .analytics-goals-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
+  @apply flex flex-col gap-4 p-6;
 }
 
 .page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1rem 0;
+  @apply flex items-start justify-between pb-4 flex-wrap gap-4 w-full;
   border-bottom: 1px solid var(--border-primary);
-  flex-wrap: wrap;
-  gap: 1rem;
 }
 
 .header-left h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  @apply text-xl font-semibold;
   color: var(--text-primary);
 }
 
 .page-subtitle {
+  @apply text-[0.875rem] mt-1;
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
 }
 
 .header-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  @apply flex gap-2 items-center;
 }
 
 .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-sm font-medium text-sm no-underline;
   background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
+  color: var(--text-inverse);
   transition: opacity 0.2s ease;
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  @apply opacity-90;
 }
 
 .controls-bar {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem;
+  @apply flex gap-4 items-center p-4 rounded-xl;
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
 }
 
 .filter-select {
-  padding: 0.5rem 1rem;
+  @apply px-4 py-2 rounded-sm text-sm;
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-sm);
   background-color: var(--bg-card);
   color: var(--text-primary);
-  font-size: 0.875rem;
 }
 
 .goals-grid {
-  display: grid;
+  @apply grid gap-4;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
 }
 
 .goals-empty {
-  grid-column: 1 / -1;
+  @apply col-span-full;
 }
 
 .empty-state {
-  text-align: center;
-  padding: 3rem 2rem;
+  @apply text-center p-12 rounded-xl;
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius);
   color: var(--text-secondary);
 }
 
 .empty-state svg {
+  @apply mb-4;
   color: var(--text-muted);
-  margin-bottom: 1rem;
 }
 
 .empty-state h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
+  @apply text-lg font-semibold mb-2;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-  max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
+  @apply text-sm mb-6 max-w-[300px] mx-auto;
 }
 
 .skeleton-card {
-  height: 300px;
+  @apply h-[300px];
 }
 </style>

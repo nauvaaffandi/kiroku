@@ -222,11 +222,9 @@ onMounted(() => {
 }
 
 .spinner {
-  width: 1.25rem;
-  height: 1.25rem;
+  @apply w-[1.25rem] h-[1.25rem] rounded-full;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
-  @apply rounded-full;
   animation: spin 0.8s linear infinite;
 }
 

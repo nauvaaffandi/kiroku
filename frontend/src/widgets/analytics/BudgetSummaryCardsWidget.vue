@@ -56,10 +56,28 @@ function formatCurrency(val: number): string {
 
 <style scoped>
 @reference "tailwindcss";
-.summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
-.summary-card { background-color: var(--bg-card); border: 1px solid var(--border-primary); border-radius: var(--radius); padding: 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
-.summary-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-.summary-value { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
-.summary-value.positive { color: var(--success); }
-.summary-value.negative { color: var(--error); }
+
+.summary-cards {
+  @apply grid gap-4;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.summary-card {
+  @apply border rounded-xl p-4 flex flex-col gap-1;
+  background-color: var(--bg-card);
+  border-color: var(--border-primary);
+}
+.summary-label {
+  @apply text-xs uppercase tracking-wider;
+  color: var(--text-secondary);
+}
+.summary-value {
+  @apply text-xl font-semibold;
+  color: var(--text-primary);
+}
+.summary-value.positive {
+  color: var(--success);
+}
+.summary-value.negative {
+  color: var(--error);
+}
 </style>

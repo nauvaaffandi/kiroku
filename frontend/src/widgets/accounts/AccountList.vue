@@ -39,27 +39,25 @@ defineEmits<{
 
 <style scoped>
 @reference "tailwindcss";
+
 .accounts-grid {
-  display: grid;
+  @apply grid gap-4;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
 }
 
 .empty-state {
-  text-align: center;
-  padding: 3rem 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  color: var(--text-muted);
   border-radius: var(--radius-lg);
-  color: var(--color-text-muted);
+  @apply text-center py-12 px-6;
 }
 
 .empty-icon {
-  margin-bottom: 1rem;
-  opacity: 0.5;
+  @apply mb-4 opacity-50;
 }
 
 .empty-state p {
-  margin-bottom: 1rem;
+  @apply mb-4;
 }
 </style>

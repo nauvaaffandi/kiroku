@@ -56,32 +56,26 @@ defineEmits<{
 <style scoped>
 @reference "tailwindcss";
 .table-container {
-  width: 100%;
-  overflow-x: auto;
-  background: var(--color-surface);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  @apply w-full overflow-x-auto;
 }
 
 .data-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.875rem;
+  @apply w-full border-collapse text-left text-sm;
 }
 
 .data-table th {
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  background: var(--color-surface-variant);
-  border-bottom: 1px solid var(--color-border);
-  white-space: nowrap;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  @apply px-4 py-3 font-semibold whitespace-nowrap;
 }
 
 .data-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-primary);
+  @apply px-4 py-3;
 }
 
 .data-table tr:last-child td {
@@ -89,19 +83,18 @@ defineEmits<{
 }
 
 .text-right {
-  text-align: right;
+  @apply text-right;
 }
 
 .text-center {
-  text-align: center;
+  @apply text-center;
 }
 
 .py-8 {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  @apply py-8;
 }
 
 .text-muted {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
 }
 </style>

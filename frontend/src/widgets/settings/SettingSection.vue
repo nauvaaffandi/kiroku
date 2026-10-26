@@ -14,15 +14,12 @@ defineProps<{
 <style scoped>
 @reference "tailwindcss";
 .settings-section {
-  margin-bottom: 2rem;
+  @apply mb-8;
 }
 
 .section-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-border);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-primary);
+  @apply text-lg font-semibold pb-2 mb-4 mt-0;
 }
 </style>

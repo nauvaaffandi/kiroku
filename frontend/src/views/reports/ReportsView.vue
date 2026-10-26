@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen flex flex-col pb-20">
-    <header class="p-4 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-      <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">{{ t('reports.title') }}</h1>
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3">
-        <select v-model="selectedCurrency" @change="fetchSpending" class="w-full sm:w-auto px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+  <div class="reports-page">
+    <header class="reports-header">
+      <h1 class="reports-title">{{ t('reports.title') }}</h1>
+      <div class="toolbar">
+        <select v-model="selectedCurrency" @change="fetchSpending" class="currency-select">
           <option v-for="c of currencies" :key="c" :value="c">{{ c }}</option>
         </select>
-        <button @click="exportCSV" class="flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none">
+        <button @click="exportCSV" class="export-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -14,7 +14,7 @@
           </svg>
           Export CSV
         </button>
-        <button @click="exportExcel" class="flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none">
+        <button @click="exportExcel" class="export-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -24,14 +24,14 @@
       </div>
     </header>
 
-    <div class="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 p-4 flex-1">
-      <aside class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm h-fit">
-        <section class="mb-6">
-          <h3 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">{{ t('reports.spendingReport') }}</h3>
-          <div class="space-y-3">
+    <div class="reports-body">
+      <aside class="reports-sidebar">
+        <section class="sidebar-section">
+          <h3 class="sidebar-label">{{ t('reports.spendingReport') }}</h3>
+          <div class="sidebar-group">
             <div>
-              <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.period') }}</label>
-              <select v-model="spendingParams.period" @change="fetchSpending" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+              <label class="field-label">{{ t('reports.period') }}</label>
+              <select v-model="spendingParams.period" @change="fetchSpending" class="field-select">
                 <option value="this_week">This Week</option>
                 <option value="this_month">This Month</option>
                 <option value="this_year">This Year</option>
@@ -40,15 +40,15 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.groupBy') }}</label>
-              <select v-model="spendingParams.group_by" @change="fetchSpending" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+              <label class="field-label">{{ t('reports.groupBy') }}</label>
+              <select v-model="spendingParams.group_by" @change="fetchSpending" class="field-select">
                 <option value="category">{{ t('reports.category') }}</option>
                 <option value="parent_category">{{ t('reports.parentCategory') }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.accountOptional') }}</label>
-              <select v-model="spendingParams.account_id" @change="fetchSpending" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+              <label class="field-label">{{ t('reports.accountOptional') }}</label>
+              <select v-model="spendingParams.account_id" @change="fetchSpending" class="field-select">
                 <option value="">{{ t('reports.allAccounts') }}</option>
                 <option v-for="acc in accountsStore.accounts" :key="acc.id" :value="acc.id">
                   {{ acc.name }}
@@ -58,11 +58,11 @@
           </div>
         </section>
 
-        <section>
-          <h3 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">{{ t('reports.trendReport') }}</h3>
+        <section class="sidebar-section">
+          <h3 class="sidebar-label">{{ t('reports.trendReport') }}</h3>
           <div>
-            <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ t('reports.months') }}</label>
-            <select v-model="trendParams.months" @change="fetchTrend" class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <label class="field-label">{{ t('reports.months') }}</label>
+            <select v-model="trendParams.months" @change="fetchTrend" class="field-select">
               <option value="6">{{ 6 }} {{ t('reports.months') }}</option>
               <option value="12" selected>{{ 12 }} {{ t('reports.months') }}</option>
               <option value="24">{{ 24 }} {{ t('reports.months') }}</option>
@@ -71,48 +71,48 @@
         </section>
       </aside>
 
-      <main class="flex flex-col gap-4">
-        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
-          <div class="flex bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 overflow-x-auto">
-            <button :class="['flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2', activeTab === 'spending' ? 'text-sky-500 border-sky-500 bg-white dark:bg-zinc-900' : 'text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100']" @click="activeTab = 'spending'">{{ t('reports.spendingReport') }}</button>
-            <button :class="['flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2', activeTab === 'trend' ? 'text-sky-500 border-sky-500 bg-white dark:bg-zinc-900' : 'text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100']" @click="activeTab = 'trend'">{{ t('reports.trendReport') }}</button>
-            <button :class="['flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2', activeTab === 'cashflow' ? 'text-sky-500 border-sky-500 bg-white dark:bg-zinc-900' : 'text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100']" @click="activeTab = 'cashflow'">{{ t('reports.cashflowTable') }}</button>
+      <main class="reports-main">
+        <div class="tab-panel">
+          <div class="tab-bar">
+            <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'spending' }]" @click="activeTab = 'spending'">{{ t('reports.spendingReport') }}</button>
+            <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'trend' }]" @click="activeTab = 'trend'">{{ t('reports.trendReport') }}</button>
+            <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'cashflow' }]" @click="activeTab = 'cashflow'">{{ t('reports.cashflowTable') }}</button>
           </div>
 
-          <div v-if="activeTab === 'spending'" class="p-4">
-            <section class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 mb-4 border border-zinc-200 dark:border-zinc-700">
-              <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{{ t('reports.spendingByCategory') }}</h2>
-                <span class="text-xs text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-700">{{ spendingParams.period }}</span>
+          <div v-if="activeTab === 'spending'" class="tab-content">
+            <section class="chart-section">
+              <div class="chart-header">
+                <h2 class="chart-title">{{ t('reports.spendingByCategory') }}</h2>
+                <span class="period-badge">{{ spendingParams.period }}</span>
               </div>
-              <div class="w-full h-[300px] sm:h-[350px] mb-4" ref="spendingChart"></div>
-              <div class="overflow-x-auto" v-if="spendingReport.groups">
-                <table class="w-full text-left text-sm border-collapse">
+              <div class="spending-chart" ref="spendingChart"></div>
+              <div class="table-wrap" v-if="spendingReport.groups">
+                <table class="data-table">
                   <thead>
-                    <tr class="border-b border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800">
-                      <th class="p-3 font-semibold">Category</th>
-                      <th class="p-3 font-semibold text-right">Amount</th>
-                      <th class="p-3 font-semibold text-right">Count</th>
-                      <th class="p-3 font-semibold text-right">%</th>
+                    <tr class="table-header-row">
+                      <th class="table-head">Category</th>
+                      <th class="table-head table-cell--numeric">Amount</th>
+                      <th class="table-head table-cell--numeric">Count</th>
+                      <th class="table-head table-cell--numeric">%</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <tr v-for="group in spendingReport.groups" :key="group.id" class="hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
-                      <td class="p-3">
-                        <div class="flex items-center gap-2">
-                          <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ backgroundColor: group.color }"></span>
-                          <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ group.name }}</span>
+                  <tbody class="table-body">
+                    <tr v-for="group in spendingReport.groups" :key="group.id" class="table-row">
+                      <td class="table-cell">
+                        <div class="category-row">
+                          <span class="color-dot" :style="{ backgroundColor: group.color }"></span>
+                          <span class="category-name">{{ group.name }}</span>
                         </div>
-                        <div class="ml-4 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700 mt-1 space-y-1" v-if="group.children && group.children.length > 0">
-                          <div v-for="child in group.children" :key="child.id" class="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 py-0.5">
-                            <span class="w-2 h-2 rounded-full flex-shrink-0" :style="{ backgroundColor: child.color }"></span>
+                        <div class="children-list" v-if="group.children && group.children.length > 0">
+                          <div v-for="child in group.children" :key="child.id" class="child-row">
+                            <span class="color-dot color-dot--sm" :style="{ backgroundColor: child.color }"></span>
                             <span>{{ child.name }}: {{ formatDisplayNumber(child.amount, 'expense') }}</span>
                           </div>
                         </div>
                       </td>
-                      <td class="p-3 text-right font-medium text-zinc-900 dark:text-zinc-100">{{ formatDisplayNumber(group.amount, 'expense') }}</td>
-                      <td class="p-3 text-right text-zinc-600 dark:text-zinc-400">{{ group.count }}</td>
-                      <td class="p-3 text-right text-zinc-600 dark:text-zinc-400">{{ totalAmount > 0 ? ((group.amount / totalAmount) * 100).toFixed(1) : 0 }}%</td>
+                      <td class="table-cell table-cell--amount">{{ formatDisplayNumber(group.amount, 'expense') }}</td>
+                      <td class="table-cell table-cell--count">{{ group.count }}</td>
+                      <td class="table-cell table-cell--pct">{{ totalAmount > 0 ? ((group.amount / totalAmount) * 100).toFixed(1) : 0 }}%</td>
                     </tr>
                   </tbody>
                 </table>
@@ -120,14 +120,14 @@
             </section>
           </div>
 
-          <div v-if="activeTab === 'trend'" class="p-4">
-            <section class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700">
-              <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4">{{ t('reports.monthlyTrend') }}</h2>
-              <div class="w-full h-[300px] sm:h-[350px]" ref="trendChart"></div>
+          <div v-if="activeTab === 'trend'" class="tab-content">
+            <section class="trend-section">
+              <h2 class="trend-title">{{ t('reports.monthlyTrend') }}</h2>
+              <div class="trend-chart" ref="trendChart"></div>
             </section>
           </div>
 
-          <div v-if="activeTab === 'cashflow'" class="p-4">
+          <div v-if="activeTab === 'cashflow'" class="tab-content">
             <CashflowTable :date-from="spendingParams.date_from" :date-to="spendingParams.date_to" />
           </div>
         </div>
@@ -301,3 +301,193 @@ onMounted(() => {
   })
 })
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+
+.reports-page {
+  @apply min-h-screen flex flex-col pb-20;
+}
+
+.reports-header {
+  @apply p-4 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800;
+}
+
+.reports-title {
+  @apply text-xl font-bold text-zinc-900 dark:text-zinc-100;
+}
+
+.toolbar {
+  @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3;
+}
+
+.currency-select,
+.field-select {
+  @apply w-full sm:w-auto px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500;
+}
+
+.export-btn {
+  @apply flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none;
+}
+
+.reports-body {
+  @apply flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 p-4 flex-1;
+}
+
+.reports-sidebar {
+  @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm h-fit;
+}
+
+.sidebar-section {
+  @apply mb-6;
+}
+
+.sidebar-label {
+  @apply text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3;
+}
+
+.sidebar-group {
+  @apply space-y-3;
+}
+
+.field-label {
+  @apply block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1;
+}
+
+.reports-main {
+  @apply flex flex-col gap-4;
+}
+
+.tab-panel {
+  @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm;
+}
+
+.tab-bar {
+  @apply flex bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 overflow-x-auto;
+}
+
+.tab-btn {
+  @apply flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2;
+}
+
+.tab-btn--active {
+  @apply text-sky-500 border-sky-500 bg-white dark:bg-zinc-900;
+}
+
+.tab-btn--inactive {
+  @apply text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100;
+}
+
+.tab-content {
+  @apply p-4;
+}
+
+.chart-section {
+  @apply bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700 mb-4;
+}
+
+.trend-section {
+  @apply bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700;
+}
+
+.chart-header {
+  @apply flex items-center justify-between mb-4 flex-wrap gap-2;
+}
+
+.chart-title {
+  @apply text-base font-semibold text-zinc-900 dark:text-zinc-100;
+}
+
+.trend-title {
+  @apply text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4;
+}
+
+.period-badge {
+  @apply text-xs text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-700;
+}
+
+.table-wrap {
+  @apply overflow-x-auto;
+}
+
+.data-table {
+  @apply w-full text-left text-sm border-collapse;
+}
+
+.table-header-row {
+  @apply border-b border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800;
+}
+
+.table-head {
+  @apply p-3 font-semibold;
+}
+
+.table-cell {
+  @apply p-3;
+}
+
+.table-cell--numeric {
+  @apply text-right;
+}
+
+.table-cell--amount {
+  @apply text-right font-medium text-zinc-900 dark:text-zinc-100;
+}
+
+.table-cell--count,
+.table-cell--pct {
+  @apply text-right text-zinc-600 dark:text-zinc-400;
+}
+
+.table-body {
+  @apply divide-y divide-zinc-200 dark:divide-zinc-700;
+}
+
+.table-row {
+  @apply hover:bg-zinc-100 dark:hover:bg-zinc-800/50;
+}
+
+.category-row {
+  @apply flex items-center gap-2;
+}
+
+.color-dot {
+  @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
+}
+
+.color-dot--sm {
+  @apply w-2 h-2 rounded-full flex-shrink-0;
+}
+
+.category-name {
+  @apply font-medium text-zinc-900 dark:text-zinc-100;
+}
+
+.children-list {
+  @apply ml-4 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700 mt-1 space-y-1;
+}
+
+.child-row {
+  @apply flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 py-0.5;
+}
+
+.spending-chart {
+  @apply w-full mb-4;
+  height: 300px;
+}
+
+.trend-chart {
+  @apply w-full;
+  height: 300px;
+}
+
+@media (min-width: 640px) {
+  .spending-chart {
+    height: 350px;
+  }
+
+  .trend-chart {
+    height: 350px;
+  }
+}
+</style>

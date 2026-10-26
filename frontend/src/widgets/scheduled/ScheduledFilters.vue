@@ -92,18 +92,14 @@ const emitSearch = (event: Event) => {
 <style scoped>
 @reference "tailwindcss";
 .filters-bar {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  background: var(--color-surface);
-  padding: 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  @apply grid gap-4 mb-6 p-4;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .filter-group {
-  display: flex;
-  flex-direction: column;
+  @apply flex flex-col;
 }
 </style>

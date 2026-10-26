@@ -101,24 +101,23 @@ const calcEvaluate = () => {
 
 <style scoped>
 @reference "tailwindcss";
-.calculator-modal { max-width: 300px; }
-.calc-body { padding: 1rem; }
+.calculator-modal { @apply max-w-[300px]; }
+.calc-body { @apply p-4; }
 .calc-display {
-  background-color: var(--color-neutral-900);
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-align: right;
-  padding: 0.75rem 1rem;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
-  font-variant-numeric: tabular-nums;
-  overflow: hidden;
+  @apply text-2xl font-semibold text-right p-3 mb-4 overflow-hidden tabular-nums;
 }
-.calc-keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
-.calc-key { padding: 0.75rem; font-size: 1rem; font-weight: 600; background-color: var(--color-neutral-200); color: var(--color-neutral-900); border-radius: var(--radius-sm); border: none; cursor: pointer; transition: background-color 0.2s ease; }
-.calc-key:hover { background-color: var(--color-neutral-300); }
-.calc-key.op { background-color: var(--color-neutral-300); color: var(--color-primary); }
-.calc-key.eq { background-color: var(--color-primary); color: white; }
-.calc-key.span-2 { grid-column: span 2; }
+.calc-keypad { @apply grid grid-cols-4 gap-2; }
+.calc-key {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  @apply p-3 text-base font-semibold border-none cursor-pointer transition-colors duration-200 ease-in-out;
+}
+.calc-key:hover { background-color: var(--bg-hover); }
+.calc-key.op { background-color: var(--bg-tertiary); color: var(--accent); }
+.calc-key.eq { background-color: var(--accent); @apply text-white; }
+.calc-key.span-2 { @apply col-span-2; }
 </style>

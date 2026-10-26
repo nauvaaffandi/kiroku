@@ -117,144 +117,143 @@ onMounted(fetchSharedData)
 
 <style scoped>
 @reference "tailwindcss";
+
 .shared-view-page {
-  min-height: 100vh;
-  background-color: var(--color-neutral-50);
-  display: flex;
-  flex-direction: column;
+  @apply min-h-screen flex flex-col;
+  background-color: var(--bg-secondary);
 }
 
 .shared-header {
-  background-color: var(--color-neutral-100);
-  border-bottom: 1px solid var(--color-neutral-200);
-  padding: 1rem 1.5rem;
+  @apply px-6 py-4;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .shared-header-content {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  @apply mx-auto max-w-[800px] flex items-center justify-between w-full;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  @apply flex items-center gap-4;
 }
 
 .brand h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin: 0;
+  @apply text-xl font-bold m-0;
+  color: var(--accent);
 }
 
 .shared-badge {
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-700);
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
+  @apply text-xs font-medium px-2 py-1 rounded-sm;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .attribution {
-  font-size: 0.8125rem;
-  color: var(--color-neutral-500);
+  @apply text-[0.8125rem];
+  color: var(--text-secondary);
 }
 
 .shared-container {
-  flex: 1;
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 1.5rem;
+  @apply flex-1 max-w-[800px] mx-auto w-full p-6;
 }
 
 .loading-state, .error-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  color: var(--color-neutral-500);
+  @apply text-center p-16 rounded-xl shadow-sm;
+  background-color: var(--bg-card);
+  color: var(--text-secondary);
 }
 
-.error-state svg { color: var(--color-danger); margin-bottom: 1rem; }
-.error-state h2 { font-size: 1.25rem; font-weight: 600; color: var(--color-neutral-900); margin-bottom: 0.5rem; }
+.error-state svg { 
+  @apply mb-4; 
+  color: var(--error); 
+}
+.error-state h2 { 
+  @apply text-xl font-semibold mb-2; 
+  color: var(--text-primary); 
+}
 
 .account-summary-card {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  color: white;
-  border-radius: var(--radius);
-  padding: 2rem;
-  box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
+  @apply rounded-xl p-8 mb-6 shadow-lg text-white;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
 }
 
-.account-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
-.account-name { font-size: 1.25rem; font-weight: 600; }
-.account-currency { font-size: 0.875rem; opacity: 0.8; background: rgba(255,255,255,0.2); padding: 0.125rem 0.5rem; border-radius: var(--radius-sm); }
-.account-balance { font-size: 2.25rem; font-weight: 700; }
-.account-balance.text-danger { color: #ff8080; }
+.account-meta { 
+  @apply flex items-center justify-between mb-2; 
+}
+.account-name { 
+  @apply text-xl font-semibold; 
+}
+.account-currency { 
+  @apply text-sm opacity-80 px-2 py-[0.125rem] rounded-sm; 
+  background-color: rgba(255,255,255,0.2); 
+}
+.account-balance { 
+  @apply text-[2.25rem] font-bold; 
+}
+.account-balance.text-danger { 
+  color: #ff8080; 
+}
 
-.transactions-section h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-neutral-900);
-  margin-bottom: 1rem;
+.transactions-section h3 { 
+  @apply text-lg font-semibold mb-4; 
+  color: var(--text-primary); 
 }
 
 .transactions-list {
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  @apply rounded-xl overflow-hidden shadow-sm;
+  background-color: var(--bg-card);
 }
 
 .transaction-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-neutral-200);
+  @apply flex items-center justify-between px-5 py-4;
+  border-bottom: 1px solid var(--border-primary);
 }
 
-.transaction-item:last-child { border-bottom: none; }
-
-.tx-left { display: flex; align-items: center; gap: 1rem; }
-
-.tx-category-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.125rem;
-  flex-shrink: 0;
+.transaction-item:last-child { 
+  @apply border-b-0; 
 }
 
-.tx-info { display: flex; flex-direction: column; gap: 0.125rem; }
+.tx-left { 
+  @apply flex items-center gap-4; 
+}
 
-.tx-payee { font-weight: 500; color: var(--color-neutral-900); font-size: 0.9375rem; }
-.tx-note { font-size: 0.8125rem; color: var(--color-neutral-500); }
-.tx-date { font-size: 0.75rem; color: var(--color-neutral-400); }
+.tx-category-icon { 
+  @apply w-[2.5rem] h-[2.5rem] rounded-full flex items-center justify-center shrink-0 text-lg; 
+}
 
-.tx-right { text-align: right; }
-.tx-amount { font-weight: 600; font-size: 0.9375rem; }
-.tx-amount.income { color: var(--color-success); }
-.tx-amount.expense { color: var(--color-neutral-900); }
+.tx-info { 
+  @apply flex flex-col gap-0.5; 
+}
+
+.tx-payee { 
+  @apply font-medium text-[0.9375rem]; 
+  color: var(--text-primary); 
+}
+.tx-note { 
+  @apply text-[0.8125rem]; 
+  color: var(--text-secondary); 
+}
+.tx-date { 
+  @apply text-[0.75rem]; 
+  color: var(--text-muted); 
+}
+
+.tx-right { 
+  @apply text-right; 
+}
+.tx-amount { 
+  @apply font-semibold text-[0.9375rem]; 
+}
+.tx-amount.income { 
+  color: var(--success); 
+}
+.tx-amount.expense { 
+  color: var(--text-primary); 
+}
 
 .empty-transactions {
-  text-align: center;
-  padding: 3rem;
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  color: var(--color-neutral-500);
+  @apply text-center p-12 rounded-xl shadow-sm;
+  background-color: var(--bg-card);
+  color: var(--text-secondary);
 }
 </style>

@@ -58,11 +58,8 @@ const handleOverlayClick = () => {
 @reference "tailwindcss";
 
 .modal-overlay {
-  position: fixed;
-  inset: 0;
+  @apply fixed inset-0 flex items-center justify-center p-4 z-[500];
   background-color: rgba(0, 0, 0, 0.5);
-  @apply flex items-center justify-center p-4;
-  z-index: 500;
   animation: fadeIn 0.2s ease;
 }
 
@@ -89,11 +86,11 @@ const handleOverlayClick = () => {
   }
 }
 
-.modal-sm { max-width: 320px; }
-.modal-md { max-width: 480px; }
-.modal-lg { max-width: 640px; }
-.modal-xl { max-width: 800px; }
-.modal-full { max-width: 95vw; max-height: 95vh; }
+.modal-sm { @apply max-w-[320px]; }
+.modal-md { @apply max-w-[480px]; }
+.modal-lg { @apply max-w-[640px]; }
+.modal-xl { @apply max-w-[800px]; }
+.modal-full { @apply max-w-[95vw] max-h-[95vh]; }
 
 .modal-header {
   @apply flex items-center justify-between px-5 py-4 border-b;
@@ -101,8 +98,7 @@ const handleOverlayClick = () => {
 }
 
 .modal-title {
-  margin: 0;
-  @apply text-lg font-semibold;
+  @apply m-0 text-lg font-semibold;
   color: var(--text-primary);
 }
 
