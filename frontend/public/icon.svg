@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Unix-style finance tracker icon: minimalist ledger with trend line -->
+  <rect x="64" y="96" width="384" height="320" rx="16" fill="none" stroke="#2563eb" stroke-width="12"/>
+  <!-- Ledger lines -->
+  <line x1="112" y1="160" x2="400" y2="160" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/>
+  <line x1="112" y1="224" x2="400" y2="224" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/>
+  <!-- Trend line (upward = growth) -->
+  <polyline points="144,320 208,256 272,288 336,224 400,176" fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Data points -->
+  <circle cx="144" cy="320" r="8" fill="#10b981"/>
+  <circle cx="208" cy="256" r="8" fill="#10b981"/>
+  <circle cx="272" cy="288" r="8" fill="#10b981"/>
+  <circle cx="336" cy="224" r="8" fill="#10b981"/>
+  <circle cx="400" cy="176" r="8" fill="#10b981"/>
+</svg>
