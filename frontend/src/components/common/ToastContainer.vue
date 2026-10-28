@@ -56,9 +56,9 @@ const removeToast = (id: number) => {
 
 .toast {
   @apply relative flex items-center gap-3 py-3 px-4 pl-10 rounded-xl shadow-lg min-w-[18rem] max-w-[24rem] pointer-events-auto border animate-[slideIn_0.3s_ease];
-  background-color: var(--bg-card);
+  background-color: var(--bg-hover);
   color: var(--text-primary);
-  border-color: var(--border-primary);
+  border-color: var(--border-secondary);
 }
 
 .toast-accent {
