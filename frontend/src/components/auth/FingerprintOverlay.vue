@@ -4,8 +4,8 @@
       <div class="w-[40px] h-[4px] bg-[#ccc] rounded-[2px] mb-[1.5rem]"></div>
       
       <div class="text-center mb-[2rem]">
-        <h2 class="text-lg font-semibold text-[#212529] mb-[0.375rem]">Autentikasi Sidik Jari</h2>
-        <p class="text-sm text-[#6c757d]">Sentuh sensor sidik jari perangkat Anda untuk masuk</p>
+        <h2 class="text-lg font-semibold text-[#212529] mb-[0.375rem]">{{ t('auth.biometricAuth') }}</h2>
+        <p class="text-sm text-[#6c757d]">{{ t('auth.touchSensor') }}</p>
       </div>
 
       <div class="relative w-[96px] h-[96px] rounded-full bg-[#e7f1fc] flex items-center justify-center cursor-pointer mb-[1.5rem] hover:scale-105 transition-transform duration-200" @click="triggerScan">
@@ -27,21 +27,29 @@
       </div>
 
       <div class="w-full flex justify-center">
-        <button class="px-[0.75rem] py-[1.5rem] bg-[#e7f1fc] text-[#4a90d9] font-medium rounded-[10px] border border-[#4a90d9] cursor-pointer w-full max-w-[200px] mb-[0.75rem] hover:bg-[#4a90d9] hover:text-white transition-colors duration-200" @click="triggerScan">Coba Lagi</button>
-        <button class="px-[0.75rem] py-[1.5rem] bg-[#f1f3f5] text-[#495057] font-medium rounded-[10px] border-0 cursor-pointer w-full max-w-[200px] hover:bg-[#e9ecef] transition-colors duration-200" @click="close">Gunakan PIN</button>
+        <button class="px-[0.75rem] py-[1.5rem] bg-[#e7f1fc] text-[#4a90d9] font-medium rounded-[10px] border border-[#4a90d9] cursor-pointer w-full max-w-[200px] mb-[0.75rem] hover:bg-[#4a90d9] hover:text-white transition-colors duration-200" @click="triggerScan">{{ t('auth.tryAgain') }}</button>
+        <button class="px-[0.75rem] py-[1.5rem] bg-[#f1f3f5] text-[#495057] font-medium rounded-[10px] border-0 cursor-pointer w-full max-w-[200px] hover:bg-[#e9ecef] transition-colors duration-200" @click="close">{{ t('auth.usePin') }}</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
+import { useI18n } from '@/locales'
 
-const props = defineProps<{
+const { t } = useI18n()
+
+interface Props {
   isOpen: boolean
-}>()
+}
 
-const emit = defineEmits(['close', 'success'])
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  close: []
+  authenticate: []
+}>()
 
 const isScanning = ref(false)
 const errorMessage = ref<string | null>(null)
@@ -60,47 +68,25 @@ const triggerScan = async () => {
   errorMessage.value = null
 
   try {
-    // Check if WebAuthn is supported
-    if (!window.PublicKeyCredential || !navigator.credentials) {
-      throw new Error('WebAuthn tidak didukung di browser ini.')
-    }
-
-    // Simulate real WebAuthn fingerprint prompt or invoke WebAuthn API if credentials exist
-    // In local / test mode or real device:
-    const publicKey: PublicKeyCredentialRequestOptions = {
-      challenge: Uint8Array.from('kiroku_auth_challenge_random_bytes_32', c => c.charCodeAt(0)),
-      timeout: 30000,
-      userVerification: 'required'
-    }
-
-    try {
-      // Race with a fallback timeout so the scan never hangs forever
-      await Promise.race([
-        navigator.credentials.get({ publicKey }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('scan_timeout')), 25000)
-        )
-      ])
-    } catch (e) {
-      // WebAuthn get() may fail if no credential was registered — fall back to simulated scan
-      console.warn('WebAuthn get() skipped or failed, falling back to biometric simulation:', e)
-      await new Promise(resolve => setTimeout(resolve, 1200))
-    }
-
-    emit('success')
+    // Emit authenticate event to parent which will call the biometric composable
+    await emit('authenticate')
   } catch (err: any) {
-    errorMessage.value = err.message || 'Verifikasi sidik jari gagal.'
+    errorMessage.value = err.message || t('auth.biometricFailed')
   } finally {
     isScanning.value = false
   }
 }
 
-onMounted(() => {
-  if (props.isOpen) {
+watch(() => props.isOpen, (isOpen) => {
+  if (isOpen) {
     // Auto trigger scan when opened
     setTimeout(() => {
       triggerScan()
     }, 400)
+  } else {
+    // Reset error when closed
+    errorMessage.value = null
+    isScanning.value = false
   }
 })
 </script>

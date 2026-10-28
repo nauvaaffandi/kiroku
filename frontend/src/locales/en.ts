@@ -225,12 +225,37 @@ export default {
     resetPinNew: 'New PIN',
     pinChangeSuccess: 'PIN changed successfully',
     pinResetSuccess: 'PIN reset successfully',
+    biometricAuth: 'Fingerprint Authentication (Biometric)',
+    biometricEnabledDesc: 'Enabled - Fingerprint login is active',
+    biometricDisabledDesc: 'Enable fingerprint login using your device\'s biometric sensor',
+    enableBiometric: 'Enable',
+    disableBiometric: 'Disable',
+    biometricNotSupported: 'Biometric authentication is not supported on this device.',
+    biometricEnabled: 'Fingerprint enabled on this device.',
+    biometricDisabled: 'Fingerprint login disabled.'
   },
   notifications: {
     saved: 'Saved successfully',
     deleted: 'Deleted successfully',
     error: 'An error occurred',
     copied: 'Copied to clipboard'
+  },
+  auth: {
+    signIn: 'Sign In',
+    verifying: 'Verifying...',
+    welcomeBack: 'Welcome back!',
+    biometricAuth: 'Fingerprint Authentication',
+    touchSensor: 'Touch your device\'s fingerprint sensor to sign in',
+    loginWithBiometric: 'Sign in with Fingerprint',
+    biometricSuccess: 'Fingerprint authentication successful!',
+    biometricFailed: 'Fingerprint verification failed.',
+    tryAgain: 'Try Again',
+    usePin: 'Use PIN',
+    singleUserMode: 'Single-user mode · Device remembered for 24h of activity',
+    biometricNotSupported: 'Biometric authentication is not supported on this device.',
+    biometricNotConfigured: 'No fingerprint registered. Enable in Settings.',
+    biometricEnabled: 'Fingerprint enabled on this device.',
+    biometricDisabled: 'Fingerprint login disabled.'
   },
   about: {
     title: 'About',

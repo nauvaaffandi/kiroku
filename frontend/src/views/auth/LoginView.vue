@@ -36,13 +36,13 @@
         >
           <span v-if="authStore.loading" class="btn-loading">
             <span class="spinner"></span>
-            Verifying...
+            {{ t('auth.verifying') }}
           </span>
-          <span v-else>Sign In</span>
+          <span v-else>{{ t('auth.signIn') }}</span>
         </button>
 
         <button
-          v-if="isBiometricConfigured"
+          v-if="status.enabled && status.credentialRegistered"
           type="button"
           class="login-fingerprint-btn"
           @click="showFingerprintOverlay = true"
@@ -55,19 +55,19 @@
             <path d="M12 18v2"></path>
             <path d="M9 19.5c0 .83.67 1.5 1.5 1.5h3c.83 0 1.5-.67 1.5-1.5V18"></path>
           </svg>
-          Masuk dengan Sidik Jari
+          {{ t('auth.loginWithBiometric') }}
         </button>
       </form>
 
       <p class="login-footer">
-        Single-user mode · Device remembered for 24h of activity
+        {{ t('auth.singleUserMode') }}
       </p>
     </div>
 
     <FingerprintOverlay
       :is-open="showFingerprintOverlay"
       @close="showFingerprintOverlay = false"
-      @success="handleFingerprintSuccess"
+      @authenticate="handleFingerprintAuth"
     />
   </div>
 </template>
@@ -77,16 +77,18 @@ import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/locales'
+import { useBiometric } from '@/composables/useBiometric'
 import FingerprintOverlay from '@/components/auth/FingerprintOverlay.vue'
 
 const authStore = useAuthStore()
 const uiStore = useUIStore()
 const router = useRouter()
+const { t } = useI18n()
+const { status, refreshStatus, authenticate } = useBiometric()
 
 const pin = ref('')
 const showFingerprintOverlay = ref(false)
-const isBiometricConfigured = ref(false)
-
 const submitting = ref(false)
 
 const handleVerify = async () => {
@@ -94,7 +96,7 @@ const handleVerify = async () => {
   submitting.value = true
   const success = await authStore.login(pin.value)
   if (success) {
-    uiStore.success('Welcome back!')
+    uiStore.success(t('auth.welcomeBack'))
     router.push('/dashboard')
   }
   pin.value = ''
@@ -112,17 +114,24 @@ watch(pin, (newVal) => {
 const handleFingerprintSuccess = async () => {
   showFingerprintOverlay.value = false
   authStore.user = { user_id: 'authenticated' }
-  uiStore.success('Autentikasi sidik jari berhasil!')
+  uiStore.success(t('auth.biometricSuccess'))
   router.push('/dashboard')
 }
 
-onMounted(() => {
-  // Check if biometric is enabled/configured in localStorage (set via settings)
-  const configured = localStorage.getItem('kiroku_biometric_enabled') === 'true'
-  isBiometricConfigured.value = configured
+const handleFingerprintAuth = async () => {
+  const success = await authenticate()
+  if (success) {
+    handleFingerprintSuccess()
+  } else {
+    // Error is handled by the composable
+  }
+}
 
-  // Only auto-open if biometric is explicitly configured by user
-  if (configured) {
+onMounted(async () => {
+  await refreshStatus()
+  
+  // Auto-open biometric overlay if supported, enabled, and credential registered
+  if (status.value.supported && status.value.enabled && status.value.credentialRegistered) {
     setTimeout(() => {
       showFingerprintOverlay.value = true
     }, 400)

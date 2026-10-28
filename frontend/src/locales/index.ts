@@ -6,7 +6,22 @@ import { defineStore } from 'pinia'
 
 type Locale = 'en' | 'ja' | 'id'
 
-const locales: Record<Locale, typeof en> = { en, ja, id }
+interface LocaleMessages {
+  common: typeof en.common
+  nav: typeof en.nav
+  dashboard: typeof en.dashboard
+  transactions: typeof en.transactions
+  accounts: typeof en.accounts
+  categories: typeof en.categories
+  budgetAnalysis: typeof en.budgetAnalysis
+  reports: typeof en.reports
+  settings: typeof en.settings
+  notifications: typeof en.notifications
+  about: typeof en.about
+  auth: typeof en.auth
+}
+
+const locales: Record<Locale, LocaleMessages> = { en, ja, id }
 
 const SUPPORTED_LOCALES: Locale[] = ['en', 'ja', 'id']
 

@@ -126,17 +126,19 @@
       </SettingItem>
 
       <SettingItem
-        label="Autentikasi Sidik Jari (Biometric)"
-        :description="biometricEnabled ? 'Sudah diaktifkan' : 'Aktifkan login dengan sidik jari perangkat'"
+        :label="t('settings.biometricAuth')"
+        :description="status.enabled ? t('settings.biometricEnabledDesc') : t('settings.biometricDisabledDesc')"
       >
         <template #default>
           <button
             @click="toggleBiometric"
             class="biometric-toggle"
-            :class="{ active: biometricEnabled }"
+            :class="{ active: status.enabled }"
+            :disabled="!status.supported || biometricLoading"
           >
-            {{ biometricEnabled ? 'Matikan' : 'Aktifkan' }}
+            {{ status.enabled ? t('settings.disableBiometric') : t('settings.enableBiometric') }}
           </button>
+          <span v-if="!status.supported" class="text-xs text-[#dc3545] ml-2">{{ t('settings.biometricNotSupported') }}</span>
         </template>
       </SettingItem>
     </SettingSection>
@@ -210,10 +212,12 @@ import { BaseSelect, BaseButton } from '@/components/ui'
 import TelegramPinModal from '@/components/auth/TelegramPinModal.vue'
 import TelegramRegisterModal from '@/components/auth/TelegramRegisterModal.vue'
 import { useCurrencies } from '@/composables/useCurrencies'
+import { useBiometric } from '@/composables/useBiometric'
 
 const settingsStore = useSettingsStore()
 const uiStore = useUIStore()
 const { t } = useI18n()
+const { status, enable, disable, loading: biometricLoading, refreshStatus } = useBiometric()
 
 const settings = computed(() => settingsStore.settings)
 
@@ -240,40 +244,18 @@ const showTelegramRegister = ref(false)
 const telegramLoading = ref(false)
 const pinChangeLoading = ref(false)
 const isTelegramLinked = ref(false)
-const biometricEnabled = ref(localStorage.getItem('kiroku_biometric_enabled') === 'true')
 
 const toggleBiometric = async () => {
-  if (!window.PublicKeyCredential) {
-    uiStore.error('Browser tidak mendukung WebAuthn / Biometrik.')
-    return
-  }
-  biometricEnabled.value = !biometricEnabled.value
-  localStorage.setItem('kiroku_biometric_enabled', String(biometricEnabled.value))
-  if (biometricEnabled.value) {
-    try {
-      // Trigger WebAuthn registration test
-      const challenge = Uint8Array.from('kiroku_register_biometric_challenge', c => c.charCodeAt(0))
-      await navigator.credentials.create({
-        publicKey: {
-          challenge,
-          rp: { name: 'Kiroku Finance' },
-          user: {
-            id: Uint8Array.from('user_id_1', c => c.charCodeAt(0)),
-            name: 'user@kiroku.local',
-            displayName: 'Kiroku User'
-          },
-          pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
-          timeout: 60000,
-          attestation: 'none'
-        }
-      })
-      uiStore.success('Sidik jari berhasil dihubungkan ke perangkat!')
-    } catch (e) {
-      console.warn('Biometric registration prompt canceled or simulated:', e)
-      uiStore.success('Sidik jari diaktifkan pada perangkat ini.')
+  if (status.value.enabled) {
+    const success = await disable()
+    if (success) {
+      uiStore.success(t('settings.biometricDisabled'))
     }
   } else {
-    uiStore.success('Login sidik jari dinonaktifkan.')
+    const success = await enable()
+    if (success) {
+      uiStore.success(t('settings.biometricEnabled'))
+    }
   }
 }
 
@@ -328,6 +310,7 @@ const weekStartOptions = [
 
 onMounted(async () => {
   settingsStore.fetchSettings()
+  await refreshStatus()
   await checkTelegramStatus()
 })
 
