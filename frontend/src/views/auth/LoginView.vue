@@ -2,6 +2,7 @@
   <div class="login-page">
     <div class="login-card">
       <div class="login-header">
+        <AppIcon class="app-icon--lg" />
         <h1>Kiroku</h1>
         <p>Personal Finance Tracker</p>
       </div>
@@ -80,6 +81,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from '@/locales'
 import { useBiometric } from '@/composables/useBiometric'
 import FingerprintOverlay from '@/components/auth/FingerprintOverlay.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 
 const authStore = useAuthStore()
 const uiStore = useUIStore()
@@ -152,7 +154,11 @@ onMounted(async () => {
 }
 
 .login-header {
-  @apply text-center mb-8;
+  @apply text-center mb-8 flex flex-col items-center gap-3;
+}
+
+.login-header :deep(.app-icon) {
+  color: var(--accent);
 }
 
 .login-header h1 {

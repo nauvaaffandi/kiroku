@@ -8,11 +8,7 @@
       <section class="about-section">
         <div class="app-info">
           <div class="app-icon">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-              <path d="M2 17l10 5 10-5"></path>
-              <path d="M2 12l10 5 10-5"></path>
-            </svg>
+            <AppIcon class="app-icon--xl" />
           </div>
           <div class="app-details">
             <h2>Kiroku</h2>
@@ -106,6 +102,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useI18n } from '@/locales'
+import AppIcon from '@/components/icons/AppIcon.vue'
 
 const { t: $t } = useI18n()
 
@@ -157,8 +154,11 @@ onMounted(() => {
 }
 
 .app-icon {
-  @apply w-[80px] h-[80px] rounded-lg flex items-center justify-center shrink-0 text-white;
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  @apply shrink-0;
+}
+
+.app-icon :deep(.app-icon) {
+  color: var(--accent);
 }
 
 .app-details h2 {

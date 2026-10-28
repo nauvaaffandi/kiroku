@@ -2,10 +2,7 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <router-link to="/dashboard" class="logo">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="1" x2="12" y2="23"></line>
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-        </svg>
+        <AppIcon class="app-icon-logo" />
         <span>Kiroku</span>
       </router-link>
       <button v-show="isMobile" @click="$emit('close')" class="sidebar-close text-zinc-600 dark:text-white hover:text-zinc-900 dark:hover:text-white" aria-label="Close sidebar">
@@ -132,6 +129,7 @@ import AnalyticsIcon from '@/components/icons/AnalyticsIcon.vue'
 import SharedAccessIcon from '@/components/icons/SharedAccessIcon.vue'
 import BudgetIcon from '@/components/icons/BudgetIcon.vue'
 import GoalsIcon from '@/components/icons/GoalsIcon.vue'
+import AppIcon from '@/components/icons/AppIcon.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 
 const route = useRoute()
@@ -230,6 +228,13 @@ defineEmits(['close'])
 
 .logo {
   @apply flex items-center gap-3 font-bold text-lg no-underline;
+  color: var(--accent);
+}
+
+.app-icon-logo {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
   color: var(--accent);
 }
 
