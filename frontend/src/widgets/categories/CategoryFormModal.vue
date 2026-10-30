@@ -1,50 +1,40 @@
 <template>
   <BaseModal
     v-model="isOpen"
-    :title="isEditing ? 'Edit Category' : (isChild ? 'New Subcategory' : 'New Category')"
+    :title="modalTitle"
     size="lg"
     @update:modelValue="$emit('update:modelValue', $event)"
   >
     <form @submit.prevent="handleSubmit" class="category-form">
       <div class="form-group">
-        <label class="form-label">Name *</label>
+        <label class="form-label">{{ t('categories.labelName') }}</label>
         <BaseInput
           v-model="formData.name"
           type="text"
           required
-          placeholder="Category name"
+          :placeholder="t('categories.placeholderName')"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label">{{ t('categories.labelParent') }}</label>
+        <BaseSelect
+          v-model="formData.parent_id"
+          :options="parentOptions"
+          placeholder="No parent (root category)"
         />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Type *</label>
-          <BaseSelect
-            v-model="formData.type"
-            :options="typeOptions"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Parent</label>
-          <BaseSelect
-            v-model="formData.parent_id"
-            :options="parentOptions"
-            placeholder="No parent (root category)"
-          />
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Icon</label>
+          <label class="form-label">{{ t('categories.labelIcon') }}</label>
           <BaseInput
             v-model="formData.icon"
             type="text"
-            placeholder="Emoji or leave blank"
+            :placeholder="t('categories.placeholderIcon')"
             maxlength="4"
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Color</label>
+          <label class="form-label">{{ t('categories.labelColor') }}</label>
           <input
             v-model="formData.color"
             type="color"
@@ -53,16 +43,16 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Sort Order</label>
+        <label class="form-label">{{ t('categories.labelSortOrder') }}</label>
         <BaseInput
           v-model="formData.sort_order"
           type="number"
           :min="0"
-          placeholder="0"
+          :placeholder="t('categories.placeholderSortOrder')"
         />
       </div>
       <div class="form-group form-checkbox">
-        <label class="form-label">Archived</label>
+        <label class="form-label">{{ t('categories.labelArchived') }}</label>
         <input
           v-model="formData.archived"
           type="checkbox"
@@ -71,11 +61,9 @@
       </div>
       <div class="modal-actions">
         <BaseButton type="button" variant="secondary" @click="isOpen = false">
-          Cancel
+          {{ t('common.cancel') }}
         </BaseButton>
-        <BaseButton type="submit">
-          {{ isEditing ? 'Save Changes' : (isChild ? 'Create Subcategory' : 'Create Category') }}
-        </BaseButton>
+        <BaseButton type="submit">{{ submitLabel }}</BaseButton>
       </div>
     </form>
   </BaseModal>
@@ -84,7 +72,8 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
-import type { Category, CategoryType } from '@/types'
+import { useI18n } from '@/locales'
+import type { Category } from '@/types'
 
 interface Props {
   modelValue: boolean
@@ -98,13 +87,26 @@ const emit = defineEmits<{
   submit: [data: Partial<Category>]
 }>()
 
+const { t } = useI18n()
+
 const isOpen = ref(props.modelValue)
 const isEditing = computed(() => !!props.category)
 const isChild = computed(() => !!props.parent && !props.category)
 
+const modalTitle = computed(() => {
+  if (isEditing.value) return t('categories.formTitleEdit')
+  if (isChild.value) return t('categories.formTitleChild')
+  return t('categories.formTitleCreate')
+})
+
+const submitLabel = computed(() => {
+  if (isEditing.value) return t('common.save')
+  if (isChild.value) return t('categories.btnCreateSubcategory')
+  return t('categories.btnCreateCategory')
+})
+
 interface FormData {
   name: string
-  type: CategoryType
   parent_id: string
   icon: string
   color: string
@@ -114,7 +116,6 @@ interface FormData {
 
 const defaultForm = (): FormData => ({
   name: '',
-  type: 'expense',
   parent_id: props.parent?.id || '',
   icon: '',
   color: '#2563eb',
@@ -124,22 +125,13 @@ const defaultForm = (): FormData => ({
 
 const formData = ref<FormData>(defaultForm())
 
-const typeOptions = [
-  { value: 'income', label: 'Income' },
-  { value: 'expense', label: 'Expense' },
-  { value: 'transfer', label: 'Transfer' }
-]
-
-const parentOptions = computed(() => (props.category
-  ? [] // Can't be parent of itself
-  : [])) // We'll pass parent options from parent if needed
+const parentOptions = computed(() => (props.category ? [] : []))
 
 watch(() => props.modelValue, (val) => {
   isOpen.value = val
   if (val && props.category) {
     formData.value = {
       name: props.category.name,
-      type: props.category.type,
       parent_id: props.category.parent_id || '',
       icon: props.category.icon || '',
       color: props.category.color || '#2563eb',
@@ -158,7 +150,6 @@ watch(isOpen, (val) => {
 const handleSubmit = () => {
   emit('submit', {
     name: formData.value.name,
-    type: formData.value.type,
     parent_id: formData.value.parent_id || null,
     icon: formData.value.icon,
     color: formData.value.color,

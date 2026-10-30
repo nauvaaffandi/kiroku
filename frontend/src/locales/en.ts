@@ -137,6 +137,7 @@ export default {
   },
   categories: {
     title: 'Categories',
+    subtitle: 'Manage transaction categories and hierarchy',
     addCategory: 'Add Category',
     name: 'Name',
     kind: 'Kind',
@@ -144,7 +145,23 @@ export default {
     kindHave: 'Have',
     kindWant: 'Want',
     budgetAmount: 'Budget Amount',
-    budgetPeriod: 'Budget Period'
+    budgetPeriod: 'Budget Period',
+    formTitleEdit: 'Edit Category',
+    formTitleChild: 'New Subcategory',
+    formTitleCreate: 'New Category',
+    labelName: 'Name *',
+    placeholderName: 'Category name',
+    labelParent: 'Parent',
+    labelIcon: 'Icon',
+    placeholderIcon: 'Emoji or leave blank',
+    labelColor: 'Color',
+    labelSortOrder: 'Sort Order',
+    placeholderSortOrder: '0',
+    labelArchived: 'Archived',
+    btnCreateSubcategory: 'Create Subcategory',
+    btnCreateCategory: 'Create Category',
+    filterActive: 'Active',
+    filterArchived: 'Archived'
   },
   budgetAnalysis: {
     title: 'Budget Analysis',

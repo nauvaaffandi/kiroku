@@ -4,23 +4,15 @@
       <BaseInput
         v-model="localFilters.q"
         type="search"
-        placeholder="Search categories..."
+        :placeholder="t('common.search')"
         @input="emitSearch"
-      />
-    </div>
-    <div class="filter-group">
-      <BaseSelect
-        v-model="localFilters.type"
-        :options="typeOptions"
-        placeholder="All Types"
-        @change="emitChange"
       />
     </div>
     <div class="filter-group">
       <BaseSelect
         v-model="localFilters.archived"
         :options="archivedOptions"
-        placeholder="All Status"
+        :placeholder="t('common.status')"
         @change="emitChange"
       />
     </div>
@@ -30,6 +22,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { BaseInput, BaseSelect } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { CategoryFilters } from '@/types'
 
 interface Props {
@@ -44,22 +37,18 @@ const emit = defineEmits<{
   search: [value: string]
 }>()
 
+const { t } = useI18n()
+
 const localFilters = ref<CategoryFilters>({ ...props.modelValue })
 
 watch(() => props.modelValue, (newVal) => {
   localFilters.value = { ...newVal }
 }, { deep: true })
 
-const typeOptions = [
-  { value: 'income', label: 'Income' },
-  { value: 'expense', label: 'Expense' },
-  { value: 'transfer', label: 'Transfer' }
-]
-
 const archivedOptions = [
-  { value: '', label: 'All' },
-  { value: 'false', label: 'Active' },
-  { value: 'true', label: 'Archived' }
+  { value: '', label: t('common.all') },
+  { value: 'false', label: t('categories.filterActive') || 'Active' },
+  { value: 'true', label: t('categories.filterArchived') || 'Archived' }
 ]
 
 const emitChange = () => {

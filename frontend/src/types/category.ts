@@ -1,9 +1,6 @@
 // Category Types
-export type CategoryType = 'income' | 'expense' | 'transfer'
-
 export interface CategoryFilters {
   q: string
-  type: string
   archived: string
   sort: string
   order: string
@@ -15,7 +12,6 @@ export interface Category {
   name: string
   icon: string
   color: string
-  type: CategoryType
   sort_order: number
   depth: number
   path: string

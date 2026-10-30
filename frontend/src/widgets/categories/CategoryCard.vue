@@ -9,8 +9,7 @@
         </svg>
       </div>
       <div class="category-badges">
-        <div class="category-type-badge" :class="category.type">{{ category.type }}</div>
-        <span v-if="category.archived" class="category-type-badge archived">Archived</span>
+        <span v-if="category.archived" class="category-status-badge archived">Archived</span>
       </div>
     </div>
     <h3 class="category-name">{{ category.path || category.name }}</h3>
@@ -64,11 +63,7 @@ defineEmits<{
 .category-header { @apply flex justify-between items-center; }
 .category-icon { @apply w-10 h-10 rounded flex items-center justify-center text-white text-xl; }
 .category-badges { @apply flex gap-2 items-center; }
-.category-type-badge { background-color: var(--bg-primary); color: var(--text-muted); @apply text-xs px-2 py-0.5 rounded-full capitalize; }
-.category-type-badge.income { background-color: var(--success-light); color: var(--success); }
-.category-type-badge.expense { background-color: var(--error-light); color: var(--error); }
-.category-type-badge.transfer { background-color: var(--accent-light); color: var(--accent); }
-.category-type-badge.archived { background-color: var(--warning-light); color: var(--warning); }
+.category-status-badge { background-color: var(--warning-light); color: var(--warning); @apply text-xs px-2 py-0.5 rounded-full capitalize; }
 .category-name { color: var(--text-primary); @apply text-base font-semibold mt-2 mb-1; }
 .category-count { color: var(--text-muted); @apply text-[0.8125rem] m-0; }
 .category-actions { @apply flex gap-2 mt-3 pt-3 border-t; border-color: var(--border-primary); }

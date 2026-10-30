@@ -137,6 +137,7 @@ export default {
   },
   categories: {
     title: 'カテゴリ管理',
+    subtitle: '取引カテゴリと階層構造を管理',
     addCategory: 'カテゴリを追加',
     name: '名称',
     kind: '種類',
@@ -144,7 +145,23 @@ export default {
     kindHave: '必要',
     kindWant: '希望',
     budgetAmount: '予算額',
-    budgetPeriod: '予算期間'
+    budgetPeriod: '予算期間',
+    formTitleEdit: 'カテゴリを編集',
+    formTitleChild: 'サブカテゴリを追加',
+    formTitleCreate: 'カテゴリを追加',
+    labelName: '名称 *',
+    placeholderName: 'カテゴリ名',
+    labelParent: '親カテゴリ',
+    labelIcon: 'アイコン',
+    placeholderIcon: '絵文字または空欄',
+    labelColor: '色',
+    labelSortOrder: '並び順',
+    placeholderSortOrder: '0',
+    labelArchived: 'アーカイブ済み',
+    btnCreateSubcategory: 'サブカテゴリを作成',
+    btnCreateCategory: 'カテゴリを作成',
+    filterActive: '有効',
+    filterArchived: 'アーカイブ'
   },
   budgetAnalysis: {
     title: '予算分析',

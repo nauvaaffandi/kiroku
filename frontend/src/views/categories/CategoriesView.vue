@@ -42,8 +42,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useCategoriesStore } from '@/stores/categories'
 import { useI18n } from '@/locales'
-import type { Category, CategoryFilters } from '@/types'
-import { CategoryTree, CategoryFormModal } from '@/widgets/categories'
+import type { Category, CategoryFilters as CategoryFiltersType } from '@/types'
+import { CategoryTree, CategoryFormModal, CategoryFilters } from '@/widgets/categories'
 import { BaseButton } from '@/components/ui'
 
 const categoriesStore = useCategoriesStore()
@@ -55,9 +55,8 @@ const showFormModal = ref(false)
 const editingCategory = ref<Category | null>(null)
 const creatingChildParent = ref<Category | null>(null)
 
-const localFilters = ref<CategoryFilters>({
+const localFilters = ref<CategoryFiltersType>({
   q: '',
-  type: '',
   archived: '',
   sort: 'sort_order',
   order: 'ASC'
@@ -104,7 +103,7 @@ const handleCreateChild = (parent: Category) => {
 }
 
 const handleDelete = (id: string) => {
-  if (confirm('Are you sure you want to delete this category?')) {
+  if (confirm(t('common.confirm') + '?')) {
     categoriesStore.deleteCategory(id)
   }
 }

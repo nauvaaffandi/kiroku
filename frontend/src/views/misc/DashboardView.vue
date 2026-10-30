@@ -87,12 +87,11 @@ const initCharts = async () => {
   if (spendingChart.value && categoriesStore.categories.length > 0) {
     spendingChartInstance = echarts.init(spendingChart.value)
     const expenseCats = categoriesStore.categories
-      .filter(c => c.type === 'expense')
       .slice(0, 8)
     
     const data = expenseCats.map(c => {
       const total = (transactionsStore.transactions || [])
-        .filter(t => t.category_id === c.id && t.type === 'expense')
+        .filter(t => t.category_id === c.id)
         .reduce((sum, t) => sum + t.amount, 0)
       return { name: c.name, value: total, color: c.color }
     }).sort((a, b) => b.value - a.value)

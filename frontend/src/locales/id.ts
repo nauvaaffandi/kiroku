@@ -137,6 +137,7 @@ export default {
   },
   categories: {
     title: 'Kategori',
+    subtitle: 'Kelola kategori transaksi dan hierarki',
     addCategory: 'Tambah Kategori',
     name: 'Nama',
     kind: 'Jenis',
@@ -144,7 +145,23 @@ export default {
     kindHave: 'Perlu',
     kindWant: 'Ingin',
     budgetAmount: 'Jumlah Anggaran',
-    budgetPeriod: 'Periode Anggaran'
+    budgetPeriod: 'Periode Anggaran',
+    formTitleEdit: 'Edit Kategori',
+    formTitleChild: 'Subkategori Baru',
+    formTitleCreate: 'Kategori Baru',
+    labelName: 'Nama *',
+    placeholderName: 'Nama kategori',
+    labelParent: 'Induk',
+    labelIcon: 'Ikon',
+    placeholderIcon: 'Emoji atau kosongkan',
+    labelColor: 'Warna',
+    labelSortOrder: 'Urutan',
+    placeholderSortOrder: '0',
+    labelArchived: 'Diarsipkan',
+    btnCreateSubcategory: 'Buat Subkategori',
+    btnCreateCategory: 'Buat Kategori',
+    filterActive: 'Aktif',
+    filterArchived: 'Diarsipkan'
   },
   budgetAnalysis: {
     title: 'Analisis Anggaran',

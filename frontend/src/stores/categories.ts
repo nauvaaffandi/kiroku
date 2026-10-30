@@ -12,7 +12,6 @@ export const useCategoriesStore = defineStore('categories', () => {
   const pagination = ref({ page: 1, pageSize: 50, total: 0 })
   const filters = ref<CategoryFilters>({
     q: '',
-    type: '',
     archived: '',
     sort: 'sort_order',
     order: 'ASC'
