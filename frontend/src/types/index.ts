@@ -35,3 +35,6 @@ export * from './calendar'
 
 // Receipts
 export * from './receipt'
+
+// Labels
+export * from './label'

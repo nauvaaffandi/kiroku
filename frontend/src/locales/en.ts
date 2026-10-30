@@ -66,6 +66,7 @@ export default {
     reports: 'Reports',
     sharedAccess: 'Shared Access',
     settings: 'Settings',
+    labels: 'Labels',
     about: 'About',
     logout: 'Logout',
     login: 'Login',
@@ -278,5 +279,25 @@ export default {
     architecture: 'Architecture',
     acknowledgments: 'Acknowledgments',
     acknowledgmentsDesc: 'Built with open source technologies. Thanks to all contributors and the open source community.'
+  },
+  labels: {
+    title: 'Labels',
+    addLabel: 'Add Label',
+    name: 'Name',
+    color: 'Color',
+    icon: 'Icon',
+    description: 'Description',
+    sortOrder: 'Sort Order',
+    save: 'Save Label',
+    deleteConfirm: 'Delete label "{{name}}"? This removes it from linked transactions.',
+    deleteSuccess: 'Label deleted',
+    createSuccess: 'Label created',
+    updateSuccess: 'Label updated',
+    empty: 'No labels yet',
+    legacyLabels: 'Legacy labels',
+    legacyNote: 'Legacy label strings are kept for compatibility and shown separately.',
+    inlineCreate: 'Create label',
+    requiredName: 'Label name is required',
+    invalidColor: 'Invalid color format'
   }
 }

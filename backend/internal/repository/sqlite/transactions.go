@@ -113,11 +113,29 @@ func (r *TransactionsRepo) Create(ctx context.Context, input domain.CreateTransa
 	labelsStr := strings.Join(input.Labels, ",")
 	attachmentsStr, _ := jsonMarshal(input.Attachments)
 
-	_, err := r.db.ExecContext(ctx, `
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(ctx, `
 		INSERT INTO transactions (id, type, date_time, amount, currency, from_account_id, to_account_id, category_id, labels, note, payee_payer, payment_type, warranty_until, status, place_name, place_lat, place_lng, attachments, template_id)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, id, input.Type, input.DateTime, input.Amount, input.Currency, input.FromAccountID, input.ToAccountID, input.CategoryID, labelsStr, input.Note, input.PayeePayer, input.PaymentType, input.WarrantyUntil, status, input.PlaceName, input.PlaceLat, input.PlaceLng, string(attachmentsStr), input.TemplateID)
 	if err != nil {
+		return nil, err
+	}
+
+	if len(input.LabelIDs) > 0 {
+		for _, lid := range input.LabelIDs {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO transaction_labels (transaction_id, label_id) VALUES (?, ?)`, id, lid); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 	return r.Get(ctx, id)
@@ -179,12 +197,38 @@ func (r *TransactionsRepo) Update(ctx context.Context, id string, input domain.U
 		setParts = append(setParts, "attachments = ?")
 		args = append(args, string(attStr))
 	}
-	if len(setParts) == 0 {
+	if len(setParts) == 0 && input.LabelIDs == nil {
 		return r.Get(ctx, id)
 	}
-	args = append(args, id)
-	_, err := r.db.ExecContext(ctx, "UPDATE transactions SET "+strings.Join(setParts, ", ")+" WHERE id = ?", args...)
+
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if len(setParts) > 0 {
+		args = append(args, id)
+		_, err := tx.ExecContext(ctx, "UPDATE transactions SET "+strings.Join(setParts, ", ")+" WHERE id = ?", args...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if input.LabelIDs != nil {
+		_, err := tx.ExecContext(ctx, `DELETE FROM transaction_labels WHERE transaction_id = ?`, id)
+		if err != nil {
+			return nil, err
+		}
+		for _, lid := range *input.LabelIDs {
+			_, err := tx.ExecContext(ctx, `INSERT INTO transaction_labels (transaction_id, label_id) VALUES (?, ?)`, id, lid)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 	return r.Get(ctx, id)
@@ -341,6 +385,23 @@ func (r *TransactionsRepo) scanTransactions(ctx context.Context, query string, a
 		}
 		if labelsStr.Valid && labelsStr.String != "" {
 			t.Labels = strings.Split(labelsStr.String, ",")
+		}
+		// Load label IDs from junction table
+		labelRows, err := r.db.QueryContext(ctx, `SELECT label_id FROM transaction_labels WHERE transaction_id = ?`, t.ID)
+		if err == nil {
+			var lIDs []string
+			for labelRows.Next() {
+				var lid string
+				if err := labelRows.Scan(&lid); err == nil {
+					lIDs = append(lIDs, lid)
+				}
+			}
+			labelRows.Close()
+			if lIDs != nil {
+				t.LabelIDs = lIDs
+			} else {
+				t.LabelIDs = []string{}
+			}
 		}
 		out = append(out, t)
 	}

@@ -54,6 +54,7 @@ func main() {
 	reportsRepo := sqlite.NewReportsRepo(database)
 	sharedRepo := sqlite.NewSharedRepo(database)
 	fxRepo := sqlite.NewFXRepo(database)
+	labelsRepo := sqlite.NewLabelsRepo(database)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -103,6 +104,12 @@ func main() {
 
 		fxHandler := httpdelivery.NewFXHandler(fxRepo)
 		r.Mount("/fx", fxHandler.Routes())
+
+		labelsHandler := httpdelivery.NewLabelsHandler(labelsRepo)
+		r.Group(func(r chi.Router) {
+			r.Use(auth.AuthMiddleware(cfg))
+			r.Mount("/labels", labelsHandler.Routes())
+		})
 	})
 
 	srv := &http.Server{

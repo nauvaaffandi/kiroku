@@ -261,7 +261,7 @@ watch(() => props.modelValue, (val) => {
       category_id: props.transaction.category_id || '',
       payment_type: props.transaction.payment_type || '',
       payee_payer: props.transaction.payee_payer || '',
-      labels: props.transaction.labels || '',
+       labels: Array.isArray(props.transaction.labels) ? props.transaction.labels.join(', ') : (props.transaction.labels || ''),
       note: props.transaction.note || '',
       place_name: props.transaction.place_name || '',
       warranty_until: props.transaction.warranty_until || '',

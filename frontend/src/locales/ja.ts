@@ -66,6 +66,7 @@ export default {
     reports: 'レポート',
     sharedAccess: '共有アクセス',
     settings: '設定',
+    labels: 'ラベル',
     about: 'アプリについて',
     logout: 'ログアウト',
     login: 'ログイン',
@@ -287,5 +288,25 @@ export default {
     architecture: 'アーキテクチャ',
     acknowledgments: '謝辞',
     acknowledgmentsDesc: 'オープンソーステクノロジーで構築されています。すべてのコントリビューターとオープンソースコミュニティに感謝します。'
+  },
+  labels: {
+    title: 'ラベル',
+    addLabel: 'ラベルを追加',
+    name: '名称',
+    color: '色',
+    icon: 'アイコン',
+    description: '説明',
+    sortOrder: '並び順',
+    save: 'ラベルを保存',
+    deleteConfirm: 'ラベル "{{name}}" を削除しますか？紐付けられた取引から削除されます。',
+    deleteSuccess: 'ラベルを削除しました',
+    createSuccess: 'ラベルを作成しました',
+    updateSuccess: 'ラベルを更新しました',
+    empty: 'ラベルがありません',
+    legacyLabels: 'レガシーラベル',
+    legacyNote: '互換性のために保持されているレガシーラベル文字列です。',
+    inlineCreate: 'ラベルを作成',
+    requiredName: 'ラベル名は必須です',
+    invalidColor: '無効なカラー形式です'
   }
 }

@@ -123,6 +123,7 @@ import TransactionsIcon from '@/components/icons/TransactionsIcon.vue'
 import CalendarIcon from '@/components/icons/CalendarIcon.vue'
 import AccountsIcon from '@/components/icons/AccountsIcon.vue'
 import CategoriesIcon from '@/components/icons/CategoriesIcon.vue'
+import LabelsIcon from '@/components/icons/LabelsIcon.vue'
 import ScheduledIcon from '@/components/icons/ScheduledIcon.vue'
 import ReportsIcon from '@/components/icons/ReportsIcon.vue'
 import AnalyticsIcon from '@/components/icons/AnalyticsIcon.vue'
@@ -157,6 +158,7 @@ const analyticsItems = [
 const bottomMainNavItems = [
   { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon, color: '#06b6d4' }, // cyan-500
   { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon, color: '#84cc16' }, // lime-500
+  { path: '/labels', label: t('nav.labels'), icon: LabelsIcon, color: '#6366f1' }, // indigo-500
   { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon, color: '#0ea5e9' }, // sky-500
   { path: '/reports', label: t('nav.reports'), icon: ReportsIcon, color: '#a855f7' }, // purple-500
   { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon, color: '#f97316' } // orange-500

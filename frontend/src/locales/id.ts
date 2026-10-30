@@ -66,6 +66,7 @@ export default {
     reports: 'Laporan',
     sharedAccess: 'Akses Berbagi',
     settings: 'Pengaturan',
+    labels: 'Label',
     about: 'Tentang',
     logout: 'Keluar',
     login: 'Masuk',
@@ -287,5 +288,25 @@ export default {
     architecture: 'Arsitektur',
     acknowledgments: 'Pengakuan',
     acknowledgmentsDesc: 'Dibangun dengan teknologi sumber terbuka. Terima kasih kepada semua kontributor dan komunitas sumber terbuka.'
+  },
+  labels: {
+    title: 'Label',
+    addLabel: 'Tambah Label',
+    name: 'Nama',
+    color: 'Warna',
+    icon: 'Ikon',
+    description: 'Deskripsi',
+    sortOrder: 'Urutan',
+    save: 'Simpan Label',
+    deleteConfirm: 'Hapus label "{{name}}"? Ini akan menghapusnya dari transaksi terkait.',
+    deleteSuccess: 'Label dihapus',
+    createSuccess: 'Label dibuat',
+    updateSuccess: 'Label diperbarui',
+    empty: 'Belum ada label',
+    legacyLabels: 'Label lama',
+    legacyNote: 'Teks label lama disimpan untuk kompatibilitas dan ditampilkan terpisah.',
+    inlineCreate: 'Buat label',
+    requiredName: 'Nama label wajib diisi',
+    invalidColor: 'Format warna tidak valid'
   }
 }

@@ -36,6 +36,7 @@ type Transaction struct {
 	ToAccountID   *string    `json:"to_account_id,omitempty"`
 	CategoryID    *string    `json:"category_id,omitempty"`
 	Labels        []string   `json:"labels,omitempty"`
+	LabelIDs      []string   `json:"label_ids,omitempty"`
 	Note          string     `json:"note,omitempty"`
 	PayeePayer    string     `json:"payee_payer,omitempty"`
 	PaymentType   string     `json:"payment_type,omitempty"`
@@ -60,16 +61,17 @@ type CreateTransactionInput struct {
 	ToAccountID   *string
 	CategoryID    *string
 	Labels        []string
+	LabelIDs      []string `json:"label_ids"`
 	Note          string
-	PayeePayer    string
-	PaymentType   string
-	WarrantyUntil *time.Time
-	Status        string
-	PlaceName     string
-	PlaceLat      *float64
-	PlaceLng      *float64
-	Attachments   []Attachment
-	TemplateID    *string
+	PayeePayer    string       `json:"payee_payer"`
+	PaymentType   string       `json:"payment_type"`
+	WarrantyUntil *time.Time   `json:"warranty_until"`
+	Status        string       `json:"status"`
+	PlaceName     string       `json:"place_name"`
+	PlaceLat      *float64     `json:"place_lat"`
+	PlaceLng      *float64     `json:"place_lng"`
+	Attachments   []Attachment `json:"attachments"`
+	TemplateID    *string      `json:"template_id"`
 }
 
 type UpdateTransactionInput struct {
@@ -81,16 +83,17 @@ type UpdateTransactionInput struct {
 	ToAccountID   *string
 	CategoryID    *string
 	Labels        []string
+	LabelIDs      *[]string `json:"label_ids"`
 	Note          *string
-	PayeePayer    *string
-	PaymentType   *string
-	WarrantyUntil *time.Time
-	Status        *string
-	PlaceName     *string
-	PlaceLat      *float64
-	PlaceLng      *float64
-	Attachments   []Attachment
-	TemplateID    *string
+	PayeePayer    *string      `json:"payee_payer"`
+	PaymentType   *string      `json:"payment_type"`
+	WarrantyUntil *time.Time   `json:"warranty_until"`
+	Status        *string      `json:"status"`
+	PlaceName     *string      `json:"place_name"`
+	PlaceLat      *float64     `json:"place_lat"`
+	PlaceLng      *float64     `json:"place_lng"`
+	Attachments   []Attachment `json:"attachments"`
+	TemplateID    *string      `json:"template_id"`
 }
 
 type TransactionFilter struct {
@@ -129,5 +132,6 @@ type BatchInput struct {
 	IDs        []string
 	Action     BatchAction
 	CategoryID *string
-	Labels     []string
+	Labels        []string
+	LabelIDs      []string
 }

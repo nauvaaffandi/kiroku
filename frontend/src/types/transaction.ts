@@ -13,7 +13,8 @@ export interface Transaction {
   from_account_id: string | null
   to_account_id: string | null
   category_id: string | null
-  labels: string
+  labels: string | string[]
+  label_ids?: string[]
   note: string
   payee_payer: string
   payment_type: string
@@ -60,7 +61,8 @@ export interface CreateTransactionRequest {
   from_account_id?: string | null
   to_account_id?: string | null
   category_id?: string | null
-  labels?: string
+  labels?: string | string[]
+  label_ids?: string[]
   note?: string
   payee_payer?: string
   payment_type?: string
@@ -81,7 +83,8 @@ export interface UpdateTransactionRequest {
   from_account_id?: string | null
   to_account_id?: string | null
   category_id?: string | null
-  labels?: string
+  labels?: string | string[]
+  label_ids?: string[]
   note?: string
   payee_payer?: string
   payment_type?: string

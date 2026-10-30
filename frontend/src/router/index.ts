@@ -75,6 +75,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/labels',
+      name: 'Labels',
+      component: () => import('@/views/labels/LabelsView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/shared/:token',
       name: 'SharedView',
       component: () => import('@/views/shared/SharedView.vue'),
