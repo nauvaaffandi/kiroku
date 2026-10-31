@@ -82,40 +82,43 @@ func main() {
 		authHandler := auth.NewHandler(database, cfg, tgService)
 		r.Mount("/auth", authHandler.Routes())
 
-		r.Use(auth.AuthMiddleware(cfg))
+		// Public /auth routes mounted above; all remaining routes require auth
+		r.Group(func(r chi.Router) {
+			r.Use(auth.AuthMiddleware(cfg))
 
-		accHandler := httpdelivery.NewAccountsHandler(accountsRepo)
-		r.Mount("/accounts", accHandler.Routes())
+			accHandler := httpdelivery.NewAccountsHandler(accountsRepo)
+			r.Mount("/accounts", accHandler.Routes())
 
-		catHandler := httpdelivery.NewCategoriesHandler(categoriesRepo)
-		r.Mount("/categories", catHandler.Routes())
+			catHandler := httpdelivery.NewCategoriesHandler(categoriesRepo)
+			r.Mount("/categories", catHandler.Routes())
 
-		txnHandler := httpdelivery.NewTransactionsHandler(transactionsRepo)
-		r.Mount("/transactions", txnHandler.Routes())
+			txnHandler := httpdelivery.NewTransactionsHandler(transactionsRepo)
+			r.Mount("/transactions", txnHandler.Routes())
 
-		tmplHandler := httpdelivery.NewTemplatesHandler(templatesRepo)
-		r.Mount("/templates", tmplHandler.Routes())
+			tmplHandler := httpdelivery.NewTemplatesHandler(templatesRepo)
+			r.Mount("/templates", tmplHandler.Routes())
 
-		schedHandler := httpdelivery.NewScheduledHandler(scheduledRepo)
-		r.Mount("/scheduled", schedHandler.Routes())
+			schedHandler := httpdelivery.NewScheduledHandler(scheduledRepo)
+			r.Mount("/scheduled", schedHandler.Routes())
 
-		repHandler := httpdelivery.NewReportsHandler(reportsRepo)
-		r.Mount("/reports", repHandler.Routes())
+			repHandler := httpdelivery.NewReportsHandler(reportsRepo)
+			r.Mount("/reports", repHandler.Routes())
 
-		setHandler := httpdelivery.NewSettingsHandler(settingsRepo)
-		r.Mount("/settings", setHandler.Routes())
+			setHandler := httpdelivery.NewSettingsHandler(settingsRepo)
+			r.Mount("/settings", setHandler.Routes())
 
-		fxHandler := httpdelivery.NewFXHandler(fxRepo)
-		r.Mount("/fx", fxHandler.Routes())
+			fxHandler := httpdelivery.NewFXHandler(fxRepo)
+			r.Mount("/fx", fxHandler.Routes())
 
-		analyticsHandler := httpdelivery.NewAnalyticsHandler(sqlite.NewAnalyticsRepo(database))
-		r.Mount("/analytics", analyticsHandler.Routes())
+			analyticsHandler := httpdelivery.NewAnalyticsHandler(sqlite.NewAnalyticsRepo(database))
+			r.Mount("/analytics", analyticsHandler.Routes())
 
-		labelsHandler := httpdelivery.NewLabelsHandler(labelsRepo)
-		r.Mount("/labels", labelsHandler.Routes())
+			labelsHandler := httpdelivery.NewLabelsHandler(labelsRepo)
+			r.Mount("/labels", labelsHandler.Routes())
 
-		pushHandler := httpdelivery.NewPushHandler(pushRepo, cfg)
-		r.Mount("/push", pushHandler.Routes())
+			pushHandler := httpdelivery.NewPushHandler(pushRepo, cfg)
+			r.Mount("/push", pushHandler.Routes())
+		})
 	})
 
 	srv := &http.Server{
