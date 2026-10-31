@@ -82,6 +82,8 @@ func main() {
 		authHandler := auth.NewHandler(database, cfg, tgService)
 		r.Mount("/auth", authHandler.Routes())
 
+		r.Use(auth.AuthMiddleware(cfg))
+
 		accHandler := httpdelivery.NewAccountsHandler(accountsRepo)
 		r.Mount("/accounts", accHandler.Routes())
 
@@ -110,16 +112,10 @@ func main() {
 		r.Mount("/analytics", analyticsHandler.Routes())
 
 		labelsHandler := httpdelivery.NewLabelsHandler(labelsRepo)
-		r.Group(func(r chi.Router) {
-			r.Use(auth.AuthMiddleware(cfg))
-			r.Mount("/labels", labelsHandler.Routes())
-		})
+		r.Mount("/labels", labelsHandler.Routes())
 
 		pushHandler := httpdelivery.NewPushHandler(pushRepo, cfg)
-		r.Group(func(r chi.Router) {
-			r.Use(auth.AuthMiddleware(cfg))
-			r.Mount("/push", pushHandler.Routes())
-		})
+		r.Mount("/push", pushHandler.Routes())
 	})
 
 	srv := &http.Server{
