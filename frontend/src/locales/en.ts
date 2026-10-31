@@ -94,10 +94,13 @@ export default {
   },
   dashboard: {
     title: 'Dashboard',
+    summary: 'Monthly Summary',
     totalBalance: 'Total Balance',
     monthlyIncome: 'Income (Monthly)',
     monthlyExpense: 'Expense (Monthly)',
     net: 'Net',
+    accounts: 'Accounts',
+    noAccounts: 'No accounts yet',
     recentTransactions: 'Recent Transactions',
     viewAll: 'View All',
     spendingByCategory: 'Spending by Category',
@@ -152,7 +155,13 @@ export default {
     balance: 'Balance',
     type: 'Type',
     archive: 'Archive',
-    unarchive: 'Unarchive'
+    unarchive: 'Unarchive',
+    typeChecking: 'Checking',
+    typeSavings: 'Savings',
+    typeCredit: 'Credit',
+    typeCash: 'Cash',
+    typeInvestment: 'Investment',
+    typeOther: 'Other'
   },
   categories: {
     title: 'Categories',

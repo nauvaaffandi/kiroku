@@ -94,10 +94,13 @@ export default {
   },
   dashboard: {
     title: 'Dasbor',
+    summary: 'Ringkasan Bulanan',
     totalBalance: 'Saldo Total',
     monthlyIncome: 'Pemasukan Bulanan',
     monthlyExpense: 'Pengeluaran Bulanan',
     net: 'Bersih',
+    accounts: 'Akun',
+    noAccounts: 'Belum ada akun',
     recentTransactions: 'Transaksi Terbaru',
     viewAll: 'Lihat Semua',
     spendingByCategory: 'Pengeluaran per Kategori',
@@ -152,7 +155,13 @@ export default {
     balance: 'Saldo',
     type: 'Tipe',
     archive: 'Arsipkan',
-    unarchive: 'Batal Arsipkan'
+    unarchive: 'Batal Arsipkan',
+    typeChecking: 'Cek',
+    typeSavings: 'Tabungan',
+    typeCredit: 'Kredit',
+    typeCash: 'Tunai',
+    typeInvestment: 'Investasi',
+    typeOther: 'Lainnya'
   },
   categories: {
     title: 'Kategori',

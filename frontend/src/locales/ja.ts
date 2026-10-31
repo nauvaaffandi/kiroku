@@ -94,10 +94,13 @@ export default {
   },
   dashboard: {
     title: 'ダッシュボード',
+    summary: '月次サマリー',
     totalBalance: '総残高',
     monthlyIncome: '月間収入',
     monthlyExpense: '月間支出',
     net: '純収支',
+    accounts: '口座',
+    noAccounts: '口座がありません',
     recentTransactions: '最近の取引',
     viewAll: 'すべて見る',
     spendingByCategory: 'カテゴリ別支出',
@@ -152,7 +155,13 @@ export default {
     balance: '残高',
     type: '種類',
     archive: 'アーカイブ',
-    unarchive: 'アーカイブ解除'
+    unarchive: 'アーカイブ解除',
+    typeChecking: '当座',
+    typeSavings: '貯蓄',
+    typeCredit: 'クレジット',
+    typeCash: '現金',
+    typeInvestment: '投資',
+    typeOther: 'その他'
   },
   categories: {
     title: 'カテゴリ管理',
