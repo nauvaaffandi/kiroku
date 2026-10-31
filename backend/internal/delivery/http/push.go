@@ -61,8 +61,8 @@ func (d *WebPushDelivery) Send(sub *domain.PushSubscription, payload []byte) err
 
 func NewPushHandler(repo domain.PushSubscriptionRepository, cfg *config.Config) *PushHandler {
 	var privKey *ecdsa.PrivateKey
-	if cfg.VAPIDPrivateKey != "" {
-		d, err := base64.RawURLEncoding.DecodeString(cfg.VAPIDPrivateKey)
+	if config.VAPIDPrivateKey() != "" {
+		d, err := base64.RawURLEncoding.DecodeString(config.VAPIDPrivateKey())
 		if err != nil {
 			log.Warn().Err(err).Msg("push: failed to decode VAPID private key")
 		} else {
@@ -76,15 +76,15 @@ func NewPushHandler(repo domain.PushSubscriptionRepository, cfg *config.Config) 
 		}
 	}
 	delivery := &WebPushDelivery{
-		VAPIDPublic:  cfg.VAPIDPublicKey,
+		VAPIDPublic:  config.VAPIDPublicKey(),
 		VAPIDPriv:    privKey,
-		VAPIDSubject: cfg.VAPIDSubject,
+		VAPIDSubject: config.VAPIDSubject(),
 	}
 	return &PushHandler{
 		repo:        repo,
-		vapidPublic: cfg.VAPIDPublicKey,
+		vapidPublic: config.VAPIDPublicKey(),
 		vapidPriv:   privKey,
-		vapidSubj:   cfg.VAPIDSubject,
+		vapidSubj:   config.VAPIDSubject(),
 		delivery:    delivery,
 	}
 }

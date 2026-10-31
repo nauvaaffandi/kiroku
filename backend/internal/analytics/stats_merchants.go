@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -31,7 +32,7 @@ func (h *Handler) GetTopMerchants(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}

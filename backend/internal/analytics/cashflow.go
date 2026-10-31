@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -40,7 +41,7 @@ func (h *Handler) CashFlowProjection(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if currency == "" {
-		currency = h.cfg.FXBaseCurrency
+		currency = config.FXBaseCurrency()
 		if currency == "" {
 			currency = "JPY"
 		}
@@ -83,7 +84,7 @@ func (h *Handler) Calendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	currency := h.cfg.FXBaseCurrency
+	currency := config.FXBaseCurrency()
 	if currency == "" {
 		currency = "JPY"
 	}

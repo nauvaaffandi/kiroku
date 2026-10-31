@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -25,7 +26,7 @@ func (h *Handler) GetGoalsProgress(w http.ResponseWriter, r *http.Request) {
 		dateTo = time.Now().Format("2006-01-02")
 	}
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}

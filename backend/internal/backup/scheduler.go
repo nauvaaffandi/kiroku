@@ -33,8 +33,8 @@ type Scheduler struct {
 func NewScheduler(database *db.DB, cfg *config.Config, root, token string) *Scheduler {
 	var providers []provider.StorageProvider
 	
-	providerNames := provider.ParseProviders(cfg.BackupProviders)
-	if len(providerNames) == 0 && (token != "" || cfg.BackupRepoPath != "") {
+	providerNames := provider.ParseProviders(config.BackupProviders())
+	if len(providerNames) == 0 && (token != "" || config.BackupRepoPath() != "") {
 		providerNames = []string{"git"}
 	}
 
@@ -329,7 +329,7 @@ func StartScheduler(s *Scheduler) {
 			log.Warn().Err(err).Msg("backup: initial run failed")
 		}
 		for {
-			next, err := nextCron(s.cfg.BackupSchedule, time.Now())
+			next, err := nextCron(config.BackupSchedule(), time.Now())
 			if err != nil {
 				log.Warn().Err(err).Msg("backup: invalid schedule, retrying in 1 hour")
 				time.Sleep(time.Hour)

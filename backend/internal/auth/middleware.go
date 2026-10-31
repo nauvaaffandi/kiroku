@@ -34,7 +34,7 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 				return
 			}
 
-			userID, err := ValidateAccessToken(token, cfg.JWTSecret)
+			userID, err := ValidateAccessToken(token, config.JWTSecret())
 			if err != nil {
 				log.Debug().Err(err).Msg("auth: invalid access token")
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
@@ -52,7 +52,7 @@ func OptionalAuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token := extractToken(r)
 			if token != "" {
-				if userID, err := ValidateAccessToken(token, cfg.JWTSecret); err == nil {
+				if userID, err := ValidateAccessToken(token, config.JWTSecret()); err == nil {
 					r = r.WithContext(context.WithValue(r.Context(), userIDKey, userID))
 				}
 			}

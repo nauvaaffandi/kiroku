@@ -294,7 +294,7 @@ func collectAttachments(cfg *config.Config, txs [][]string) []attachment {
 				continue
 			}
 			seen[p] = true
-			full := resolveAttachmentPath(cfg, p)
+			full := resolveAttachmentPath(p)
 			data, err := os.ReadFile(full)
 			if err != nil {
 				continue
@@ -324,14 +324,14 @@ func parseAttachmentPaths(raw string) []string {
 	return nil
 }
 
-func resolveAttachmentPath(cfg *config.Config, p string) string {
+func resolveAttachmentPath(p string) string {
 	if filepath.IsAbs(p) {
 		return p
 	}
 	if strings.HasPrefix(p, "attachments"+string(filepath.Separator)) || p == "attachments" {
-		return filepath.Join(cfg.DataDir, filepath.FromSlash(p))
+		return filepath.Join(config.DataDir(), filepath.FromSlash(p))
 	}
-	return filepath.Join(cfg.DataDir, "attachments", filepath.Base(p))
+	return filepath.Join(config.DataDir(), "attachments", filepath.Base(p))
 }
 
 func contentTypeFor(p string) string {

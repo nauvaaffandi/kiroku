@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -58,7 +59,7 @@ func (h *Handler) GetBalanceTrend(w http.ResponseWriter, r *http.Request) {
 			OpeningBalance: opening,
 			ClosingBalance: closing,
 			NetChange:      net,
-			Currency:       h.cfg.FXBaseCurrency,
+			Currency:       config.FXBaseCurrency(),
 		})
 
 		currStart = currEnd

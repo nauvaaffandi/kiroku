@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -48,7 +49,11 @@ func (h *Handler) ChangePin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHash, err := HashPin(string(req.NewPIN), h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin(string(req.NewPIN),
+		config.Argon2Time(),
+		config.Argon2Memory(),
+		config.Argon2Threads(),
+	)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: hash new pin")
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -166,7 +171,11 @@ func (h *Handler) VerifyPinChange(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHash, err := HashPin(string(req.NewPIN), h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin(string(req.NewPIN),
+		config.Argon2Time(),
+		config.Argon2Memory(),
+		config.Argon2Threads(),
+	)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: hash new pin")
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -275,7 +284,11 @@ func (h *Handler) VerifyPinReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newHash, err := HashPin(string(req.NewPIN), h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin(string(req.NewPIN),
+		config.Argon2Time(),
+		config.Argon2Memory(),
+		config.Argon2Threads(),
+	)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: hash new pin")
 		http.Error(w, "internal error", http.StatusInternalServerError)

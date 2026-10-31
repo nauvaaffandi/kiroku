@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -65,7 +66,7 @@ func (h *Handler) GetStatsByCategory(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}

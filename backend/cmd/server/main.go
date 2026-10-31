@@ -26,7 +26,7 @@ import (
 )
 
 func main() {
-	devMode := os.Getenv("KIROKU_DEV") == "true"
+	devMode := config.KIROKUDev()
 	logger.Init(devMode)
 
 	cfg, err := config.Load()
@@ -34,7 +34,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to load config")
 	}
 
-	database, err := db.Open(cfg)
+	database, err := db.Open(config.DataDir())
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to open database")
 	}
@@ -131,13 +131,13 @@ func main() {
 		var count int
 		database.QueryRow("SELECT COUNT(*) FROM fx_rates").Scan(&count)
 		if count == 0 {
-			_ = sqlite.FetchAndStoreFX(database, cfg.FXBaseCurrency)
+			_ = sqlite.FetchAndStoreFX(database, config.FXBaseCurrency())
 		}
 	}()
 
-	if cfg.TunnelEnabled {
-		urlFile := filepath.Join(cfg.DataDir, ".working", "backend-url.txt")
-		tunnelMgr := tunnel.NewManager("http://localhost"+cfg.Addr, urlFile, cfg.UpstashRedisRestURL, cfg.UpstashRedisRestToken)
+	if config.TunnelEnabled() {
+		urlFile := filepath.Join(config.DataDir(), ".working", "backend-url.txt")
+		tunnelMgr := tunnel.NewManager("http://localhost"+cfg.Addr, urlFile, config.UpstashRedisRestURL(), config.UpstashRedisRestToken())
 		_ = tunnelMgr.Start()
 		defer tunnelMgr.Stop()
 	}

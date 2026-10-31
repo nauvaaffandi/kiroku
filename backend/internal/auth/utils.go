@@ -1,40 +1,46 @@
 package auth
 
 import (
-    "database/sql"
-    "net/http"
-    "time"
+	"database/sql"
+	"net/http"
+	"time"
 
-    "github.com/google/uuid"
-    "github.com/rs/zerolog/log"
+	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
+
+	"kiroku/backend/internal/config"
 )
 
 // getOrCreateUser returns an existing user ID or creates one with a default PIN hash
 func (h *Handler) getOrCreateUser() (string, error) {
-    var userID string
-    err := h.db.QueryRow("SELECT id FROM users LIMIT 1").Scan(&userID)
-    if err == nil {
-        return userID, nil
-    }
-    if err != sql.ErrNoRows {
-        return "", err
-    }
+	var userID string
+	err := h.db.QueryRow("SELECT id FROM users LIMIT 1").Scan(&userID)
+	if err == nil {
+		return userID, nil
+	}
+	if err != sql.ErrNoRows {
+		return "", err
+	}
 
-    hash, err := HashPin("123456", h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
-    if err != nil {
-        return "", err
-    }
+	hash, err := HashPin("123456",
+		config.Argon2Time(),
+		config.Argon2Memory(),
+		config.Argon2Threads(),
+	)
+	if err != nil {
+		return "", err
+	}
 
-    userID = uuid.New().String()
-    _, err = h.db.Exec(
-        "INSERT INTO users (id, email, pin_hash) VALUES (?, ?, ?)",
-        userID, "user@kiroku.local", hash,
-    )
-    if err != nil {
-        return "", err
-    }
+	userID = uuid.New().String()
+	_, err = h.db.Exec(
+		"INSERT INTO users (id, email, pin_hash) VALUES (?, ?, ?)",
+		userID, "user@kiroku.local", hash,
+	)
+	if err != nil {
+		return "", err
+	}
 
-    return userID, nil
+	return userID, nil
 }
 
 // setAuthCookies sets the access and refresh cookies on the response
@@ -100,7 +106,11 @@ func (h *Handler) CheckAndResetPinHash() {
 
 	log.Warn().Msg("auth: default PIN hash invalid, resetting")
 
-	newHash, err := HashPin("123456", h.cfg.Argon2Time, h.cfg.Argon2Memory, h.cfg.Argon2Threads)
+	newHash, err := HashPin("123456",
+		config.Argon2Time(),
+		config.Argon2Memory(),
+		config.Argon2Threads(),
+	)
 	if err != nil {
 		log.Error().Err(err).Msg("auth: failed to hash new PIN")
 		return

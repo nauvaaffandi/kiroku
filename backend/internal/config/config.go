@@ -1,58 +1,17 @@
 package config
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
 	"crypto/rand"
-	"encoding/base64"
 	"encoding/hex"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
-
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/env"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/v2"
 )
 
 type Config struct {
-	Addr          string        `koanf:"addr"`
-	DataDir       string        `koanf:"data_dir"`
-	DBPath        string        `koanf:"db_path"`
-	JWTSecret     string        `koanf:"jwt_secret"`
-	JWTAccessTTL  time.Duration `koanf:"jwt_access_ttl"`
-	JWTRefreshTTL time.Duration `koanf:"jwt_refresh_ttl"`
-	Argon2Time    uint32        `koanf:"argon2_time"`
-	Argon2Memory  uint32        `koanf:"argon2_memory"`
-	Argon2Threads uint8         `koanf:"argon2_threads"`
-	// WARNING: Changing Argon2 parameters will invalidate existing password hashes.
-	// All existing users will need to reset their passwords.
-	FXBaseCurrency           string `koanf:"fx_base_currency"`
-	BackupSchedule           string `koanf:"backup_schedule"`
-	BackupRetentionDaily     int    `koanf:"backup_retention_daily"`
-	BackupRetentionWeekly    int    `koanf:"backup_retention_weekly"`
-	BackupRetentionMonthly   int    `koanf:"backup_retention_monthly"`
-	BackupPassphrase         string `koanf:"backup_passphrase"`
-	BackupRepoPath           string `koanf:"backup_repo_path"`
-	BackupGitToken           string `koanf:"backup_git_token"`
-	BackupProviders          string `koanf:"backup_providers"`
-	OCRSpaceAPIKey           string `koanf:"ocr_space_api_key"`
-	NineRouterBaseURL        string `koanf:"ninerouter_base_url"`
-	NineRouterAPIKey         string `koanf:"ninerouter_api_key"`
-	NineRouterModelComboName string `koanf:"ninerouter_model_combo_name"`
-	MockOCREnabled           bool   `koanf:"mock_ocr_enabled"`
-	TelegramBotToken         string `koanf:"telegram_bot_token"`
-	TelegramBotUsername      string `koanf:"telegram_bot_username"`
-	TelegramWebhookSecret    string `koanf:"telegram_webhook_secret"`
-	UpstashRedisRestURL      string `koanf:"upstash_redis_rest_url"`
-	UpstashRedisRestToken    string `koanf:"upstash_redis_rest_token"`
-	TunnelEnabled            bool   `koanf:"tunnel_enabled"`
-	LogRetention             string `koanf:"log_retention"`
-	VAPIDPublicKey           string `koanf:"vapid_public_key"`
-	VAPIDPrivateKey          string `koanf:"vapid_private_key"`
-	VAPIDSubject             string `koanf:"vapid_subject"`
+	Addr string
 }
 
 func loadDotEnv() {
@@ -81,163 +40,232 @@ func loadDotEnv() {
 
 func Load() (*Config, error) {
 	loadDotEnv()
-	k := koanf.New(".")
-
-	k.Load(file.Provider(filepath.Join(".", "config.yaml")), yaml.Parser())
-	k.Load(env.Provider("KIROKU_", ".", func(s string) string {
-		return strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "KIROKU_")), "_", ".")
-	}), nil)
-
-	cfg := &Config{}
-	if err := k.Unmarshal("", cfg); err != nil {
-		return nil, err
+	addr := os.Getenv("PORT")
+	if addr == "" {
+		addr = "8080"
 	}
-
-	if cfg.Addr == "" {
-		cfg.Addr = ":8080"
-	}
-	if cfg.DataDir == "" {
-		cfg.DataDir = "./data"
-	}
-	if cfg.DBPath == "" {
-		cfg.DBPath = "kiroku.db"
-	}
-	if cfg.JWTSecret == "" {
-		cfg.JWTSecret = "changeme"
-	}
-	if cfg.JWTAccessTTL == 0 {
-		cfg.JWTAccessTTL = 15 * time.Minute
-	}
-	if cfg.JWTRefreshTTL == 0 {
-		cfg.JWTRefreshTTL = 168 * time.Hour
-	}
-	if cfg.Argon2Time == 0 {
-		cfg.Argon2Time = 3
-	}
-	if cfg.Argon2Memory == 0 {
-		cfg.Argon2Memory = 65536
-	}
-	if cfg.Argon2Threads == 0 {
-		cfg.Argon2Threads = 4
-	}
-	if cfg.FXBaseCurrency == "" {
-		cfg.FXBaseCurrency = "JPY"
-	}
-	if cfg.BackupSchedule == "" {
-		cfg.BackupSchedule = "0 3 * * *"
-	}
-	if cfg.BackupRetentionDaily == 0 {
-		cfg.BackupRetentionDaily = 7
-	}
-	if cfg.BackupRetentionWeekly == 0 {
-		cfg.BackupRetentionWeekly = 4
-	}
-	if cfg.BackupRetentionMonthly == 0 {
-		cfg.BackupRetentionMonthly = 6
-	}
-	if cfg.BackupRepoPath == "" {
-		cfg.BackupRepoPath = "backup/kiroku-backup-storage"
-	}
-	if cfg.BackupGitToken == "" {
-		cfg.BackupGitToken = os.Getenv("KIROKU_BACKUP_GIT_TOKEN")
-	}
-	if cfg.BackupGitToken == "" {
-		cfg.BackupGitToken = os.Getenv("BACKUP_GIT_TOKEN")
-	}
-	if cfg.NineRouterBaseURL == "" {
-		cfg.NineRouterBaseURL = "http://localhost:20128/v1"
-	}
-	if cfg.NineRouterModelComboName == "" {
-		cfg.NineRouterModelComboName = "main"
-	}
-
-	// Environment variable fallbacks for Telegram & Upstash
-	if cfg.TelegramBotToken == "" {
-		cfg.TelegramBotToken = os.Getenv("TELEGRAM_BOT_TOKEN")
-	}
-	if cfg.TelegramBotUsername == "" {
-		cfg.TelegramBotUsername = GetEnv("TELEGRAM_BOT_USERNAME", "nauva_kiroku_bot")
-	}
-	if cfg.TelegramWebhookSecret == "" {
-		cfg.TelegramWebhookSecret = os.Getenv("TELEGRAM_WEBHOOK_SECRET")
-	}
-	if cfg.TelegramWebhookSecret == "" {
-		// Auto-generate random 32-hex-char secret if not set
-		bytes := make([]byte, 16)
-		if _, err := rand.Read(bytes); err == nil {
-			cfg.TelegramWebhookSecret = hex.EncodeToString(bytes)
-		}
-	}
-	if cfg.UpstashRedisRestURL == "" {
-		cfg.UpstashRedisRestURL = os.Getenv("UPSTASH_REDIS_REST_URL")
-	}
-	if cfg.UpstashRedisRestToken == "" {
-		cfg.UpstashRedisRestToken = os.Getenv("UPSTASH_REDIS_REST_TOKEN")
-	}
-	if cfg.UpstashRedisRestToken == "" {
-		cfg.UpstashRedisRestToken = os.Getenv("BACKEND_UPSTASH_REDIS_REST_TOKEN")
-	}
-	if cfg.LogRetention == "" {
-		cfg.LogRetention = os.Getenv("KIROKU_LOG_RETENTION")
-	}
-	if cfg.LogRetention == "" {
-		cfg.LogRetention = os.Getenv("LOG_RETENTION")
-	}
-	if cfg.LogRetention == "" {
-		cfg.LogRetention = "90d"
-	}
-
-	// VAPID configuration: env var fallbacks; generate fresh key pair if missing
-	if cfg.VAPIDPublicKey == "" {
-		cfg.VAPIDPublicKey = os.Getenv("VAPID_PUBLIC_KEY")
-	}
-	if cfg.VAPIDPrivateKey == "" {
-		cfg.VAPIDPrivateKey = os.Getenv("VAPID_PRIVATE_KEY")
-	}
-	if cfg.VAPIDSubject == "" {
-		cfg.VAPIDSubject = os.Getenv("VAPID_SUBJECT")
-		if cfg.VAPIDSubject == "" {
-			cfg.VAPIDSubject = "mailto:admin@kiroku.local"
-		}
-	}
-	if cfg.VAPIDPublicKey == "" || cfg.VAPIDPrivateKey == "" {
-		pubKey, privKey, err := generateVAPIDKeys()
-		if err == nil {
-			if cfg.VAPIDPublicKey == "" {
-				cfg.VAPIDPublicKey = pubKey
-			}
-			if cfg.VAPIDPrivateKey == "" {
-				cfg.VAPIDPrivateKey = privKey
-			}
-		}
-	}
-
-	if os.Getenv("KIROKU_TUNNEL_ENABLED") == "false" || os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") == "false" {
-		cfg.TunnelEnabled = false
-	} else {
-		cfg.TunnelEnabled = true
-	}
-	return cfg, nil
+	return &Config{
+		Addr: ":" + addr,
+	}, nil
 }
 
-func (c *Config) FullDBPath() string {
-	return filepath.Join(c.DataDir, c.DBPath)
+// FXBaseCurrency returns the base currency from FX_BASE_CURRENCY env var, default "JPY".
+func FXBaseCurrency() string {
+	if v := os.Getenv("FX_BASE_CURRENCY"); v != "" {
+		return v
+	}
+	return "JPY"
 }
 
-func GetEnv(key, fallback string) string {
+// BackupSchedule returns the backup cron schedule from BACKUP_SCHEDULE env var, default "0 3 * * *".
+func BackupSchedule() string {
+	if v := os.Getenv("BACKUP_SCHEDULE"); v != "" {
+		return v
+	}
+	return "0 3 * * *"
+}
+
+// BackupRetentionDaily returns daily retention count from BACKUP_RETENTION_DAILY env var, default 7.
+func BackupRetentionDaily() int {
+	return retentionEnv("BACKUP_RETENTION_DAILY", 7)
+}
+
+// BackupRetentionWeekly returns weekly retention count from BACKUP_RETENTION_WEEKLY env var, default 4.
+func BackupRetentionWeekly() int {
+	return retentionEnv("BACKUP_RETENTION_WEEKLY", 4)
+}
+
+// BackupRetentionMonthly returns monthly retention count from BACKUP_RETENTION_MONTHLY env var, default 6.
+func BackupRetentionMonthly() int {
+	return retentionEnv("BACKUP_RETENTION_MONTHLY", 6)
+}
+
+func retentionEnv(key string, def int) int {
+	if v := os.Getenv(key); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			return n
+		}
+	}
+	return def
+}
+
+// FullDBPath returns the full path to the database file.
+func FullDBPath(dataDir string) string {
+	return filepath.Join(dataDir, "kiroku.db")
+}
+
+// GetEnv returns the value of the named environment variable, or def if unset.
+func GetEnv(key, def string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
 	}
-	return fallback
+	return def
 }
 
-func generateVAPIDKeys() (string, string, error) {
-	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return "", "", err
+// VAPIDPublicKey returns the VAPID public key from VAPID_PUBLIC_KEY env var.
+func VAPIDPublicKey() string {
+	return os.Getenv("VAPID_PUBLIC_KEY")
+}
+
+// VAPIDPrivateKey returns the VAPID private key from VAPID_PRIVATE_KEY env var.
+func VAPIDPrivateKey() string {
+	return os.Getenv("VAPID_PRIVATE_KEY")
+}
+
+// VAPIDSubject returns the VAPID subject from VAPID_SUBJECT env var.
+func VAPIDSubject() string {
+	if v := os.Getenv("VAPID_SUBJECT"); v != "" {
+		return v
 	}
-	pubBytes := elliptic.Marshal(priv.Curve, priv.X, priv.Y)
-	pubKey := base64.RawURLEncoding.EncodeToString(pubBytes)
-	privKey := base64.RawURLEncoding.EncodeToString(priv.D.Bytes())
-	return pubKey, privKey, nil
+	return "mailto:admin@kiroku.local"
+}
+
+// OCRSpaceAPIKey returns the OCR.space API key from OCR_SPACE_API_KEY env var.
+func OCRSpaceAPIKey() string {
+	return os.Getenv("OCR_SPACE_API_KEY")
+}
+
+// NineRouterBaseURL returns the 9Router base URL from NINE_ROUTER_URL env var.
+func NineRouterBaseURL() string {
+	if v := os.Getenv("NINE_ROUTER_URL"); v != "" {
+		return v
+	}
+	return "http://localhost:20128/v1"
+}
+
+// NineRouterAPIKey returns the 9Router API key from NINE_ROUTER_API_KEY env var.
+func NineRouterAPIKey() string {
+	return os.Getenv("NINE_ROUTER_API_KEY")
+}
+
+// NineRouterModelComboName returns the 9Router model combo name from NINE_ROUTER_MODEL_COMBO_NAME env var.
+func NineRouterModelComboName() string {
+	if v := os.Getenv("NINE_ROUTER_MODEL_COMBO_NAME"); v != "" {
+		return v
+	}
+	return "main"
+}
+
+// MockOCREnabled returns true if KIROKU_MOCK_OCR_ENABLED is "true".
+func MockOCREnabled() bool {
+	return os.Getenv("KIROKU_MOCK_OCR_ENABLED") == "true"
+}
+
+// TelegramBotToken returns the Telegram bot token from TELEGRAM_BOT_TOKEN env var.
+func TelegramBotToken() string {
+	return os.Getenv("TELEGRAM_BOT_TOKEN")
+}
+
+// TelegramBotUsername returns the Telegram bot username from TELEGRAM_BOT_USERNAME env var.
+func TelegramBotUsername() string {
+	if v := os.Getenv("TELEGRAM_BOT_USERNAME"); v != "" {
+		return v
+	}
+	return "nauva_kiroku_bot"
+}
+
+// TelegramWebhookSecret returns the Telegram webhook secret from TELEGRAM_WEBHOOK_SECRET env var.
+func TelegramWebhookSecret() string {
+	if v := os.Getenv("TELEGRAM_WEBHOOK_SECRET"); v != "" {
+		return v
+	}
+	// Auto-generate random 32-hex-char secret if not set
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err == nil {
+		return hex.EncodeToString(b)
+	}
+	return ""
+}
+
+// UpstashRedisRestURL returns the Upstash Redis REST URL.
+func UpstashRedisRestURL() string {
+	return GetEnv("UPSTASH_REDIS_REST_URL", "")
+}
+
+func UpstashRedisRestToken() string {
+	return os.Getenv("BACKEND_UPSTASH_REDIS_REST_TOKEN")
+}
+
+// LogRetention returns the log retention from LOG_RETENTION env var, default "90d".
+func LogRetention() string {
+	return GetEnv("LOG_RETENTION", "90d")
+}
+
+// TunnelEnabled returns true unless CLOUDFLARE_TUNNEL_ENABLED is "false".
+func TunnelEnabled() bool {
+	return os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") != "false"
+}
+
+// BackupPassphrase returns the backup passphrase from BACKUP_PASSPHRASE env var.
+func BackupPassphrase() string {
+	return os.Getenv("BACKUP_PASSPHRASE")
+}
+
+// BackupRepoPath returns the backup repo path from BACKUP_REPO_PATH env var.
+func BackupRepoPath() string {
+	if v := os.Getenv("BACKUP_REPO_PATH"); v != "" {
+		return v
+	}
+	return "backup/kiroku-backup-storage"
+}
+
+// BackupGitToken returns the backup git token.
+func BackupGitToken() string {
+	return GetEnv("KIROKU_BACKUP_GIT_TOKEN", GetEnv("BACKUP_GIT_TOKEN", ""))
+}
+
+// BackupProviders returns the backup providers from BACKUP_PROVIDERS env var.
+func BackupProviders() string {
+	return os.Getenv("BACKUP_PROVIDERS")
+}
+
+// DataDir returns the data directory from DATA_DIR env var.
+func DataDir() string {
+	return os.Getenv("DATA_DIR")
+}
+
+// JWTSecret returns the JWT secret from JWT_SECRET env var.
+func JWTSecret() string {
+	return os.Getenv("JWT_SECRET")
+}
+
+// JWTAccessTTL returns the JWT access TTL from JWT_ACCESS_TTL env var, default 15m.
+func JWTAccessTTL() time.Duration {
+	d, err := time.ParseDuration(os.Getenv("JWT_ACCESS_TTL"))
+	if err != nil {
+		return 15 * time.Minute
+	}
+	return d
+}
+
+// JWTRefreshTTL returns the JWT refresh TTL from JWT_REFRESH_TTL env var, default 168h.
+func JWTRefreshTTL() time.Duration {
+	d, err := time.ParseDuration(os.Getenv("JWT_REFRESH_TTL"))
+	if err != nil {
+		return 168 * time.Hour
+	}
+	return d
+}
+
+// Argon2Time returns the Argon2 time cost from ARGON2_TIME env var, default 3.
+func Argon2Time() uint32 {
+	v := retentionEnv("ARGON2_TIME", 3)
+	return uint32(v)
+}
+
+// Argon2Memory returns the Argon2 memory cost from ARGON2_MEMORY env var, default 65536.
+func Argon2Memory() uint32 {
+	v := retentionEnv("ARGON2_MEMORY", 65536)
+	return uint32(v)
+}
+
+// Argon2Threads returns the Argon2 parallelism from ARGON2_THREADS env var, default 4.
+func Argon2Threads() uint8 {
+	v := retentionEnv("ARGON2_THREADS", 4)
+	return uint8(v)
+}
+
+// KIROKUDev returns true if KIROKU_DEV is "true".
+func KIROKUDev() bool {
+	return os.Getenv("KIROKU_DEV") == "true"
 }

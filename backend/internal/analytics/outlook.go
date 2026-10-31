@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -153,7 +154,7 @@ func (h *Handler) GetBalanceForecast(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	end, _ := time.Parse("2006-01-02", dateTo)
 
-	accounts, err := h.getAccountBalances(userID, "", h.cfg.FXBaseCurrency)
+	accounts, err := h.getAccountBalances(userID, "", config.FXBaseCurrency())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -164,7 +165,7 @@ func (h *Handler) GetBalanceForecast(w http.ResponseWriter, r *http.Request) {
 		currentBalance += acc.Balance
 	}
 
-	scheduled, err := h.getScheduledTransactions(userID, start, end, "", h.cfg.FXBaseCurrency)
+	scheduled, err := h.getScheduledTransactions(userID, start, end, "", config.FXBaseCurrency())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

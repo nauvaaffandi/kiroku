@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -30,7 +31,7 @@ func (h *Handler) GetCashFlowStats(w http.ResponseWriter, r *http.Request) {
 	start, _ := time.Parse("2006-01-02", dateFrom)
 	end, _ := time.Parse("2006-01-02", dateTo)
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}
@@ -95,7 +96,7 @@ func (h *Handler) GetNetWorth(w http.ResponseWriter, r *http.Request) {
 		dateTo = time.Now().Format("2006-01-02")
 	}
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}

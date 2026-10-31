@@ -59,7 +59,7 @@ func (h *Handler) Spending(w http.ResponseWriter, r *http.Request) {
 
 	accountID := r.URL.Query().Get("account_id")
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}
@@ -174,7 +174,7 @@ func (h *Handler) Trend(w http.ResponseWriter, r *http.Request) {
 	accountID := r.URL.Query().Get("account_id")
 	categoryID := r.URL.Query().Get("category_id")
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}

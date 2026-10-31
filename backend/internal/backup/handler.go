@@ -28,7 +28,7 @@ func NewHandler(database *db.DB, cfg *config.Config) *Handler {
 	return &Handler{
 		db:    database,
 		cfg:   cfg,
-		sched: NewScheduler(database, cfg, cfg.BackupRepoPath, cfg.BackupGitToken),
+		sched: NewScheduler(database, cfg, config.BackupRepoPath(), config.BackupGitToken()),
 	}
 }
 
@@ -182,8 +182,8 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if h.cfg.BackupPassphrase != "" {
-		data, err = decrypt(data, h.cfg.BackupPassphrase)
+	if config.BackupPassphrase() != "" {
+		data, err = decrypt(data, config.BackupPassphrase())
 		if err != nil {
 			http.Error(w, "decrypt error (check passphrase)", http.StatusBadRequest)
 			return

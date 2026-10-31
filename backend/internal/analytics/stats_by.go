@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -22,7 +23,7 @@ func (h *Handler) GetStatsByCurrency(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}
@@ -74,7 +75,7 @@ func (h *Handler) GetStatsByAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	baseCurrency := h.cfg.FXBaseCurrency
+	baseCurrency := config.FXBaseCurrency()
 	if baseCurrency == "" {
 		baseCurrency = "JPY"
 	}

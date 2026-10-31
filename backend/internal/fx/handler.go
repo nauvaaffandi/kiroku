@@ -17,10 +17,7 @@ type Handler struct {
 }
 
 func NewHandler(database *db.DB, cfg *config.Config) *Handler {
-	base := cfg.FXBaseCurrency
-	if base == "" {
-		base = "JPY"
-	}
+	base := config.FXBaseCurrency()
 	return &Handler{
 		fetcher: NewFetcher(database, base),
 	}

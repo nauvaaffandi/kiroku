@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/rs/zerolog/log"
+	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
 )
 
@@ -41,21 +42,23 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    accessToken, err := GenerateAccessToken(userID, h.cfg.JWTSecret, h.cfg.JWTAccessTTL)
-    if err != nil {
-        log.Error().Err(err).Msg("auth: generate access token")
-        http.Error(w, "internal error", http.StatusInternalServerError)
-        return
-    }
+	accessTTL := config.JWTAccessTTL()
+	accessToken, err := GenerateAccessToken(userID, config.JWTSecret(), accessTTL)
+	if err != nil {
+		log.Error().Err(err).Msg("auth: generate access token")
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
 
-    refreshToken, err := GenerateRefreshToken(userID, h.cfg.JWTSecret, h.cfg.JWTRefreshTTL)
+	refreshTTL := config.JWTRefreshTTL()
+	refreshToken, err := GenerateRefreshToken(userID, config.JWTSecret(), refreshTTL)
     if err != nil {
         log.Error().Err(err).Msg("auth: generate refresh token")
         http.Error(w, "internal error", http.StatusInternalServerError)
         return
     }
 
-    setAuthCookies(w, accessToken, refreshToken, h.cfg.JWTAccessTTL, h.cfg.JWTRefreshTTL)
+    setAuthCookies(w, accessToken, refreshToken, accessTTL, refreshTTL)
 
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]string{"status": "ok"})

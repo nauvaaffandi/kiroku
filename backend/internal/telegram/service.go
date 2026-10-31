@@ -29,8 +29,8 @@ type TelegramService struct {
 }
 
 func NewTelegramService(database *db.DB, cfg *config.Config) *TelegramService {
-	botToken := cfg.TelegramBotToken
-	botUsername := cfg.TelegramBotUsername
+	botToken := config.TelegramBotToken()
+	botUsername := config.TelegramBotUsername()
 	if botUsername == "" {
 		botUsername = "nauva_kiroku_bot"
 	}
@@ -40,7 +40,7 @@ func NewTelegramService(database *db.DB, cfg *config.Config) *TelegramService {
 		cfg:           cfg,
 		botToken:      botToken,
 		botUsername:   botUsername,
-		webhookSecret: cfg.TelegramWebhookSecret,
+		webhookSecret: config.TelegramWebhookSecret(),
 		httpClient:    &http.Client{Timeout: 10 * time.Second},
 	}
 }

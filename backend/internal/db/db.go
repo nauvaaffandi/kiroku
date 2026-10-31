@@ -9,7 +9,6 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/logger"
 )
 
@@ -20,8 +19,8 @@ type DB struct {
 	*sql.DB
 }
 
-func Open(cfg *config.Config) (*DB, error) {
-	dbPath := cfg.FullDBPath()
+func Open(dataDir string) (*DB, error) {
+	dbPath := filepath.Join(dataDir, "kiroku.db")
 
 	if err := os.MkdirAll(filepath.Dir(dbPath), 0o755); err != nil {
 		return nil, fmt.Errorf("create data dir: %w", err)

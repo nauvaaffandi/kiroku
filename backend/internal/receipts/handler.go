@@ -103,7 +103,7 @@ func (h *Handler) processReceiptAsync(jobID string, imageBase64 string) {
 	maxRetries := 3
 
 	for attempt := 1; attempt <= maxRetries; attempt++ {
-		ocrText, ocrErr = CallOCRSpace(ctx, h.cfg.OCRSpaceAPIKey, imageBase64, h.cfg.MockOCREnabled)
+		ocrText, ocrErr = CallOCRSpace(ctx, config.OCRSpaceAPIKey(), imageBase64, config.MockOCREnabled())
 		if ocrErr == nil {
 			break
 		}
@@ -127,13 +127,13 @@ func (h *Handler) processReceiptAsync(jobID string, imageBase64 string) {
 
 	// 2. AI Normalization Stage with schema validation loop
 	h.logEvent(jobID, "ai_started", "normalization", 1, "processing", "Converting receipt text to transaction draft...")
-	aiClient := NewNineRouterClient(h.cfg.NineRouterBaseURL, h.cfg.NineRouterAPIKey, h.cfg.NineRouterModelComboName)
+	aiClient := NewNineRouterClient(config.NineRouterBaseURL(), config.NineRouterAPIKey(), config.NineRouterModelComboName())
 
 	var draft *models.AINormalizationResult
 	var aiErr error
 	var rawOutput string
 
-	draft, aiErr = aiClient.NormalizeReceipt(ctx, ocrText, categories, accounts, h.cfg.FXBaseCurrency)
+	draft, aiErr = aiClient.NormalizeReceipt(ctx, ocrText, categories, accounts, config.FXBaseCurrency())
 	if aiErr == nil {
 		draftBytes, _ := json.Marshal(draft)
 		rawOutput = string(draftBytes)
@@ -147,7 +147,7 @@ func (h *Handler) processReceiptAsync(jobID string, imageBase64 string) {
 		}
 		h.logEvent(jobID, "ai_validation_failed", "normalization", 1, "warning", "Validation failed: "+validationErr+". Requesting correction...")
 
-		draft, aiErr = aiClient.RetryWithCorrection(ctx, ocrText, categories, accounts, h.cfg.FXBaseCurrency, rawOutput, validationErr)
+		draft, aiErr = aiClient.RetryWithCorrection(ctx, ocrText, categories, accounts, config.FXBaseCurrency(), rawOutput, validationErr)
 		if aiErr == nil {
 			draftBytes, _ := json.Marshal(draft)
 			rawOutput = string(draftBytes)

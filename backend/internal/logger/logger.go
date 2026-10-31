@@ -34,12 +34,9 @@ func logsDir() string {
 func Init(devMode bool) {
 	zerolog.TimeFieldFormat = time.RFC3339
 
-	cfg, err := config.Load()
-	retentionDays := parseRetentionDays(defaultRetention)
-	if err == nil && cfg.LogRetention != "" {
-		if d := parseRetentionDays(cfg.LogRetention); d > 0 {
-			retentionDays = d
-		}
+	retentionDays := parseRetentionDays(config.LogRetention())
+	if retentionDays == 0 {
+		retentionDays = parseRetentionDays(defaultRetention)
 	}
 
 	var writers []io.Writer
