@@ -37,7 +37,7 @@ func (r *AnalyticsRepo) Calendar(ctx context.Context, filter domain.AnalyticsFil
 		endDate = startDate.AddDate(0, 1, 0).Add(-time.Second)
 	}
 
-	query := `SELECT t.id, t.name, t.type, t.amount, t.currency, t.date_time, c.name FROM transactions t LEFT JOIN categories c ON t.category_id = c.id WHERE t.deleted_at IS NULL AND t.date_time >= ? AND t.date_time <= ?`
+	query := `SELECT t.id, COALESCE(t.payee_payer, t.note, ''), t.type, t.amount, t.currency, t.date_time, c.name FROM transactions t LEFT JOIN categories c ON t.category_id = c.id WHERE t.deleted_at IS NULL AND t.date_time >= ? AND t.date_time <= ?`
 	args := []interface{}{startDate.Format(time.RFC3339), endDate.Format(time.RFC3339)}
 
 	if filter.AccountID != nil && *filter.AccountID != "" {
