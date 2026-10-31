@@ -307,7 +307,15 @@ export default {
     saved: 'Saved successfully',
     deleted: 'Deleted successfully',
     error: 'An error occurred',
-    copied: 'Copied to clipboard'
+    copied: 'Copied to clipboard',
+    push_enabled: 'Push notifications enabled',
+    push_disabled: 'Push notifications disabled',
+    push_subscribed: 'Subscribed to push notifications',
+    push_unsubscribed: 'Unsubscribed from push notifications',
+    push_not_supported: 'Push notifications not supported in this browser',
+    push_permission_denied: 'Notification permission denied',
+    push_subscribe: 'Enable Push Notifications',
+    push_unsubscribe: 'Disable Push Notifications'
   },
   auth: {
     signIn: 'Sign In',

@@ -5,6 +5,7 @@ import App from './App.vue'
 import './assets/main.css'
 import { registerSW } from 'virtual:pwa-register'
 import { useI18nStore } from '@/locales'
+import { usePushStore } from '@/stores/push'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -13,6 +14,10 @@ app.use(router)
 
 // Initialize i18n store (sets document lang from localStorage)
 useI18nStore()
+
+// Initialize push notification support check
+const pushStore = usePushStore()
+pushStore.checkSupport()
 
 // Register service worker
 if ('serviceWorker' in navigator) {

@@ -10,7 +10,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      strategies: 'generateSW',
+      strategies: 'injectManifest',
+      srcSW: 'public/sw.js',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
         id: 'kiroku',
@@ -37,7 +38,6 @@ export default defineConfig({
         ]
       },
       workbox: {
-        mode: 'generateSW',
         runtimeCaching: [
           {
             urlPattern: /^https?.*\/api\/v1\//,

@@ -334,7 +334,15 @@ export default {
     saved: '保存しました',
     deleted: '削除しました',
     error: 'エラーが発生しました',
-    copied: 'クリップボードにコピーしました'
+    copied: 'クリップボードにコピーしました',
+    push_enabled: 'プッシュ通知を有効にしました',
+    push_disabled: 'プッシュ通知を無効にしました',
+    push_subscribed: 'プッシュ通知を購読しました',
+    push_unsubscribed: 'プッシュ通知の購読を解除しました',
+    push_not_supported: 'このブラウザではプッシュ通知はサポートされていません',
+    push_permission_denied: '通知の許可が拒否されました',
+    push_subscribe: 'プッシュ通知を有効化',
+    push_unsubscribe: 'プッシュ通知を無効化'
   },
   about: {
     title: 'アプリについて',

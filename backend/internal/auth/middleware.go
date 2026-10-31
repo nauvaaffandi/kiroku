@@ -67,3 +67,9 @@ func GetUserID(r *http.Request) string {
 	}
 	return ""
 }
+
+// WithUserID injects userID into request context for testing
+func WithUserID(r *http.Request, userID string) *http.Request {
+	ctx := context.WithValue(r.Context(), userIDKey, userID)
+	return r.WithContext(ctx)
+}

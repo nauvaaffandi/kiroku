@@ -38,3 +38,6 @@ export * from './receipt'
 
 // Labels
 export * from './label'
+
+// Notifications
+export * from './notification'

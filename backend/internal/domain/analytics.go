@@ -32,10 +32,14 @@ type CalendarTxn struct {
 }
 
 type AccountBalance struct {
-	AccountID   string  `json:"account_id"`
-	AccountName string  `json:"account_name"`
-	Currency    string  `json:"currency"`
-	Balance     float64 `json:"balance"`
+	AccountID       string  `json:"account_id"`
+	AccountName     string  `json:"account_name"`
+	Currency        string  `json:"currency"`
+	OpeningBalance  float64 `json:"opening_balance"`
+	ClosingBalance  float64 `json:"closing_balance"`
+	NetChange       float64 `json:"net_change"`
+	Color           string  `json:"color"`
+	Balance         float64 `json:"balance"`
 }
 
 type BalanceTrendPoint struct {

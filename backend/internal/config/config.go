@@ -1,7 +1,10 @@
 package config
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"os"
 	"path/filepath"
@@ -46,6 +49,9 @@ type Config struct {
 	UpstashRedisRestToken    string `koanf:"upstash_redis_rest_token"`
 	TunnelEnabled            bool   `koanf:"tunnel_enabled"`
 	LogRetention             string `koanf:"log_retention"`
+	VAPIDPublicKey           string `koanf:"vapid_public_key"`
+	VAPIDPrivateKey          string `koanf:"vapid_private_key"`
+	VAPIDSubject             string `koanf:"vapid_subject"`
 }
 
 func loadDotEnv() {
@@ -179,12 +185,37 @@ func Load() (*Config, error) {
 	if cfg.LogRetention == "" {
 		cfg.LogRetention = "90d"
 	}
+
+	// VAPID configuration: env var fallbacks; generate fresh key pair if missing
+	if cfg.VAPIDPublicKey == "" {
+		cfg.VAPIDPublicKey = os.Getenv("VAPID_PUBLIC_KEY")
+	}
+	if cfg.VAPIDPrivateKey == "" {
+		cfg.VAPIDPrivateKey = os.Getenv("VAPID_PRIVATE_KEY")
+	}
+	if cfg.VAPIDSubject == "" {
+		cfg.VAPIDSubject = os.Getenv("VAPID_SUBJECT")
+		if cfg.VAPIDSubject == "" {
+			cfg.VAPIDSubject = "mailto:admin@kiroku.local"
+		}
+	}
+	if cfg.VAPIDPublicKey == "" || cfg.VAPIDPrivateKey == "" {
+		pubKey, privKey, err := generateVAPIDKeys()
+		if err == nil {
+			if cfg.VAPIDPublicKey == "" {
+				cfg.VAPIDPublicKey = pubKey
+			}
+			if cfg.VAPIDPrivateKey == "" {
+				cfg.VAPIDPrivateKey = privKey
+			}
+		}
+	}
+
 	if os.Getenv("KIROKU_TUNNEL_ENABLED") == "false" || os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") == "false" {
 		cfg.TunnelEnabled = false
 	} else {
 		cfg.TunnelEnabled = true
 	}
-
 	return cfg, nil
 }
 
@@ -197,4 +228,15 @@ func GetEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func generateVAPIDKeys() (string, string, error) {
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return "", "", err
+	}
+	pubBytes := elliptic.Marshal(priv.Curve, priv.X, priv.Y)
+	pubKey := base64.RawURLEncoding.EncodeToString(pubBytes)
+	privKey := base64.RawURLEncoding.EncodeToString(priv.D.Bytes())
+	return pubKey, privKey, nil
 }

@@ -55,6 +55,7 @@ func main() {
 	sharedRepo := sqlite.NewSharedRepo(database)
 	fxRepo := sqlite.NewFXRepo(database)
 	labelsRepo := sqlite.NewLabelsRepo(database)
+	pushRepo := sqlite.NewPushSubscriptionRepo(database)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -112,6 +113,12 @@ func main() {
 		r.Group(func(r chi.Router) {
 			r.Use(auth.AuthMiddleware(cfg))
 			r.Mount("/labels", labelsHandler.Routes())
+		})
+
+		pushHandler := httpdelivery.NewPushHandler(pushRepo, cfg)
+		r.Group(func(r chi.Router) {
+			r.Use(auth.AuthMiddleware(cfg))
+			r.Mount("/push", pushHandler.Routes())
 		})
 	})
 

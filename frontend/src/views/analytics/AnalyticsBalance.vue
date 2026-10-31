@@ -70,7 +70,7 @@ async function fetchBalanceTrend() {
   trendLoading.value = true
   try {
     const res = await api.get<{ series: BalanceTrendPoint[] }>(
-      `/analytics/balance/trend?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${trendInterval.value}`
+      `/api/v1/analytics/balance/trend?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${trendInterval.value}`
     )
     trendData.value = res.data.series
   } catch (e) {
@@ -84,7 +84,7 @@ async function fetchBalanceByAccounts() {
   accountsLoading.value = true
   try {
     const res = await api.get<{ accounts: AccountBalanceSummary[]; total_by_currency: Record<string, number> }>(
-      `/analytics/balance/by-accounts?date_from=${dateFrom.value}&date_to=${dateTo.value}`
+      `/api/v1/analytics/balance/by-accounts?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     accountsData.value = res.data.accounts
   } catch (e) {
@@ -98,7 +98,7 @@ async function fetchBalanceByCurrencies() {
   currenciesLoading.value = true
   try {
     const res = await api.get<{ currencies: CurrencyBalanceSummary[] }>(
-      `/analytics/balance/by-currencies?date_from=${dateFrom.value}&date_to=${dateTo.value}`
+      `/api/v1/analytics/balance/by-currencies?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     currenciesData.value = res.data.currencies
   } catch (e) {

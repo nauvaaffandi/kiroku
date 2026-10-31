@@ -331,10 +331,18 @@ export default {
     biometricDisabled: 'Login sidik jari dinonaktifkan.'
   },
   notifications: {
-    saved: 'Berhasil disimpan',
-    deleted: 'Berhasil dihapus',
+    saved: 'Disimpan berhasil',
+    deleted: 'Dihapus berhasil',
     error: 'Terjadi kesalahan',
-    copied: 'Disalin ke clipboard'
+    copied: 'Disalin ke clipboard',
+    push_enabled: 'Notifikasi push diaktifkan',
+    push_disabled: 'Notifikasi push dinonaktifkan',
+    push_subscribed: 'Berlangganan notifikasi push',
+    push_unsubscribed: 'Berhenti berlangganan notifikasi push',
+    push_not_supported: 'Notifikasi push tidak didukung di browser ini',
+    push_permission_denied: 'Izin notifikasi ditolak',
+    push_subscribe: 'Aktifkan notifikasi push',
+    push_unsubscribe: 'Nonaktifkan notifikasi push'
   },
   about: {
     title: 'Tentang',
