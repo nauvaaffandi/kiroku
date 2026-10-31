@@ -151,7 +151,7 @@ function openDayDetail(day: DisplayDay) {
 }
 
 function openAddTransaction(date: string) {
-  router.push({ path: '/transactions', query: { action: 'add', date } })
+  router.push({ path: '/transactions', query: { create: 'true', date } })
 }
 
 onMounted(async () => {

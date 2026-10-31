@@ -166,6 +166,7 @@ interface Props {
   transaction?: Transaction | null
   accounts: Account[]
   categories: Category[]
+  initialDateTime?: string
 }
 
 const props = defineProps<Props>()
@@ -269,6 +270,9 @@ watch(() => props.modelValue, (val) => {
     }
   } else if (val) {
     form.value = defaultForm()
+    if (props.initialDateTime) {
+      form.value.date_time = props.initialDateTime
+    }
   }
 })
 

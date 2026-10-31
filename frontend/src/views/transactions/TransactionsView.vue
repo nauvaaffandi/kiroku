@@ -71,6 +71,7 @@
       :transaction="editingTransaction"
       :accounts="accounts"
       :categories="categories"
+      :initial-date-time="initialDateTime"
       @submit="handleFormSubmit"
     />
 
@@ -118,6 +119,10 @@ const showFormModal = ref(false)
 const editingTransaction = ref<Transaction | null>(null)
 const showDeleteConfirm = ref(false)
 const deleteId = ref<string | null>(null)
+const initialDateTime = computed(() => {
+  const d = route.query.date as string | undefined
+  return d ? `${d}T00:00` : undefined
+})
 
 const localFilters = ref<ITransactionFilters>({
   account_id: '',
@@ -267,17 +272,17 @@ const nextPage = () => {
 }
 
 onMounted(async () => {
-  await Promise.all([
-    fetchTransactions(),
-    accountsStore.fetchAccounts(),
-    categoriesStore.fetchCategories()
-  ])
+    await Promise.all([
+      fetchTransactions(),
+      accountsStore.fetchAccounts(),
+      categoriesStore.fetchCategories()
+    ])
 
-  if (route.query.create === 'true' || route.query.type) {
-    openCreateModal()
-    router.replace({ query: { ...route.query, create: undefined, type: undefined } })
-  }
-})
+    if (route.query.create === 'true' || route.query.type) {
+      openCreateModal()
+      router.replace({ query: { ...route.query, create: undefined, date: undefined } })
+    }
+  })
 </script>
 
 <style scoped>
