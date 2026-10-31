@@ -25,17 +25,17 @@
             <span class="txn-name">{{ txn.name }}</span>
             <span class="txn-amt">{{ formatCurrency(txn.amount) }}</span>
           </div>
-          <div
-            v-for="txn in day.scheduled.slice(0, 1)"
-            :key="txn.id"
-            class="txn-pill pill-scheduled"
-          >
-            <span class="txn-name">予定: {{ txn.name }}</span>
-            <span class="txn-amt">{{ formatCurrency(txn.amount) }}</span>
-          </div>
-          <div v-if="day.transactions.length + day.scheduled.length > 3" class="more-indicator">
-            +{{ day.transactions.length + day.scheduled.length - 3 }} 件
-          </div>
+           <div
+             v-for="txn in day.scheduled.slice(0, 1)"
+             :key="txn.id"
+             class="txn-pill pill-scheduled"
+           >
+             <span class="txn-name">{{ t('calendar.scheduledPrefix', { name: txn.name }) }}</span>
+             <span class="txn-amt">{{ formatCurrency(txn.amount) }}</span>
+           </div>
+           <div v-if="day.transactions.length + day.scheduled.length > 3" class="more-indicator">
+             {{ t('calendar.moreCount', { count: day.transactions.length + day.scheduled.length - 3 }) }}
+           </div>
         </div>
       </div>
     </div>
@@ -44,6 +44,10 @@
 
 <script setup lang="ts">
 import type { DisplayDay } from '@/types'
+import { computed } from 'vue'
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
 
 defineProps<{
   calendarDays: DisplayDay[]
@@ -51,7 +55,17 @@ defineProps<{
 
 defineEmits(['open-detail'])
 
-const weekdays = ['日', '月', '火', '水', '木', '金', '土']
+const weekdays = computed(() => {
+  return [
+    t('calendar.weekdays.sun'),
+    t('calendar.weekdays.mon'),
+    t('calendar.weekdays.tue'),
+    t('calendar.weekdays.wed'),
+    t('calendar.weekdays.thu'),
+    t('calendar.weekdays.fri'),
+    t('calendar.weekdays.sat')
+  ]
+})
 
 function formatCurrency(val: number): string {
   return new Intl.NumberFormat('ja-JP', {

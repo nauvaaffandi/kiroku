@@ -1,8 +1,8 @@
 <template>
   <div class="analytics-balance-view">
     <div class="page-header">
-      <h1>残高分析</h1>
-      <p class="page-subtitle">残高の推移・口座別・通貨別の内訳</p>
+      <h1>{{ t('balanceAnalytics.title') }}</h1>
+      <p class="page-subtitle">{{ t('balanceAnalytics.subtitle') }}</p>
     </div>
 
     <DateFilterBar @change="onDateChange" />
@@ -30,12 +30,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from '@/locales'
 import { api } from '@/api/client'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import BalanceTrendWidget from '@/widgets/analytics/BalanceTrendWidget.vue'
 import BalanceByAccountsWidget from '@/widgets/analytics/BalanceByAccountsWidget.vue'
 import BalanceByCurrenciesWidget from '@/widgets/analytics/BalanceByCurrenciesWidget.vue'
 import type { BalanceTrendPoint, AccountBalanceSummary, CurrencyBalanceSummary } from '@/types/report'
+
+const { t } = useI18n()
 
 const dateFrom = ref('')
 const dateTo = ref('')
@@ -117,7 +120,7 @@ onMounted(async () => {
 <style scoped>
 @reference "tailwindcss";
 .analytics-balance-view {
-  @apply max-w-[80rem] mx-auto p-4 flex flex-col gap-4;
+  @apply max-w-[80rem] mx-auto p-4 flex flex-col gap-4 w-full max-w-full overflow-x-hidden box-border;
 }
 .page-header { 
   @apply flex flex-col gap-1; 
@@ -130,7 +133,12 @@ onMounted(async () => {
   color: var(--text-muted); 
 }
 .widgets-grid { 
-  @apply grid gap-4; 
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+  @apply grid gap-4 w-full; 
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 768px) {
+  .widgets-grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  }
 }
 </style>

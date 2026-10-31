@@ -9,13 +9,12 @@
         </span>
         <span class="tree-toggle placeholder" v-else></span>
         <div class="category-info">
-          <span class="category-icon" :style="{ backgroundColor: category.color }" v-if="category.icon">{{ category.icon }}</span>
-          <span class="category-icon default" v-else>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-            </svg>
-          </span>
-          <span class="category-name">{{ category.name }}</span>
+           <span class="category-icon default" v-else>
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <circle cx="12" cy="12" r="10"></circle>
+             </svg>
+           </span>
+           <span class="category-name">{{ translate(category) }}</span>
         </div>
       </div>
       <div class="tree-col kind" v-if="category.kind">
@@ -49,24 +48,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-
-interface Category {
-  id: string
-  parent_id: string | null
-  name: string
-  icon: string
-  color: string
-  kind: string | null
-  sort_order: number
-  depth: number
-  path: string
-  children: Category[]
-}
+import { useCategoryName } from '@/utils/categoryName'
+import type { Category } from '@/types'
 
 defineProps<{
   category: Category
   level: number
 }>()
+
+const { translate } = useCategoryName()
 
 defineEmits<{
   edit: [category: Category]

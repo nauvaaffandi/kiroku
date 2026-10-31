@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showInstallPrompt" class="install-banner" role="dialog" aria-label="Install app">
+  <div v-if="showInstallPrompt" class="install-banner" role="dialog" :aria-label="t('common.install')">
     <div class="install-content">
       <div class="install-icon">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -9,13 +9,13 @@
         </svg>
       </div>
       <div class="install-text">
-        <strong>Install Kiroku</strong>
-        <span>Add to home screen for quick access</span>
+        <strong>{{ t('nav.dashboard') }} - Kiroku</strong>
+        <span>{{ t('settings.appDesc') }}</span>
       </div>
     </div>
     <div class="install-actions">
-      <button @click="dismissInstall" class="btn-ghost" aria-label="Dismiss">Not now</button>
-      <button @click="installApp" class="btn-primary">Install</button>
+      <button @click="dismissInstall" class="btn-ghost" :aria-label="t('common.dismiss')">{{ t('common.notNow') }}</button>
+      <button @click="installApp" class="btn-primary">{{ t('common.install') }}</button>
     </div>
   </div>
 </template>
@@ -23,8 +23,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useUIStore } from '@/stores/ui'
+import { useI18n } from '@/locales'
 
 const uiStore = useUIStore()
+const { t } = useI18n()
 
 const showInstallPrompt = ref(false)
 let deferredPrompt: BeforeInstallPromptEvent | null = null
@@ -45,7 +47,7 @@ const handleBeforeInstallPrompt = (e: Event) => {
 const handleAppInstalled = () => {
   showInstallPrompt.value = false
   deferredPrompt = null
-  uiStore.success('Kiroku installed!')
+  uiStore.success(t('settings.installedToast'))
 }
 
 const installApp = async () => {
@@ -53,7 +55,7 @@ const installApp = async () => {
   deferredPrompt.prompt()
   const { outcome } = await deferredPrompt.userChoice
   if (outcome === 'accepted') {
-    uiStore.success('Installing Kiroku...')
+    uiStore.success(t('settings.installingToast'))
   }
   deferredPrompt = null
   showInstallPrompt.value = false

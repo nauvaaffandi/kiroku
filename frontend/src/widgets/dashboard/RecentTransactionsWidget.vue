@@ -15,7 +15,7 @@
           </span>
         </div>
         <div class="flex-1 min-w-0">
-          <p class="font-semibold text-zinc-900 dark:text-zinc-100 truncate leading-tight">{{ getCategoryName(tx.category_id) || tx.payee_payer || 'Transaction' }}</p>
+          <p class="font-semibold text-zinc-900 dark:text-zinc-100 truncate leading-tight">{{ getCategoryName(tx.category_id) || translateName(tx.payee_payer || '') || 'Transaction' }}</p>
           <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate font-medium">{{ formatDate(tx.date_time) }} • {{ getAccountName(tx.from_account_id || tx.to_account_id) }}</p>
         </div>
         <div :class="['font-bold text-sm shrink-0 leading-none', tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400']">
@@ -32,9 +32,11 @@
 
 <script setup lang="ts">
 import { useI18n } from '@/locales'
+import { useCategoryName } from '@/utils/categoryName'
 import type { Transaction, Category, Account } from '@/types'
 
 const { t } = useI18n()
+const { translate, translateName } = useCategoryName()
 
 const props = defineProps<{
   recentTransactions: Transaction[]
@@ -45,7 +47,7 @@ const props = defineProps<{
 const getCategoryName = (id: string | null) => {
   if (!id) return ''
   const cat = props.categories.find(c => c.id === id)
-  return cat?.name || ''
+  return cat ? translate(cat) : ''
 }
 
 const getCategoryIcon = (id: string | null) => {

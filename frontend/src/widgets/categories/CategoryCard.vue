@@ -12,7 +12,7 @@
         <span v-if="category.archived" class="category-status-badge archived">Archived</span>
       </div>
     </div>
-    <h3 class="category-name">{{ category.path || category.name }}</h3>
+    <h3 class="category-name">{{ translate(category) }}</h3>
     <p class="category-count" v-if="category._count">{{ category._count }} transactions</p>
     <div class="category-actions">
       <BaseButton variant="secondary" size="sm" @click="$emit('edit', category)">
@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
+import { useCategoryName } from '@/utils/categoryName'
 import type { Category } from '@/types'
 
 interface Props {
@@ -48,6 +49,8 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const { translate } = useCategoryName()
 
 defineEmits<{
   edit: [category: Category]

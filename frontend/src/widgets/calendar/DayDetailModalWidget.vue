@@ -1,11 +1,11 @@
 <template>
   <div v-if="activeDay" class="modal-backdrop" @click="$emit('close')">
     <div class="modal-content" @click.stop>
-      <h3>{{ activeDay.date }} の取引一覧</h3>
+      <h3>{{ t('calendar.dayTransactions', { date: activeDay.date }) }}</h3>
       <div class="detail-list">
         <div v-for="txn in activeDay.transactions" :key="txn.id" class="detail-item">
           <span :class="['badge', txn.type === 'income' ? 'badge-success' : 'badge-danger']">
-            {{ txn.type === 'income' ? '収入' : '支出' }}
+            {{ txn.type === 'income' ? t('transactions.typeIncome') : t('transactions.typeExpense') }}
           </span>
           <div class="detail-info">
             <span class="detail-name">{{ txn.name }}</span>
@@ -16,7 +16,7 @@
           </span>
         </div>
         <div v-for="txn in activeDay.scheduled" :key="txn.id" class="detail-item scheduled-item">
-          <span class="badge badge-warning">予定</span>
+          <span class="badge badge-warning">{{ t('calendar.scheduledBadge') }}</span>
           <div class="detail-info">
             <span class="detail-name">{{ txn.name }}</span>
             <span class="detail-cat">{{ txn.category }}</span>
@@ -24,12 +24,12 @@
           <span class="detail-amt">{{ formatCurrency(txn.amount) }}</span>
         </div>
         <div v-if="activeDay.transactions.length === 0 && activeDay.scheduled.length === 0" class="empty-msg">
-          この日の取引はありません
+          {{ t('calendar.noTransactions') }}
         </div>
       </div>
       <div class="modal-actions">
-        <button class="btn-primary" @click="$emit('add-transaction', activeDay.date)">取引を追加</button>
-        <button class="btn-secondary" @click="$emit('close')">閉じる</button>
+        <button class="btn-primary" @click="$emit('add-transaction', activeDay.date)">{{ t('calendar.addTransaction') }}</button>
+        <button class="btn-secondary" @click="$emit('close')">{{ t('common.close') }}</button>
       </div>
     </div>
   </div>
@@ -37,6 +37,9 @@
 
 <script setup lang="ts">
 import type { DisplayDay } from '@/types'
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
 
 defineProps<{
   activeDay: DisplayDay | null

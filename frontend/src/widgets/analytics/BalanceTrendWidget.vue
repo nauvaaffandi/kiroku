@@ -1,11 +1,11 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>残高推移</h2>
+      <h2>{{ t('balanceAnalytics.trend') }}</h2>
       <select :value="interval" @change="$emit('update:interval', ($event.target as HTMLSelectElement).value)" class="interval-select">
-        <option value="day">日次</option>
-        <option value="week">週次</option>
-        <option value="month">月次</option>
+        <option value="day">{{ t('balanceAnalytics.intervalDay') }}</option>
+        <option value="week">{{ t('balanceAnalytics.intervalWeek') }}</option>
+        <option value="month">{{ t('balanceAnalytics.intervalMonth') }}</option>
       </select>
     </div>
     <div class="widget-content" v-if="!loading">
@@ -23,6 +23,9 @@ import * as echarts from 'echarts'
 import type { BalanceTrendPoint } from '@/types/report'
 import { useSettingsStore } from '@/stores/settings'
 import { formatAmountForDisplay } from '@/utils/amountDisplay'
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   interval: string
@@ -52,15 +55,15 @@ function renderTrendChart() {
       trigger: 'axis',
       formatter: (params: any) => {
         const p = params[0]
-        return `${p.name}<br/>期末: ${formatCurrency(p.value)}<br/>増減: ${p.value >= 0 ? '+' : ''}${formatCurrency(net[p.dataIndex])}`
+        return `${p.name}<br/>${t('balanceAnalytics.closingBalance')}: ${formatCurrency(p.value)}<br/>${t('balanceAnalytics.netChange')}: ${p.value >= 0 ? '+' : ''}${formatCurrency(net[p.dataIndex])}`
       },
     },
-    grid: { left: 40, right: 20, top: 10, bottom: 40 },
+    grid: { left: 40, right: 20, top: 10, bottom: 40, containLabel: true },
     xAxis: { type: 'category', data: periods, boundaryGap: false },
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
       {
-        name: '残高',
+        name: t('balanceAnalytics.legendBalance'),
         type: 'line',
         data: closing,
         smooth: true,
@@ -93,11 +96,14 @@ function formatCurrencyShort(val: number): string {
 }
 
 watch(() => props.data, () => {
-  nextTick(() => renderTrendChart())
+  nextTick(() => trendChart?.resize())
 }, { deep: true })
 
 onMounted(() => {
-  nextTick(() => renderTrendChart())
+  nextTick(() => {
+    renderTrendChart()
+    trendChart?.resize()
+  })
   window.addEventListener('resize', () => trendChart?.resize())
 })
 </script>
@@ -106,18 +112,18 @@ onMounted(() => {
 @reference "tailwindcss";
 
 .widget-card {
-  @apply border rounded-xl overflow-hidden;
+  @apply border rounded-xl overflow-hidden w-full max-w-full box-border;
   background-color: var(--bg-card);
   border-color: var(--border-primary);
   box-shadow: var(--shadow);
 }
 .widget-header {
-  @apply flex items-center justify-between p-4 border-b;
+  @apply flex items-center justify-between p-4 border-b flex-wrap gap-2;
   background-color: var(--bg-secondary);
   border-color: var(--border-primary);
 }
 .widget-header h2 {
-  @apply text-lg font-semibold;
+  @apply text-lg font-semibold truncate;
   color: var(--text-primary);
 }
 .interval-select {
@@ -127,10 +133,10 @@ onMounted(() => {
   color: var(--text-primary);
 }
 .widget-content {
-  @apply p-4;
+  @apply p-4 overflow-hidden w-full max-w-full box-border;
 }
 .chart-container {
-  @apply w-full;
-  height: 300px;
+  @apply w-full max-w-full;
+  height: 280px;
 }
 </style>

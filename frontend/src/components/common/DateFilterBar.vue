@@ -7,16 +7,16 @@
         :class="['preset-btn', { active: currentPreset === preset.value }]"
         @click="selectPreset(preset.value)"
       >
-        {{ preset.label }}
+        {{ preset.label() }}
       </button>
     </div>
     <div class="custom-range">
       <div class="date-input-group">
-        <label>From</label>
+        <label>{{ t('common.from') }}</label>
         <input type="date" v-model="dateFrom" @change="onDateChange" class="date-input" />
       </div>
       <div class="date-input-group">
-        <label>To</label>
+        <label>{{ t('common.to') }}</label>
         <input type="date" v-model="dateTo" @change="onDateChange" class="date-input" />
       </div>
     </div>
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
+import { useI18n } from '@/locales'
 
 interface Props {
   defaultFrom?: string
@@ -37,19 +38,20 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+const { t } = useI18n()
 
 const dateFrom = ref(props.defaultFrom || getDefaultFrom())
 const dateTo = ref(props.defaultTo || getDefaultTo())
 const currentPreset = ref<string>('')
 
 const presets = [
-  { value: 'thisMonth', label: '今月' },
-  { value: 'lastMonth', label: '先月' },
-  { value: 'last3Months', label: '直近3ヶ月' },
-  { value: 'last6Months', label: '直近6ヶ月' },
-  { value: 'thisYear', label: '今年' },
-  { value: 'lastYear', label: '昨年' },
-  { value: 'allTime', label: '全期間' },
+  { value: 'thisMonth', label: () => t('common.thisMonth') },
+  { value: 'lastMonth', label: () => t('common.lastMonth') },
+  { value: 'last3Months', label: () => t('common.last3Months') },
+  { value: 'last6Months', label: () => t('common.last6Months') },
+  { value: 'thisYear', label: () => t('common.thisYear') },
+  { value: 'lastYear', label: () => t('common.lastYear') },
+  { value: 'allTime', label: () => t('common.allTime') },
 ]
 
 function getDefaultFrom(): string {

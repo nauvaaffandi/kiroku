@@ -19,6 +19,9 @@ interface LocaleMessages {
   notifications: typeof en.notifications
   about: typeof en.about
   auth: typeof en.auth
+  standardCategories: typeof en.standardCategories
+  balanceAnalytics: typeof en.balanceAnalytics
+  calendar: typeof en.calendar
 }
 
 const locales: Record<Locale, LocaleMessages> = { en, ja, id }

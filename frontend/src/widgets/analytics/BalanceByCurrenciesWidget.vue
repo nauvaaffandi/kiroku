@@ -1,10 +1,10 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>通貨別残高</h2>
+      <h2>{{ t('balanceAnalytics.currencies') }}</h2>
     </div>
     <div class="widget-content" v-if="!loading">
-      <div class="chart-container" ref="currenciesChartRef" style="height: 250px;" />
+      <div class="chart-container" ref="currenciesChartRef" />
       <div class="currencies-summary">
         <div
           v-for="curr in data"
@@ -22,7 +22,7 @@
           </div>
         </div>
         <div class="currency-row total">
-          <span><strong>換算合計</strong></span>
+          <span><strong>{{ t('balanceAnalytics.convertedTotal') }}</strong></span>
           <div class="currency-values">
             <strong>{{ formatCurrency(totalConvertedOpening) }}</strong>
             <span class="arrow">→</span>
@@ -44,6 +44,12 @@
 import { ref, onMounted, watch, nextTick, computed } from 'vue'
 import * as echarts from 'echarts'
 import type { CurrencyBalanceSummary } from '@/types/report'
+import { useSettingsStore } from '@/stores/settings'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
 
 const props = defineProps<{
   loading: boolean
@@ -68,18 +74,21 @@ function renderCurrenciesChart() {
 
   currenciesChart.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['期首', '期末'], bottom: 0 },
-    grid: { left: 10, right: 10, top: 10, bottom: 40 },
+    legend: { data: [t('balanceAnalytics.legendOpening'), t('balanceAnalytics.legendClosing')], bottom: 0 },
+    grid: { left: 10, right: 20, top: 10, bottom: 50, containLabel: true },
     xAxis: { type: 'category', data: names },
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
-      { name: '期首', type: 'bar', stack: 'total', data: opening, itemStyle: { color: '#999' } },
-      { name: '期末', type: 'bar', stack: 'total', data: closing, itemStyle: { color: '#4a90d9' } },
+      { name: t('balanceAnalytics.legendOpening'), type: 'bar', stack: 'total', data: opening, itemStyle: { color: '#999' } },
+      { name: t('balanceAnalytics.legendClosing'), type: 'bar', stack: 'total', data: closing, itemStyle: { color: '#4a90d9' } },
     ],
   })
 }
 
 function formatCurrency(val: number, currency: string = 'JPY'): string {
+  if (settingsStore.isHideAmounts) {
+    return formatAmountForDisplay(val, 'transfer')
+  }
   return new Intl.NumberFormat('ja-JP', {
     style: 'currency',
     currency,
@@ -89,17 +98,23 @@ function formatCurrency(val: number, currency: string = 'JPY'): string {
 }
 
 function formatCurrencyShort(val: number): string {
+  if (settingsStore.isHideAmounts) {
+    return formatAmountForDisplay(val, 'transfer')
+  }
   if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
   if (Math.abs(val) >= 1e4) return (val / 1e4).toFixed(1) + '万'
   return val.toLocaleString('ja-JP')
 }
 
 watch(() => props.data, () => {
-  nextTick(() => renderCurrenciesChart())
+  nextTick(() => currenciesChart?.resize())
 }, { deep: true })
 
 onMounted(() => {
-  nextTick(() => renderCurrenciesChart())
+  nextTick(() => {
+    renderCurrenciesChart()
+    currenciesChart?.resize()
+  })
   window.addEventListener('resize', () => currenciesChart?.resize())
 })
 </script>
@@ -108,7 +123,7 @@ onMounted(() => {
 @reference "tailwindcss";
 
 .widget-card {
-  @apply border rounded-xl overflow-hidden;
+  @apply border rounded-xl overflow-hidden w-full max-w-full box-border;
   background-color: var(--bg-card);
   border-color: var(--border-primary);
   box-shadow: var(--shadow);
@@ -119,21 +134,23 @@ onMounted(() => {
   border-color: var(--border-primary);
 }
 .widget-header h2 {
-  @apply text-lg font-semibold;
+  @apply text-lg font-semibold truncate;
   color: var(--text-primary);
 }
 .widget-content {
-  @apply p-4;
+  @apply p-4 overflow-hidden w-full max-w-full box-border;
 }
 .chart-container {
-  @apply w-full;
+  @apply w-full max-w-full;
+  height: 240px;
 }
 .currencies-summary {
-  @apply mt-4;
+  @apply mt-4 w-full;
 }
 .currency-row {
-  @apply flex justify-between items-center p-2 border-b;
+  @apply flex flex-col sm:flex-row gap-1 justify-between items-start sm:items-center p-2 border-b;
   border-color: var(--border-primary);
+  white-space: normal;
 }
 .currency-row.total {
   @apply border-t-2;
@@ -141,11 +158,11 @@ onMounted(() => {
   border-color: var(--border-primary);
 }
 .currency-code {
-  @apply font-mono font-medium;
+  @apply font-mono font-medium w-full sm:w-auto truncate;
   color: var(--text-primary);
 }
 .currency-values {
-  @apply flex items-center gap-2 text-sm;
+  @apply flex flex-col sm:flex-row gap-2 items-start sm:items-center text-sm w-full sm:w-auto;
   color: var(--text-secondary);
 }
 .currency-values .arrow {

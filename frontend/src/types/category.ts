@@ -12,6 +12,7 @@ export interface Category {
   name: string
   icon: string
   color: string
+  kind?: string | null
   sort_order: number
   depth: number
   path: string

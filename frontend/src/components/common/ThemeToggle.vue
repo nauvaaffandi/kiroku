@@ -4,9 +4,9 @@
     class="theme-toggle"
     role="button"
     tabindex="0"
-    aria-label="Toggle theme"
+    :aria-label="t('common.toggleTheme')"
   >
-    <span class="theme-toggle-label">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
+    <span class="theme-toggle-label">{{ isDark ? t('settings.darkMode') : t('settings.lightMode') }}</span>
     <div class="theme-switch">
       <div
         class="theme-switch-thumb"
@@ -19,8 +19,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
+import { useI18n } from '@/locales'
 
 const settingsStore = useSettingsStore()
+const { t } = useI18n()
 
 const isDark = computed(() => {
   return document.documentElement.classList.contains('dark') || settingsStore.theme === 'dark'

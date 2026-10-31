@@ -12,7 +12,7 @@
     <td class="cell-category">
       <span v-if="category" class="category-badge" :style="{ backgroundColor: category.color + '20', color: category.color }">
         <span class="category-icon" :style="{ backgroundColor: category.color }">{{ category.icon }}</span>
-        {{ category.name }}
+        {{ translate(category) }}
       </span>
       <span v-else class="text-muted">—</span>
     </td>
@@ -49,6 +49,7 @@ import { computed } from 'vue'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAccountsStore } from '@/stores/accounts'
 import { formatAmountForDisplay } from '@/utils/amountDisplay'
+import { useCategoryName } from '@/utils/categoryName'
 import type { Transaction } from '@/types'
 
 interface Props {
@@ -63,6 +64,7 @@ defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 const accountsStore = useAccountsStore()
+const { translate } = useCategoryName()
 
 const category = computed(() => categoriesStore.categories.find(c => c.id === props.transaction.category_id))
 const fromAccount = computed(() => accountsStore.accounts.find(a => a.id === props.transaction.from_account_id))

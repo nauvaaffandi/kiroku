@@ -105,6 +105,9 @@ func main() {
 		fxHandler := httpdelivery.NewFXHandler(fxRepo)
 		r.Mount("/fx", fxHandler.Routes())
 
+		analyticsHandler := httpdelivery.NewAnalyticsHandler(sqlite.NewAnalyticsRepo(database))
+		r.Mount("/analytics", analyticsHandler.Routes())
+
 		labelsHandler := httpdelivery.NewLabelsHandler(labelsRepo)
 		r.Group(func(r chi.Router) {
 			r.Use(auth.AuthMiddleware(cfg))
@@ -165,11 +168,11 @@ func seedCategories(database *db.DB) {
 		Icon     string
 		Color    string
 	}{
-		{"cat_food", nil, "食費", "🍽️", "#ff6b6b"},
-		{"cat_transport", nil, "交通費", "🚌", "#4ecdc4"},
-		{"cat_housing", nil, "住居費", "🏠", "#ffe66d"},
-		{"cat_income", nil, "収入", "💴", "#90ee90"},
-		{"cat_other", nil, "その他", "📦", "#ffdac1"},
+		{"cat_food", nil, "Food", "🍽️", "#ff6b6b"},
+		{"cat_transport", nil, "Transportation", "🚌", "#4ecdc4"},
+		{"cat_housing", nil, "Housing", "🏠", "#ffe66d"},
+		{"cat_income", nil, "Income", "💴", "#90ee90"},
+		{"cat_other", nil, "Other", "📦", "#ffdac1"},
 	}
 	for _, c := range seedData {
 		_, _ = database.Exec("INSERT INTO categories (id, parent_id, name, icon, color, sort_order) VALUES (?, ?, ?, ?, ?, 1)", c.ID, c.ParentID, c.Name, c.Icon, c.Color)

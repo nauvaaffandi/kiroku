@@ -35,6 +35,7 @@ import { useTransactionsStore } from '@/stores/transactions'
 import { useAccountsStore } from '@/stores/accounts'
 import { useCategoriesStore } from '@/stores/categories'
 import { useI18n } from '@/locales'
+import { useCategoryName } from '@/utils/categoryName'
 import DashboardStatsWidget from '@/widgets/dashboard/DashboardStatsWidget.vue'
 import RecentTransactionsWidget from '@/widgets/dashboard/RecentTransactionsWidget.vue'
 import * as echarts from 'echarts/core'
@@ -45,6 +46,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 echarts.use([BarChart, LineChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent, CanvasRenderer])
 
 const { t } = useI18n()
+const { translate } = useCategoryName()
 
 const transactionsStore = useTransactionsStore()
 const accountsStore = useAccountsStore()
@@ -93,7 +95,7 @@ const initCharts = async () => {
       const total = (transactionsStore.transactions || [])
         .filter(t => t.category_id === c.id)
         .reduce((sum, t) => sum + t.amount, 0)
-      return { name: c.name, value: total, color: c.color }
+      return { name: translate(c), value: total, color: c.color }
     }).sort((a, b) => b.value - a.value)
 
     spendingChartInstance.setOption({

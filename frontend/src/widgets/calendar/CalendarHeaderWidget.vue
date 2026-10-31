@@ -1,14 +1,20 @@
 <template>
   <div class="calendar-header">
     <div class="nav-controls">
-      <button class="nav-btn" @click="$emit('prev')">&lt; 前の月</button>
-      <h2 class="month-title">{{ year }}年 {{ month }}月</h2>
-      <button class="nav-btn" @click="$emit('next')">次の月 &gt;</button>
-      <button class="today-btn" @click="$emit('today')">今日</button>
+      <button class="nav-btn" @click="$emit('prev')" :aria-label="t('calendar.prevMonth')">
+        {{ t('calendar.prevMonth') }}
+      </button>
+      <h2 class="month-title">{{ t('calendar.monthTitle', { year, month: t(`months.${month}`) }) }}</h2>
+      <button class="nav-btn" @click="$emit('next')" :aria-label="t('calendar.nextMonth')">
+        {{ t('calendar.nextMonth') }}
+      </button>
+      <button class="today-btn" @click="$emit('today')" :aria-label="t('calendar.today')">
+        {{ t('calendar.today') }}
+      </button>
     </div>
     <div class="filter-controls">
       <select :value="selectedAccount" @change="$emit('update:selectedAccount', ($event.target as HTMLSelectElement).value)" class="filter-select">
-        <option value="">すべての口座</option>
+        <option value="">{{ t('calendar.allAccounts') }}</option>
         <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
           {{ acc.name }}
         </option>
@@ -19,6 +25,9 @@
 
 <script setup lang="ts">
 import type { Account } from '@/types'
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
 
 defineProps<{
   year: number

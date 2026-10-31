@@ -23,10 +23,12 @@ type CalendarDay struct {
 }
 
 type CalendarTxn struct {
-	ID     string  `json:"id"`
-	Type   string  `json:"type"`
-	Amount float64 `json:"amount"`
-	Note   string  `json:"note"`
+	ID       string  `json:"id"`
+	Name     string  `json:"name"`
+	Amount   float64 `json:"amount"`
+	Type     string  `json:"type"`
+	Category string  `json:"category"`
+	Currency string  `json:"currency"`
 }
 
 type AccountBalance struct {
