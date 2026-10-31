@@ -13,15 +13,17 @@ export default defineConfig({
       strategies: 'generateSW',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
+        id: 'kiroku',
         name: 'Kiroku',
         short_name: 'Kiroku',
         description: 'Self-hosted Personal Finance Tracker',
-        theme_color: '#2563eb',
-        background_color: '#f8fafc',
+        theme_color: '#2b67ad',
+        background_color: '#f6f5f2',
         display: 'standalone',
         orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
+        lang: 'ja',
         icons: [
           { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
           { src: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png', purpose: 'any maskable' },
@@ -32,35 +34,6 @@ export default defineConfig({
           { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
           { src: '/icons/icon-384x384.png', sizes: '384x384', type: 'image/png', purpose: 'any maskable' },
           { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-        ],
-        shortcuts: [
-          {
-            name: 'Add Expense',
-            short_name: 'Expense',
-            description: 'Quickly add an expense transaction',
-            url: '/transactions/new?type=expense',
-            icons: [
-              { src: '/icons/shortcut-expense.png', sizes: '192x192', type: 'image/png' }
-            ]
-          },
-          {
-            name: 'Add Income',
-            short_name: 'Income',
-            description: 'Quickly add an income transaction',
-            url: '/transactions/new?type=income',
-            icons: [
-              { src: '/icons/shortcut-income.png', sizes: '192x192', type: 'image/png' }
-            ]
-          },
-          {
-            name: 'Add Transfer',
-            short_name: 'Transfer',
-            description: 'Quickly add a transfer transaction',
-            url: '/transactions/new?type=transfer',
-            icons: [
-              { src: '/icons/shortcut-transfer.png', sizes: '192x192', type: 'image/png' }
-            ]
-          }
         ]
       },
       workbox: {
