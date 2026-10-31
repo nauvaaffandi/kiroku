@@ -46,7 +46,7 @@ defineEmits(['prev', 'next', 'today', 'update:selectedAccount'])
   border: 1px solid var(--border-primary);
   @apply flex flex-wrap justify-between items-center gap-4 p-4 rounded;
 }
-.nav-controls { @apply flex items-center gap-3; }
+.nav-controls { @apply flex flex-wrap items-center gap-3; }
 .nav-btn, .today-btn {
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);

@@ -392,7 +392,7 @@ export default {
     nextMonth: 'Next month',
     today: 'Today',
     allAccounts: 'All Accounts',
-    monthTitle: '{{year}} {{month}}',
+    monthTitle: '{month} {year}',
     scheduledPrefix: 'Scheduled: {{name}}',
     moreCount: '+{{count}} more',
     dayTransactions: 'Transactions on {{date}}',
