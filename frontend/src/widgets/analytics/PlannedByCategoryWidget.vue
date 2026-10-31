@@ -1,7 +1,7 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>カテゴリ別予定</h2>
+      <h2>{{ t('outlook.plannedByCategory') }}</h2>
     </div>
     <div class="widget-content" v-if="!loading">
       <div class="chart-container" ref="chartRef" />
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface PlannedCategory {
   id: string
@@ -26,6 +27,8 @@ interface PlannedCategory {
   net: number
   transaction_count: number
 }
+
+const { t } = useI18n()
 
 const props = defineProps<{
   loading: boolean
@@ -49,12 +52,12 @@ function renderChart() {
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      formatter: (params: any) => {
-        const p = params[0]
-        return `${p.name}<br/>収入: ${formatCurrencyShort(p.value)}<br/>支出: ${formatCurrencyShort(expense[p.dataIndex])}`
-      },
+        formatter: (params: any) => {
+          const p = params[0]
+          return `${p.name}<br/>${t('outlook.income')}: ${formatCurrencyShort(p.value)}<br/>${t('outlook.expense')}: ${formatCurrencyShort(expense[p.dataIndex])}`
+        },
     },
-    legend: { data: ['収入', '支出'], bottom: 0 },
+      legend: { data: [t('outlook.income'), t('outlook.expense')], bottom: 0 },
     grid: { left: 10, right: 10, top: 10, bottom: 40 },
     xAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     yAxis: { type: 'category', data: names, axisLabel: { interval: 0 } },

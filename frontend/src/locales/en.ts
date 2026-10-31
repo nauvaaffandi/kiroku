@@ -409,6 +409,23 @@ export default {
       sat: 'Sat'
     }
   },
+  outlook: {
+    title: 'Outlook',
+    subtitle: 'Scheduled payments by category, timeline, and balance forecast',
+    plannedByCategory: 'Planned by Category',
+    plannedByTimeline: 'Planned by Timeline',
+    balanceForecast: 'Balance Forecast',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+    intervalDay: 'Daily',
+    intervalWeek: 'Weekly',
+    intervalMonth: 'Monthly',
+    income: 'Income',
+    expense: 'Expense',
+    net: 'Net',
+    projectedBalance: 'Projected Balance'
+  },
   months: {
     '1': 'January',
     '2': 'February',

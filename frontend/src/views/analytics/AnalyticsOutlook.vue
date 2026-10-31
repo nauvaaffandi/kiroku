@@ -1,8 +1,8 @@
 <template>
   <div class="analytics-outlook-view">
     <div class="page-header">
-      <h1>Outlook 分析</h1>
-      <p class="page-subtitle">予定支払いのカテゴリ別・タイムライン別・残高予測</p>
+      <h1>{{ t('outlook.title') }}</h1>
+      <p class="page-subtitle">{{ t('outlook.subtitle') }}</p>
     </div>
 
     <DateFilterBar @change="onDateChange" />
@@ -33,10 +33,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api } from '@/api/client'
+import { useI18n } from '@/locales'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import PlannedByCategoryWidget from '@/widgets/analytics/PlannedByCategoryWidget.vue'
 import PlannedByTimelineWidget from '@/widgets/analytics/PlannedByTimelineWidget.vue'
 import BalanceForecastWidget from '@/widgets/analytics/BalanceForecastWidget.vue'
+
+const { t } = useI18n()
 
 interface PlannedCategory {
   id: string
@@ -158,6 +161,11 @@ onMounted(async () => {
 }
 .widgets-grid { 
   @apply grid gap-4; 
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .widgets-grid {
+    grid-template-columns: minmax(400px, 1fr);
+  }
 }
 </style>

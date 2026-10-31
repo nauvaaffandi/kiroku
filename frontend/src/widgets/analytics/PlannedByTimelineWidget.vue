@@ -1,11 +1,11 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>タイムライン別予定</h2>
+      <h2>{{ t('outlook.plannedByTimeline') }}</h2>
       <select :value="interval" @change="$emit('update:interval', ($event.target as HTMLSelectElement).value)" class="interval-select">
-        <option value="day">日次</option>
-        <option value="week">週次</option>
-        <option value="month">月次</option>
+        <option value="day">{{ t('outlook.intervalDay') }}</option>
+        <option value="week">{{ t('outlook.intervalWeek') }}</option>
+        <option value="month">{{ t('outlook.intervalMonth') }}</option>
       </select>
     </div>
     <div class="widget-content" v-if="!loading">
@@ -20,6 +20,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface TimelinePoint {
   period: string
@@ -28,6 +29,8 @@ interface TimelinePoint {
   net: number
   transaction_count: number
 }
+
+const { t } = useI18n()
 
 const props = defineProps<{
   loading: boolean
@@ -55,12 +58,12 @@ function renderChart() {
   chart.setOption({
     tooltip: {
       trigger: 'axis',
-      formatter: (params: any) => {
-        const p = params[0]
-        return `${p.name}<br/>収入: ${formatCurrencyShort(p.value)}<br/>支出: ${formatCurrencyShort(expense[p.dataIndex])}<br/>純額: ${formatCurrencyShort(net[p.dataIndex])}`
-      },
+formatter: (params: any) => {
+          const p = params[0]
+          return `${p.name}<br/>${t('outlook.income')}: ${formatCurrencyShort(p.value)}<br/>${t('outlook.expense')}: ${formatCurrencyShort(expense[p.dataIndex])}<br/>${t('outlook.net')}: ${formatCurrencyShort(net[p.dataIndex])}`
+        },
     },
-    legend: { data: ['収入', '支出', '純額'], bottom: 0 },
+    legend: { data: [t('outlook.income'), t('outlook.expense'), t('outlook.net')], bottom: 0 },
     grid: { left: 40, right: 20, top: 10, bottom: 40 },
     xAxis: { type: 'category', data: periods },
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },

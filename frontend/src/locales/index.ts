@@ -22,6 +22,7 @@ interface LocaleMessages {
   standardCategories: typeof en.standardCategories
   balanceAnalytics: typeof en.balanceAnalytics
   calendar: typeof en.calendar
+  outlook: typeof en.outlook
 }
 
 const locales: Record<Locale, LocaleMessages> = { en, ja, id }

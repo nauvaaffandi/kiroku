@@ -1,7 +1,7 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>残高予測</h2>
+      <h2>{{ t('outlook.balanceForecast') }}</h2>
       <div class="confidence-toggles">
         <label v-for="level in confidenceLevels" :key="level" class="toggle-label">
           <input 
@@ -10,7 +10,7 @@
             :checked="selectedConfidence.includes(level)"
             @change="toggleConfidence(level)"
           />
-          <span :class="['confidence-badge', level]">{{ level }}</span>
+          <span :class="['confidence-badge', level]">{{ t('outlook.' + level) }}</span>
         </label>
       </div>
     </div>
@@ -26,12 +26,15 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface ForecastPoint {
   date: string
   projected_balance: number
   confidence_level: string
 }
+
+const { t } = useI18n()
 
 const props = defineProps<{
   loading: boolean
@@ -60,7 +63,7 @@ function renderChart() {
       trigger: 'axis',
       formatter: (params: any) => {
         const p = params[0]
-        return `${p.name}<br/>予測残高: ${formatCurrencyShort(p.value)}`
+        return `${p.name}<br/>${t('outlook.projectedBalance')}: ${formatCurrencyShort(p.value)}`
       },
     },
     grid: { left: 40, right: 20, top: 10, bottom: 40 },
@@ -68,7 +71,7 @@ function renderChart() {
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
       {
-        name: '予測残高',
+        name: t('outlook.projectedBalance'),
         type: 'line',
         data: balances,
         smooth: true,

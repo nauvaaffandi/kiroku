@@ -419,6 +419,23 @@ export default {
       sat: 'Sab'
     }
   },
+  outlook: {
+    title: 'Outlook',
+    subtitle: 'Pembayaran terjadwal berdasarkan kategori, lini masa, dan perkiraan saldo',
+    plannedByCategory: 'Terjadwal berdasarkan Kategori',
+    plannedByTimeline: 'Terjadwal berdasarkan Lini Masa',
+    balanceForecast: 'Perkiraan Saldo',
+    high: 'Tinggi',
+    medium: 'Sedang',
+    low: 'Rendah',
+    intervalDay: 'Harian',
+    intervalWeek: 'Mingguan',
+    intervalMonth: 'Bulanan',
+    income: 'Pemasukan',
+    expense: 'Pengeluaran',
+    net: 'Bersih',
+    projectedBalance: 'Perkiraan Saldo'
+  },
   months: {
     '1': 'Januari',
     '2': 'Februari',

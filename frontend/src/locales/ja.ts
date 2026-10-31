@@ -419,6 +419,23 @@ export default {
       sat: '土'
     }
   },
+  outlook: {
+    title: 'Outlook 分析',
+    subtitle: '予定支払いのカテゴリ別・タイムライン別・残高予測',
+    plannedByCategory: 'カテゴリ別予定',
+    plannedByTimeline: 'タイムライン別予定',
+    balanceForecast: '残高予測',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+    intervalDay: '日次',
+    intervalWeek: '週次',
+    intervalMonth: '月次',
+    income: '収入',
+    expense: '支出',
+    net: '純額',
+    projectedBalance: '予測残高'
+  },
   months: {
     '1': '1月',
     '2': '2月',
