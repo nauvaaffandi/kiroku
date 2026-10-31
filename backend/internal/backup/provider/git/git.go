@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"kiroku/backend/internal/backup/provider"
 )
@@ -33,7 +34,7 @@ func (gp *GitProvider) Name() string {
 }
 
 func (gp *GitProvider) run(ctx context.Context, args ...string) (string, error) {
-	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd := execCommandContext(ctx, "git", args...)
 	cmd.Dir = gp.root
 	out, err := cmd.CombinedOutput()
 	s := scrub(string(out))
@@ -41,6 +42,13 @@ func (gp *GitProvider) run(ctx context.Context, args ...string) (string, error) 
 		return s, fmt.Errorf("git %s: %w", strings.Join(args, " "), err)
 	}
 	return s, nil
+}
+
+// helper to allow mocking or standard exec
+var execCommandContext = execCommand
+
+func execCommand(ctx context.Context, name string, arg ...string) *exec.Cmd {
+	return exec.CommandContext(ctx, name, arg...)
 }
 
 func (gp *GitProvider) ensureRepo() error {
@@ -67,30 +75,53 @@ func (gp *GitProvider) Upload(ctx context.Context, key string, r io.Reader, meta
 	if err := os.MkdirAll(filepath.Dir(destPath), 0o755); err != nil {
 		return err
 	}
-	out, err := os.Create(destPath)
+
+	// Read content fully into memory to avoid read/write race condition on same file
+	data, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
 
-	if _, err := io.Copy(out, r); err != nil {
+	if err := os.WriteFile(destPath, data, 0o644); err != nil {
 		return err
 	}
-
-	// Stage, commit, and push
-	_, _ = gp.run(ctx, "add", "--", key)
-	staged := false
-	if output, err := gp.run(ctx, "status", "--porcelain", "--", key); err == nil {
-		staged = strings.TrimSpace(output) != ""
-	}
-	if staged {
-		if _, err := gp.run(ctx, "commit", "-m", "backup: update "+key); err != nil {
-			return err
-		}
-		// Try pushing if remote exists
-		_, _ = gp.run(ctx, "push", "origin", "HEAD")
-	}
 	return nil
+}
+
+func (gp *GitProvider) CommitAndPush(ctx context.Context, msg string) (bool, error) {
+	if err := gp.ensureRepo(); err != nil {
+		return false, err
+	}
+	_, _ = gp.run(ctx, "add", "--", "*.xlsx")
+	staged := false
+	if out, err := gp.run(ctx, "status", "--porcelain", "--", "*.xlsx"); err == nil {
+		staged = strings.TrimSpace(out) != ""
+	}
+	if !staged {
+		return false, nil
+	}
+	if _, err := gp.run(ctx, "commit", "-m", msg); err != nil {
+		return false, err
+	}
+	
+	// Push if origin exists
+	if gp.HasOrigin() {
+		_ = gp.Push()
+	}
+	return true, nil
+}
+
+func (gp *GitProvider) HasOrigin() bool {
+	ctx := context.Background()
+	_, err := gp.run(ctx, "remote", "get-url", "origin")
+	return err == nil
+}
+
+func (gp *GitProvider) Push() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	_, err := gp.run(ctx, "push", "origin", "HEAD")
+	return err
 }
 
 func (gp *GitProvider) Download(ctx context.Context, key string) (io.ReadCloser, error) {
@@ -130,9 +161,11 @@ func (gp *GitProvider) Delete(ctx context.Context, key string) error {
 	if err := os.Remove(destPath); err != nil {
 		return err
 	}
-	_, _ = gp.run(ctx, "add", "--", key)
-	_, _ = gp.run(ctx, "commit", "-m", "backup: remove "+key)
-	_, _ = gp.run(ctx, "push", "origin", "HEAD")
+	_, _ = gp.run(context.Background(), "add", "--", key)
+	_, _ = gp.run(context.Background(), "commit", "-m", "backup: remove "+key)
+	if gp.HasOrigin() {
+		_ = gp.Push()
+	}
 	return nil
 }
 

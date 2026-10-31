@@ -1,6 +1,7 @@
 package backup
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,15 +11,19 @@ import (
 
 	"github.com/rs/zerolog/log"
 
+	"kiroku/backend/internal/backup/provider"
+	"kiroku/backend/internal/backup/provider/gdrive"
+	"kiroku/backend/internal/backup/provider/git"
+	"kiroku/backend/internal/backup/provider/local"
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/db"
 )
 
 type Scheduler struct {
-	db   *db.DB
-	cfg  *config.Config
-	root string
-	git  *Git
+	db        *db.DB
+	cfg       *config.Config
+	root      string
+	providers []provider.StorageProvider
 
 	mu                   sync.Mutex
 	lastCreatedProcessed string
@@ -26,7 +31,28 @@ type Scheduler struct {
 }
 
 func NewScheduler(database *db.DB, cfg *config.Config, root, token string) *Scheduler {
-	return &Scheduler{db: database, cfg: cfg, root: root, git: NewGit(root, token)}
+	var providers []provider.StorageProvider
+	
+	providerNames := provider.ParseProviders(cfg.BackupProviders)
+	if len(providerNames) == 0 && (token != "" || cfg.BackupRepoPath != "") {
+		providerNames = []string{"git"}
+	}
+
+	for _, name := range providerNames {
+		switch name {
+		case "git":
+			providers = append(providers, git.New(root, token))
+		case "gdrive":
+			providers = append(providers, gdrive.New("", "", "", ""))
+		}
+	}
+
+	return &Scheduler{
+		db:        database,
+		cfg:       cfg,
+		root:      root,
+		providers: providers,
+	}
 }
 
 func (s *Scheduler) RunJob() (err error) {
@@ -44,8 +70,10 @@ func (s *Scheduler) RunJob() (err error) {
 		s.saveState(started, status, msg)
 	}()
 
-	if err := s.git.EnsureRepo(); err != nil {
-		return fmt.Errorf("ensure repo: %w", err)
+	// 1. Mandatory Local-First Backup Execution
+	localProvider := local.New(s.root)
+	if err := localProvider.HealthCheck(context.Background()); err != nil {
+		return fmt.Errorf("local backup storage initialization failed: %w", err)
 	}
 
 	cutoff := time.Now().AddDate(0, 0, -7).Format("2006-01-02")
@@ -87,6 +115,8 @@ func (s *Scheduler) RunJob() (err error) {
 		allDates[d] = true
 	}
 
+	var changedKeys []string
+
 	changedMonths := map[string]bool{}
 	for date := range allDates {
 		txs := groups[date]
@@ -112,6 +142,7 @@ func (s *Scheduler) RunJob() (err error) {
 			return err
 		}
 		changedMonths[monthOf(date)] = true
+		changedKeys = append(changedKeys, fmt.Sprintf("%s/%s/%s.xlsx", date[:4], date[5:7], date[8:10]))
 	}
 
 	for month := range changedMonths {
@@ -141,23 +172,68 @@ func (s *Scheduler) RunJob() (err error) {
 		if err := s.upsertMonth(month, fp); err != nil {
 			return err
 		}
+		changedKeys = append(changedKeys, fmt.Sprintf("%s/%s/full_%s.xlsx", month[:4], month[5:7], month[5:7]))
 	}
 
-	committed, err := s.git.StageAndCommit("backup: reconcile daily data through " + cutoff)
-	if err != nil {
-		return fmt.Errorf("git commit: %w", err)
-	}
-	if committed {
-		s.lastCommit = time.Now().Format(time.RFC3339)
-		if s.git.HasOrigin() {
-			if err := s.git.Push(); err != nil {
-				log.Warn().Err(err).Msg("backup: git push failed, will retry on next run")
+	// 2. Dispatch to Configured Pluggable Remote Providers with Failure Isolation
+	ctx := context.Background()
+	for _, prov := range s.providers {
+		if err := prov.HealthCheck(ctx); err != nil {
+			log.Warn().Str("provider", prov.Name()).Err(err).Msg("backup: provider health check failed")
+			s.recordSyncState(started, prov.Name(), "failed", err.Error())
+			continue
+		}
+
+		providerFailed := false
+		for _, key := range changedKeys {
+			fullPath := filepath.Join(s.root, key)
+			f, err := os.Open(fullPath)
+			if err != nil {
+				continue
 			}
+			fi, _ := f.Stat()
+			meta := provider.Metadata{
+				Key:          key,
+				Size:         fi.Size(),
+				LastModified: fi.ModTime(),
+			}
+			if err := prov.Upload(ctx, key, f, meta); err != nil {
+				f.Close()
+				log.Warn().Str("provider", prov.Name()).Str("key", key).Err(err).Msg("backup: provider upload failed")
+				providerFailed = true
+				break
+			}
+			f.Close()
+		}
+
+		if providerFailed {
+			s.recordSyncState(started, prov.Name(), "failed", "one or more artifact uploads failed")
 		} else {
-			log.Info().Msg("backup: no git origin configured, local backup only")
+			s.recordSyncState(started, prov.Name(), "success", "")
 		}
 	}
+
+	// 3. Git provider: batched commit-and-push after all provider uploads
+	for _, prov := range s.providers {
+		if gitProv, ok := prov.(*git.GitProvider); ok {
+			if committed, err := gitProv.CommitAndPush(ctx, "backup: reconcile through "+cutoff); err != nil {
+				log.Warn().Err(err).Msg("backup: git commit failed, will retry on next run")
+				s.recordSyncState(started, prov.Name(), "failed", err.Error())
+			} else if committed {
+				s.recordSyncState(started, prov.Name(), "success", "")
+			}
+		}
+	}
+
+	s.lastCommit = time.Now().Format(time.RFC3339)
 	return nil
+}
+
+func (s *Scheduler) recordSyncState(execTime time.Time, providerName, status, errMsg string) {
+	_, _ = s.db.Exec(
+		`INSERT INTO backup_provider_sync_states (execution_id, provider_name, status, error_message, created_at) VALUES (?, ?, ?, ?, ?)`,
+		execTime.Format(time.RFC3339), providerName, status, errMsg, time.Now(),
+	)
 }
 
 func (s *Scheduler) loadEligible(cutoff string) (map[string][][]string, error) {

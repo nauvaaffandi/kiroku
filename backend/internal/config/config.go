@@ -37,6 +37,7 @@ type Config struct {
 	BackupPassphrase         string `koanf:"backup_passphrase"`
 	BackupRepoPath           string `koanf:"backup_repo_path"`
 	BackupGitToken           string `koanf:"backup_git_token"`
+	BackupProviders          string `koanf:"backup_providers"`
 	OCRSpaceAPIKey           string `koanf:"ocr_space_api_key"`
 	NineRouterBaseURL        string `koanf:"ninerouter_base_url"`
 	NineRouterAPIKey         string `koanf:"ninerouter_api_key"`
