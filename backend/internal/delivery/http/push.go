@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"net/http"
 	"net/url"
 	"strings"
@@ -65,9 +66,13 @@ func NewPushHandler(repo domain.PushSubscriptionRepository, cfg *config.Config) 
 		if err != nil {
 			log.Warn().Err(err).Msg("push: failed to decode VAPID private key")
 		} else {
-			privKey = &ecdsa.PrivateKey{}
-			privKey.Curve = elliptic.P256()
-			privKey.D.SetBytes(d)
+			privKey = &ecdsa.PrivateKey{
+				PublicKey: ecdsa.PublicKey{
+					Curve: elliptic.P256(),
+				},
+			}
+			privKey.D = new(big.Int).SetBytes(d)
+			privKey.PublicKey.X, privKey.PublicKey.Y = elliptic.P256().ScalarBaseMult(d)
 		}
 	}
 	delivery := &WebPushDelivery{

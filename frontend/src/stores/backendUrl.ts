@@ -31,7 +31,6 @@ export const useBackendUrlStore = defineStore('backendUrl', () => {
               const data = await response.json()
               if (data.result) {
                 url.value = data.result
-                localStorage.setItem('kiroku_backend_url', data.result)
                 return data.result
               }
             }
@@ -44,36 +43,12 @@ export const useBackendUrlStore = defineStore('backendUrl', () => {
         }
       }
 
-      const envUrl = import.meta.env.VITE_API_BASE_URL
-      if (envUrl && !envUrl.includes('localhost')) {
-        url.value = envUrl
-        localStorage.setItem('kiroku_backend_url', envUrl)
-        return envUrl
-      }
-
-      const cached = localStorage.getItem('kiroku_backend_url')
-      if (cached) {
-        url.value = cached
-        return cached
-      }
-
-      const fallback = 'http://localhost:8080'
-      url.value = fallback
-      return fallback
+      throw new Error('Failed to fetch backend URL from Upstash after 5 attempts')
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Unknown error'
       error.value = msg
       console.warn('Failed to fetch backend URL:', e)
-      
-      const cached = localStorage.getItem('kiroku_backend_url')
-      if (cached) {
-        url.value = cached
-        return cached
-      }
-      
-      const fallback = 'http://localhost:8080'
-      url.value = fallback
-      return fallback
+      throw e
     } finally {
       loading.value = false
       initialized.value = true
@@ -82,12 +57,10 @@ export const useBackendUrlStore = defineStore('backendUrl', () => {
 
   const setUrl = (newUrl: string) => {
     url.value = newUrl
-    localStorage.setItem('kiroku_backend_url', newUrl)
   }
 
   const clearCache = () => {
     url.value = null
-    localStorage.removeItem('kiroku_backend_url')
   }
 
   return {

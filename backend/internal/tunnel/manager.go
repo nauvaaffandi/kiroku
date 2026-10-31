@@ -131,13 +131,10 @@ func (m *Manager) setURL(url string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if m.url == url {
-		return
-	}
 	m.url = url
 	m.restartCount = 0
 
-	log.Info().Str("url", url).Msg("tunnel: URL detected")
+	log.Info().Str("url", url).Msg("tunnel: URL detected / forced update")
 
 	// Write to file
 	if err := os.WriteFile(m.urlFile, []byte(url), 0644); err != nil {
