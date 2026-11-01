@@ -1,17 +1,78 @@
 package auth
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"fmt"
+	"math/big"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
 	"kiroku/backend/internal/config"
+	"kiroku/backend/internal/db"
 )
 
-// getOrCreateUser returns an existing user ID or creates one with a default PIN hash
+// generateRandomPIN returns a random 6-digit PIN string (e.g. "048392").
+func generateRandomPIN() (string, error) {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%06d", n.Int64()), nil
+}
+
+// writeSeedPIN writes the plaintext PIN to {DATA_DIR}/.seed/seed-pin.txt.
+// It returns an error on failure so the caller can abort user creation instead of
+// silently leaving a user with no recoverable PIN (lockout).
+func writeSeedPIN(pin string) error {
+	dataDir := config.DataDir()
+	if dataDir == "" {
+		log.Warn().Msg("auth: DATA_DIR not set, skipping seed-pin.txt write")
+		return nil
+	}
+	dir := config.SeedDir()
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		return fmt.Errorf("create seed dir: %w", err)
+	}
+	pinPath := config.SeedPINPath()
+	if err := os.WriteFile(pinPath, []byte(pin), 0o600); err != nil {
+		return fmt.Errorf("write seed-pin.txt: %w", err)
+	}
+	return nil
+}
+
+// WarnIfDefaultPINInUse logs a warning if the seed PIN file still matches the
+// stored user PIN hash. The PIN value itself is never logged.
+func WarnIfDefaultPINInUse(database *db.DB) {
+	if config.DataDir() == "" {
+		return
+	}
+	pinBytes, err := os.ReadFile(config.SeedPINPath())
+	if err != nil {
+		return
+	}
+	seedPIN := strings.TrimSpace(string(pinBytes))
+	if seedPIN == "" {
+		return
+	}
+	var hash string
+	if err := database.QueryRow("SELECT pin_hash FROM users LIMIT 1").Scan(&hash); err != nil {
+		return
+	}
+	if ok, verr := VerifyPin(seedPIN, hash); verr == nil && ok {
+		log.Warn().Msg("auth: default seed PIN still in use; please change it immediately")
+	}
+}
+
+// getOrCreateUser returns an existing user ID or creates one with a random
+// 6-digit PIN. On first-time creation the plaintext PIN is written to
+// {DATA_DIR}/.seed/seed-pin.txt before the user is inserted.
+// If the PIN file cannot be written, the user is NOT created (avoids lockout).
 func (h *Handler) getOrCreateUser() (string, error) {
 	var userID string
 	err := h.db.QueryRow("SELECT id FROM users LIMIT 1").Scan(&userID)
@@ -22,12 +83,24 @@ func (h *Handler) getOrCreateUser() (string, error) {
 		return "", err
 	}
 
-	hash, err := HashPin("123456",
+	pin, err := generateRandomPIN()
+	if err != nil {
+		return "", err
+	}
+
+	hash, err := HashPin(pin,
 		config.Argon2Time(),
 		config.Argon2Memory(),
 		config.Argon2Threads(),
 	)
 	if err != nil {
+		return "", err
+	}
+
+	// Persist the recoverable PIN before creating the user. If the seed file
+	// cannot be written (disk full, permissions), abort before inserting the user
+	// so no account is left with an unrecoverable PIN (lockout).
+	if err := writeSeedPIN(pin); err != nil {
 		return "", err
 	}
 
@@ -85,42 +158,4 @@ func clearAuthCookies(w http.ResponseWriter) {
         SameSite: http.SameSiteNoneMode,
         MaxAge:   -1,
     })
-}
-
-// ensure log is used to avoid unused import
-var _ = log.Error
-
-// CheckAndResetPinHash verifies the default user's PIN hash on startup.
-// If verification fails (e.g., due to Argon2 config change), it resets the hash.
-func (h *Handler) CheckAndResetPinHash() {
-	var userID, hash string
-	err := h.db.QueryRow("SELECT id, pin_hash FROM users LIMIT 1").Scan(&userID, &hash)
-	if err != nil {
-		return // No user exists yet, will be created on first login
-	}
-
-	ok, err := VerifyPin("123456", hash)
-	if err == nil && ok {
-		return // PIN hash is valid
-	}
-
-	log.Warn().Msg("auth: default PIN hash invalid, resetting")
-
-	newHash, err := HashPin("123456",
-		config.Argon2Time(),
-		config.Argon2Memory(),
-		config.Argon2Threads(),
-	)
-	if err != nil {
-		log.Error().Err(err).Msg("auth: failed to hash new PIN")
-		return
-	}
-
-	_, err = h.db.Exec("UPDATE users SET pin_hash = ? WHERE id = ?", newHash, userID)
-	if err != nil {
-		log.Error().Err(err).Msg("auth: failed to reset PIN hash")
-		return
-	}
-
-	log.Info().Msg("auth: PIN hash reset successfully")
 }

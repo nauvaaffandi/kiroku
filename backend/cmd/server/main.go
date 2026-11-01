@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 
@@ -19,9 +18,9 @@ import (
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/db"
 	httpdelivery "kiroku/backend/internal/delivery/http"
-	"kiroku/backend/internal/telegram"
 	"kiroku/backend/internal/logger"
 	"kiroku/backend/internal/repository/sqlite"
+	"kiroku/backend/internal/telegram"
 	"kiroku/backend/internal/tunnel"
 )
 
@@ -41,6 +40,12 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to open database")
 	}
 	defer database.Close()
+
+	// Startup warning: log (without leaking the PIN) if the seed PIN file
+	// still matches the stored user PIN hash. Only runs when DATA_DIR is set.
+	if config.DataDir() != "" {
+		auth.WarnIfDefaultPINInUse(database)
+	}
 
 	tgService := telegram.NewTelegramService(database, cfg)
 
@@ -140,7 +145,7 @@ func main() {
 	}()
 
 	if config.TunnelEnabled() {
-		urlFile := filepath.Join(config.DataDir(), ".working", "backend-url.txt")
+		urlFile := config.SeedURLPath()
 		tunnelMgr := tunnel.NewManager("http://localhost"+cfg.Addr, urlFile, config.UpstashRedisRestURL(), config.UpstashRedisRestToken())
 		_ = tunnelMgr.Start()
 		defer tunnelMgr.Stop()
