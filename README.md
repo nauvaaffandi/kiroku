@@ -281,7 +281,7 @@ For production self-hosting:
 
 *Operators deploying Kiroku in production should review the following known limitations:*
 1. **Data Route Authentication:** In `cmd/server/main.go`, certain data routes under `/api/v1` (such as `/accounts`, `/categories`, `/transactions`, `/reports`) are currently mounted without strict auth middleware enforcement.
-2. **Default PIN:** Initial user provisioning automatically provisions the default user with a random 6-digit PIN written to `{DATA_DIR}/.genesis/genesis-pin.txt`. The admin must retrieve this PIN from the file on first startup and change it immediately via the UI.
+2. **Default PIN:** Initial user provisioning automatically provisions the default user with a random 6-digit PIN written to `{DATA_DIR}/.seed/seed-pin.txt`. The admin must retrieve this PIN from the file on first startup and change it immediately via the UI.
 3. **CORS Policy:** The default CORS configuration reflects any incoming `Origin` header with credentials allowed (`SameSite=None`), which should be restricted in strict multi-tenant or public deployments.
 4. **Unmounted Backend Packages:** Internal backend packages such as `analytics`, `backup`, and `receipts` are currently unmounted in `main.go`.
 
