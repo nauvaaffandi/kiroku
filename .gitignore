@@ -6,7 +6,6 @@ backend/*.db
 backend/*.db-*
 backend/go.work
 backend/go.work.sum
-backend/**/*_test.go
 backend/server
 backend/config.yaml
 
