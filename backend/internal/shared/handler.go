@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
+	"kiroku/backend/internal/auth"
 	"kiroku/backend/internal/db"
 	"kiroku/backend/internal/models"
 )
@@ -37,7 +38,11 @@ func (h *Handler) PublicRoutes() chi.Router {
 }
 
 func (h *Handler) CreateShare(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := auth.GetUserID(r)
+	if userID == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	var req models.CreateShareReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -90,7 +95,11 @@ func (h *Handler) CreateShare(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ListShares(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := auth.GetUserID(r)
+	if userID == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	rows, err := h.db.Query(`
 		SELECT s.id, s.account_id, a.name, s.token, s.expires_at, s.created_at, s.last_accessed_at
@@ -135,7 +144,11 @@ func (h *Handler) ListShares(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) RevokeShare(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("user_id").(string)
+	userID := auth.GetUserID(r)
+	if userID == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	shareID := chi.URLParam(r, "id")
 
 	// Verify share belongs to user's account
