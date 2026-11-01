@@ -34,6 +34,8 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to load config")
 	}
 
+	allowedOrigins := config.AllowedCORSOrigins()
+
 	database, err := db.Open(config.DataDir())
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to open database")
@@ -60,7 +62,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(realIP)
-	r.Use(corsMiddleware)
+	r.Use(corsMiddleware(allowedOrigins, devMode))
 	r.Use(middleware.Recoverer)
 	r.Use(loggingMiddleware)
 
@@ -283,22 +285,52 @@ func realIP(next http.Handler) http.Handler {
 	})
 }
 
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
-		if origin != "" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSRF-Token")
-			w.Header().Set("Access-Control-Max-Age", "86400")
-		}
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
+func corsMiddleware(allowedOrigins []string, devMode bool) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			origin := r.Header.Get("Origin")
+
+			isAllowed := false
+			if len(allowedOrigins) > 0 {
+				for _, allowed := range allowedOrigins {
+					if origin == allowed {
+						isAllowed = true
+						break
+					}
+				}
+			} else if devMode {
+				devDefaults := []string{
+					"http://localhost:5173",
+					"http://localhost:3000",
+					"http://127.0.0.1:5173",
+					"http://127.0.0.1:3000",
+					"http://[::1]:5173",
+					"http://[::1]:3000",
+				}
+				for _, allowed := range devDefaults {
+					if origin == allowed {
+						isAllowed = true
+						break
+					}
+				}
+			}
+
+			if isAllowed && origin != "" {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSRF-Token")
+				w.Header().Set("Access-Control-Max-Age", "86400")
+			}
+
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
