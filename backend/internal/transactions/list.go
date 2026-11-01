@@ -73,15 +73,7 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 		query += " AND " + strings.Join(conditions, " AND ")
 	}
 
-	sortBy := r.URL.Query().Get("sort")
-	if sortBy == "" {
-		sortBy = "date_time"
-	}
-	order := r.URL.Query().Get("order")
-	if order == "" {
-		order = "DESC"
-	}
-	query += " ORDER BY " + sortBy + " " + order
+	query += " ORDER BY " + sanitizeSortOrder(r.URL.Query().Get("sort"), r.URL.Query().Get("order"))
 
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	if page < 1 {
@@ -298,4 +290,49 @@ func (h *Handler) Summary(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(summary)
+}
+
+// allowedSortColumns lists every column selected by List that may be used
+// for ordering. User-supplied values not present here fall back to date_time.
+var allowedSortColumns = map[string]struct{}{
+	"id":             {},
+	"type":           {},
+	"date_time":      {},
+	"amount":         {},
+	"currency":       {},
+	"from_account_id": {},
+	"to_account_id":  {},
+	"category_id":    {},
+	"labels":         {},
+	"note":           {},
+	"payee_payer":    {},
+	"payment_type":   {},
+	"warranty_until": {},
+	"status":         {},
+	"place_name":     {},
+	"place_lat":      {},
+	"place_lng":      {},
+	"attachments":    {},
+	"template_id":    {},
+	"created_at":     {},
+	"updated_at":     {},
+}
+
+// allowedDirections lists safe ORDER BY directions (case-insensitive).
+var allowedDirections = map[string]struct{}{
+	"ASC":  {},
+	"DESC": {},
+}
+
+// sanitizeSortOrder returns a safe ORDER BY fragment whitelisted against
+// SQL injection from user-supplied sort/order query params.
+func sanitizeSortOrder(sortBy, order string) string {
+	if _, ok := allowedSortColumns[sortBy]; !ok {
+		sortBy = "date_time"
+	}
+	o := strings.ToUpper(order)
+	if _, ok := allowedDirections[o]; !ok {
+		o = "DESC"
+	}
+	return sortBy + " " + o
 }
