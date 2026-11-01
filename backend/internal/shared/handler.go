@@ -27,7 +27,12 @@ func (h *Handler) Routes() chi.Router {
 	r.Post("/", h.CreateShare)
 	r.Get("/", h.ListShares)
 	r.Delete("/{id}", h.RevokeShare)
-	r.Get("/public/{token}", h.GetSharedView)
+	return r
+}
+
+func (h *Handler) PublicRoutes() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/{token}", h.GetSharedView)
 	return r
 }
 

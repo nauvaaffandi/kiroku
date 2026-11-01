@@ -73,9 +73,9 @@ func main() {
 		httpSwagger.URL("/api/docs/swagger.json"),
 	))
 
-	// Mount shared public routes
+	// Mount shared public routes (no auth required)
 	sharedHandler := httpdelivery.NewSharedHandler(sharedRepo)
-	r.Mount("/shared", sharedHandler.Routes())
+	r.Mount("/shared/public", sharedHandler.PublicRoutes())
 
 	// API V1 routes
 	r.Route("/api/v1", func(r chi.Router) {
@@ -85,6 +85,8 @@ func main() {
 		// Public /auth routes mounted above; all remaining routes require auth
 		r.Group(func(r chi.Router) {
 			r.Use(auth.AuthMiddleware(cfg))
+
+			r.Mount("/shared", sharedHandler.Routes())
 
 			accHandler := httpdelivery.NewAccountsHandler(accountsRepo)
 			r.Mount("/accounts", accHandler.Routes())
