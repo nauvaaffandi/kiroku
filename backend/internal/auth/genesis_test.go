@@ -33,12 +33,12 @@ func TestGetOrCreateUser_GeneratesRandomPIN(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEmpty(t, userID)
 
-	pinPath := filepath.Join(dataDir, ".seed", "seed-pin.txt")
+	pinPath := filepath.Join(dataDir, "persistent", "genesis-pin.txt")
 	content, err := os.ReadFile(pinPath)
 	require.NoError(t, err)
 
 	pin := string(content)
-	assert.Regexp(t, regexp.MustCompile(`^\d{6}$`), pin, "seed PIN must be exactly 6 digits")
+	assert.Regexp(t, regexp.MustCompile(`^\d{6}$`), pin, "genesis PIN must be exactly 6 digits")
 }
 
 func TestGetOrCreateUser_ExistingUser(t *testing.T) {
@@ -58,9 +58,9 @@ func TestGetOrCreateUser_ExistingUser(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "existing-user", userID)
 
-	pinPath := filepath.Join(dataDir, ".seed", "seed-pin.txt")
+	pinPath := filepath.Join(dataDir, "persistent", "genesis-pin.txt")
 	_, err = os.ReadFile(pinPath)
-	assert.Error(t, err, "seed-pin.txt should not exist for existing user")
+	assert.Error(t, err, "genesis-pin.txt should not exist for existing user")
 	assert.True(t, os.IsNotExist(err))
 }
 
@@ -71,7 +71,7 @@ func TestGetOrCreateUser_PinIsSixDigits(t *testing.T) {
 	_, err := h.getOrCreateUser()
 	require.NoError(t, err)
 
-	pinPath := filepath.Join(dataDir, ".seed", "seed-pin.txt")
+	pinPath := filepath.Join(dataDir, "persistent", "genesis-pin.txt")
 	content, err := os.ReadFile(pinPath)
 	require.NoError(t, err)
 
@@ -80,14 +80,14 @@ func TestGetOrCreateUser_PinIsSixDigits(t *testing.T) {
 	assert.Regexp(t, regexp.MustCompile(`^\d{6}$`), pin)
 }
 
-func TestSeedPINFileWrittenOnlyOnce(t *testing.T) {
+func TestGenesisPinFileWrittenOnlyOnce(t *testing.T) {
 	dataDir := t.TempDir()
 	h := setupFreshHandler(t, dataDir)
 
 	userID1, err := h.getOrCreateUser()
 	require.NoError(t, err)
 
-	pinPath := filepath.Join(dataDir, ".seed", "seed-pin.txt")
+	pinPath := filepath.Join(dataDir, "persistent", "genesis-pin.txt")
 	content1, err := os.ReadFile(pinPath)
 	require.NoError(t, err)
 

@@ -224,19 +224,19 @@ func DataDir() string {
 	return os.Getenv("DATA_DIR")
 }
 
-// SeedDir returns the seed data directory path under DATA_DIR/.seed.
-func SeedDir() string {
-	return filepath.Join(DataDir(), ".seed")
+// GenesisDir returns the genesis data directory path under DATA_DIR/persistent.
+func GenesisDir() string {
+	return filepath.Join(DataDir(), "persistent")
 }
 
-// SeedPINPath returns the path to seed-pin.txt.
-func SeedPINPath() string {
-	return filepath.Join(SeedDir(), "seed-pin.txt")
+// GenesisPinPath returns the path to genesis-pin.txt.
+func GenesisPinPath() string {
+	return filepath.Join(GenesisDir(), "genesis-pin.txt")
 }
 
-// SeedURLPath returns the path to backend-url.txt.
+// SeedURLPath returns the path to backend-url.txt under the genesis data directory.
 func SeedURLPath() string {
-	return filepath.Join(SeedDir(), "backend-url.txt")
+	return filepath.Join(GenesisDir(), "backend-url.txt")
 }
 
 // JWTSecret returns the JWT secret from JWT_SECRET env var.

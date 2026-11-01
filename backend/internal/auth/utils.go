@@ -26,52 +26,52 @@ func generateRandomPIN() (string, error) {
 	return fmt.Sprintf("%06d", n.Int64()), nil
 }
 
-// writeSeedPIN writes the plaintext PIN to {DATA_DIR}/.seed/seed-pin.txt.
+// writeGenesisPIN writes the plaintext PIN to {DATA_DIR}/persistent/genesis-pin.txt.
 // It returns an error on failure so the caller can abort user creation instead of
 // silently leaving a user with no recoverable PIN (lockout).
-func writeSeedPIN(pin string) error {
+func writeGenesisPin(pin string) error {
 	dataDir := config.DataDir()
 	if dataDir == "" {
-		log.Warn().Msg("auth: DATA_DIR not set, skipping seed-pin.txt write")
+		log.Warn().Msg("auth: DATA_DIR not set, skipping genesis-pin.txt write")
 		return nil
 	}
-	dir := config.SeedDir()
+	dir := config.GenesisDir()
 	if err := os.MkdirAll(dir, 0o700); err != nil {
-		return fmt.Errorf("create seed dir: %w", err)
+		return fmt.Errorf("create genesis dir: %w", err)
 	}
-	pinPath := config.SeedPINPath()
+	pinPath := config.GenesisPinPath()
 	if err := os.WriteFile(pinPath, []byte(pin), 0o600); err != nil {
-		return fmt.Errorf("write seed-pin.txt: %w", err)
+		return fmt.Errorf("write genesis-pin.txt: %w", err)
 	}
 	return nil
 }
 
-// WarnIfDefaultPINInUse logs a warning if the seed PIN file still matches the
+// WarnIfDefaultGenesisPinInUse logs a warning if the genesis PIN file still matches the
 // stored user PIN hash. The PIN value itself is never logged.
-func WarnIfDefaultPINInUse(database *db.DB) {
+func WarnIfDefaultGenesisPinInUse(database *db.DB) {
 	if config.DataDir() == "" {
 		return
 	}
-	pinBytes, err := os.ReadFile(config.SeedPINPath())
+	pinBytes, err := os.ReadFile(config.GenesisPinPath())
 	if err != nil {
 		return
 	}
-	seedPIN := strings.TrimSpace(string(pinBytes))
-	if seedPIN == "" {
+	genesisPin := strings.TrimSpace(string(pinBytes))
+	if genesisPin == "" {
 		return
 	}
 	var hash string
 	if err := database.QueryRow("SELECT pin_hash FROM users LIMIT 1").Scan(&hash); err != nil {
 		return
 	}
-	if ok, verr := VerifyPin(seedPIN, hash); verr == nil && ok {
-		log.Warn().Msg("auth: default seed PIN still in use; please change it immediately")
+	if ok, verr := VerifyPin(genesisPin, hash); verr == nil && ok {
+		log.Warn().Msg("auth: default genesis PIN still in use; please change it immediately")
 	}
 }
 
 // getOrCreateUser returns an existing user ID or creates one with a random
 // 6-digit PIN. On first-time creation the plaintext PIN is written to
-// {DATA_DIR}/.seed/seed-pin.txt before the user is inserted.
+// {DATA_DIR}/persistent/genesis-pin.txt before the user is inserted.
 // If the PIN file cannot be written, the user is NOT created (avoids lockout).
 func (h *Handler) getOrCreateUser() (string, error) {
 	var userID string
@@ -97,10 +97,10 @@ func (h *Handler) getOrCreateUser() (string, error) {
 		return "", err
 	}
 
-	// Persist the recoverable PIN before creating the user. If the seed file
+	// Persist the recoverable PIN before creating the user. If the genesis file
 	// cannot be written (disk full, permissions), abort before inserting the user
 	// so no account is left with an unrecoverable PIN (lockout).
-	if err := writeSeedPIN(pin); err != nil {
+	if err := writeGenesisPin(pin); err != nil {
 		return "", err
 	}
 

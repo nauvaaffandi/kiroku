@@ -41,10 +41,10 @@ func main() {
 	}
 	defer database.Close()
 
-	// Startup warning: log (without leaking the PIN) if the seed PIN file
+	// Startup warning: log (without leaking the PIN) if the genesis PIN file
 	// still matches the stored user PIN hash. Only runs when DATA_DIR is set.
 	if config.DataDir() != "" {
-		auth.WarnIfDefaultPINInUse(database)
+		auth.WarnIfDefaultGenesisPinInUse(database)
 	}
 
 	tgService := telegram.NewTelegramService(database, cfg)
