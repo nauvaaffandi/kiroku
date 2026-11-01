@@ -190,7 +190,7 @@ Handlers depend on `domain` interfaces, never on `database/sql` directly. Keep n
 Do not assume these are fine. Flag them to the user when your work touches them.
 
 1. **Data routes have no authentication.** In `cmd/server/main.go` only part of `/api/v1/auth/*` has `AuthMiddleware`. Under `/api/v1`, `/accounts`, `/categories`, `/transactions`, `/templates`, `/scheduled`, `/reports`, `/settings` and `/fx` are mounted without it. The top-level `/shared` mount is also open, including create, list and revoke (not only the public view). The backend is exposed through a public tunnel.
-2. **Default PIN.** The first login auto-creates the user with PIN `123456`.
+2. **Default PIN.** The first login auto-creates the user with a random 6-digit PIN written to `{DATA_DIR}/.genesis/genesis-pin.txt`. The admin must retrieve this PIN from the file on first startup and change it immediately via the UI.
 3. **CORS reflects any `Origin` with credentials**, and auth cookies use `SameSite=None`. Treat as unsafe until restricted.
 4. **Unmounted backend packages.** `internal/{accounts,analytics,backup,categories,fx,impexp,receipts,reports,scheduled,settings,shared,templates,transactions}` are not imported by `main.go`. The frontend already calls routes such as `/api/v1/backup/*`, analytics and receipts that are not served. Do not copy patterns from these packages into new code.
 5. **`.env.example` is partly decorative.** `PORT`, `DB_PATH`, `JWT_SECRET`, the `ARGON2_*` values and the 9Router/OCR keys are not read from the environment. They must go in `config.yaml`.
