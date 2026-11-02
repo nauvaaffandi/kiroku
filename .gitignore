@@ -58,6 +58,7 @@ scripts/
 
 # Agent
 .agent/
+.agents/
 .claude/
 
 # Other
