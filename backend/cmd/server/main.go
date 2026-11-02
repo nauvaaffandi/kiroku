@@ -33,6 +33,10 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to load config")
 	}
 
+	if err := config.InitDirectories(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize directories")
+	}
+
 	allowedOrigins := config.AllowedCORSOrigins()
 
 	database, err := db.Open(config.DataDir())
@@ -40,6 +44,11 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to open database")
 	}
 	defer database.Close()
+
+	if err := auth.EnsureGenesisUser(database); err != nil {
+		log.Debug().Err(err).Msg("Failed to ensure genesis user")
+		log.Fatal().Msg("Failed to ensure genesis user")
+	}
 
 	// Startup warning: log (without leaking the PIN) if the genesis PIN file
 	// still matches the stored user PIN hash. Only runs when DATA_DIR is set.
@@ -145,7 +154,7 @@ func main() {
 	}()
 
 	if config.TunnelEnabled() {
-		urlFile := config.SeedURLPath()
+		urlFile := config.BackendURLPath()
 		tunnelMgr := tunnel.NewManager("http://localhost"+cfg.Addr, urlFile, config.UpstashRedisRestURL(), config.UpstashRedisRestToken())
 		_ = tunnelMgr.Start()
 		defer tunnelMgr.Stop()

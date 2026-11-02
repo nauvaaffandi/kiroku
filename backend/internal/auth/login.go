@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -21,26 +22,23 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    userID, err := h.getOrCreateUser()
-    if err != nil {
-        log.Error().Err(err).Msg("auth: get/create user")
-        http.Error(w, "internal error", http.StatusInternalServerError)
-        return
-    }
-
-    var hash string
-    err = h.db.QueryRow("SELECT pin_hash FROM users WHERE id = ?", userID).Scan(&hash)
-    if err != nil {
-        log.Error().Err(err).Msg("auth: get pin hash")
-        http.Error(w, "internal error", http.StatusInternalServerError)
-        return
-    }
+	var userID, hash string
+	err := h.db.QueryRow("SELECT id, pin_hash FROM users LIMIT 1").Scan(&userID, &hash)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "user not found", http.StatusNotFound)
+			return
+		}
+		log.Error().Err(err).Msg("auth: get user")
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
 
 	ok, err := VerifyPin(string(req.PIN), hash)
-    if err != nil || !ok {
-        http.Error(w, "invalid pin", http.StatusUnauthorized)
-        return
-    }
+	if err != nil || !ok {
+		http.Error(w, "invalid pin", http.StatusUnauthorized)
+		return
+	}
 
 	accessTTL := config.JWTAccessTTL()
 	accessToken, err := GenerateAccessToken(userID, config.JWTSecret(), accessTTL)
@@ -52,20 +50,20 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	refreshTTL := config.JWTRefreshTTL()
 	refreshToken, err := GenerateRefreshToken(userID, config.JWTSecret(), refreshTTL)
-    if err != nil {
-        log.Error().Err(err).Msg("auth: generate refresh token")
-        http.Error(w, "internal error", http.StatusInternalServerError)
-        return
-    }
+	if err != nil {
+		log.Error().Err(err).Msg("auth: generate refresh token")
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
 
-    setAuthCookies(w, accessToken, refreshToken, accessTTL, refreshTTL)
+	setAuthCookies(w, accessToken, refreshToken, accessTTL, refreshTTL)
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-    clearAuthCookies(w)
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	clearAuthCookies(w)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }

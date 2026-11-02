@@ -3,6 +3,7 @@ package config
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -224,6 +225,46 @@ func DataDir() string {
 	return os.Getenv("DATA_DIR")
 }
 
+// ValidateDataDir ensures DATA_DIR is safe: absolute path, no traversal.
+func ValidateDataDir(path string) error {
+	if !filepath.IsAbs(path) {
+		return errors.New("DATA_DIR must be an absolute path")
+	}
+	if strings.Contains(path, "..") {
+		return errors.New("DATA_DIR must not contain '..'")
+	}
+	return nil
+}
+
+// InitDirectories creates DATA_DIR/persistent and DATA_DIR/runtime with 0o700.
+// Skips when DATA_DIR is empty. Returns generic error on MkdirAll or Chmod failure
+// to avoid leaking internal paths.
+func InitDirectories() error {
+	dataDir := DataDir()
+	if dataDir == "" {
+		return nil
+	}
+	if err := ValidateDataDir(dataDir); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(dataDir, 0o700); err != nil {
+		return errors.New("failed to create data directory")
+	}
+	if err := os.Chmod(dataDir, 0o700); err != nil {
+		return errors.New("failed to set data directory permissions")
+	}
+	for _, d := range []string{"persistent", "runtime"} {
+		path := filepath.Join(dataDir, d)
+		if err := os.MkdirAll(path, 0o700); err != nil {
+			return errors.New("failed to create data subdirectory")
+		}
+		if err := os.Chmod(path, 0o700); err != nil {
+			return errors.New("failed to set data subdirectory permissions")
+		}
+	}
+	return nil
+}
+
 // GenesisDir returns the genesis data directory path under DATA_DIR/persistent.
 func GenesisDir() string {
 	return filepath.Join(DataDir(), "persistent")
@@ -234,9 +275,14 @@ func GenesisPinPath() string {
 	return filepath.Join(GenesisDir(), "genesis-pin.txt")
 }
 
-// SeedURLPath returns the path to backend-url.txt under the genesis data directory.
-func SeedURLPath() string {
-	return filepath.Join(GenesisDir(), "backend-url.txt")
+// RuntimeDir returns the runtime data directory path under DATA_DIR/runtime.
+func RuntimeDir() string {
+	return filepath.Join(DataDir(), "runtime")
+}
+
+// BackendURLPath returns the path to backend-url.txt under the runtime data directory.
+func BackendURLPath() string {
+	return filepath.Join(RuntimeDir(), "backend-url.txt")
 }
 
 // JWTSecret returns the JWT secret from JWT_SECRET env var.

@@ -14,9 +14,11 @@ func TestGenesisPaths(t *testing.T) {
 	t.Cleanup(func() { os.Unsetenv("DATA_DIR") })
 
 	expectedDir := filepath.Join(dataDir, "persistent")
+	expectedRuntimeDir := filepath.Join(dataDir, "runtime")
 	assert.Equal(t, expectedDir, GenesisDir())
 	assert.Equal(t, filepath.Join(expectedDir, "genesis-pin.txt"), GenesisPinPath())
-	assert.Equal(t, filepath.Join(expectedDir, "backend-url.txt"), SeedURLPath())
+	assert.Equal(t, expectedRuntimeDir, RuntimeDir())
+	assert.Equal(t, filepath.Join(expectedRuntimeDir, "backend-url.txt"), BackendURLPath())
 }
 
 func TestGenesisPaths_EmptyDataDir(t *testing.T) {
@@ -29,6 +31,6 @@ func TestGenesisPaths_EmptyDataDir(t *testing.T) {
 	pinPath := GenesisPinPath()
 	assert.Equal(t, filepath.Join("persistent", "genesis-pin.txt"), pinPath)
 
-	urlPath := SeedURLPath()
-	assert.Equal(t, filepath.Join("persistent", "backend-url.txt"), urlPath)
+	urlPath := BackendURLPath()
+	assert.Equal(t, filepath.Join("runtime", "backend-url.txt"), urlPath)
 }
