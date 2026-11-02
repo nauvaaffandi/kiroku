@@ -43,7 +43,7 @@ case "$SERVICE" in
 
     cd "$PROJECT_ROOT/backend"
     export DATA_DIR="$PROJECT_ROOT/backend/$DATA_DIR"
-    CGO_ENABLED=0 go run ./cmd/server
+    CGO_ENABLED=0 air
     ;;
   *)
     echo "Usage: $0 start [fe|be]"
