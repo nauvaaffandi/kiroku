@@ -1,7 +1,6 @@
 package analytics
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -37,18 +36,18 @@ func (h *Handler) GetTopMerchants(w http.ResponseWriter, r *http.Request) {
 		baseCurrency = "JPY"
 	}
 
-	query := fmt.Sprintf(`
+	query := `
 		SELECT merchant, COALESCE(SUM(t.amount * COALESCE(r.rate, 1)), 0) as total, COUNT(*) as count
 		FROM transactions t
 		LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-		WHERE t.user_id = ? AND t.type = 'expense' AND t.merchant IS NOT NULL AND t.merchant != ''
-			AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL
+		WHERE t.type = 'expense' AND t.merchant IS NOT NULL AND t.merchant != ''
+			AND date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL
 		GROUP BY merchant
 		ORDER BY total DESC
-		LIMIT %d
-	`, limit)
+		LIMIT ?
+	`
 
-	rows, err := h.db.Query(query, baseCurrency, userID, dateFrom, dateTo)
+	rows, err := h.db.Query(query, baseCurrency, dateFrom, dateTo, limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

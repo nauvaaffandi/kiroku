@@ -518,5 +518,48 @@ export default {
     '10': '10月',
     '11': '11月',
     '12': '12月'
+  },
+  shared: {
+    access: {
+      title: '共有アクセス',
+      createShare: '共有リンクを作成',
+      link: 'リンク',
+      copyLink: 'リンクをコピー',
+      copyFullLink: 'フルリンクをコピー',
+      created: '作成日',
+      expires: '有効期限',
+      lastAccessed: '最終アクセス',
+      never: 'なし',
+      revoke: '取り消す',
+      revokeConfirm: 'この共有リンクを取り消してもよろしいですか？',
+      createdSuccess: '共有リンクを作成しました',
+      revokedSuccess: '共有リンクを取り消しました',
+      warning: 'このリンクを知っている人なら誰でもアカウントを閲覧できます（読み取り専用）。',
+      noShares: '共有リンクはありません',
+      noSharesDesc: 'アカウントへの読み取り専用アクセスを共有するリンクを作成',
+      account: '口座',
+      accountBadge: '口座 ID',
+      expiresAt: '有効期限（オプション）',
+      expiresHint: '空欄にすると有効期限なし',
+      cancel: 'キャンセル',
+      done: '完了',
+      copy: 'コピー',
+      loading: '作成中...',
+      failLoad: 'データの読み込みに失敗しました',
+      failCreate: '共有リンクの作成に失敗しました',
+      failRevoke: '共有リンクの取り消しに失敗しました',
+      noAccount: '利用可能な口座がありません'
+    },
+    view: {
+      title: '共有口座',
+      loading: '共有口座を読み込み中...',
+      error: '共有口座を読み込めませんでした',
+      transactions: '取引',
+      noTransactions: 'この口座に取引はありません。',
+      payeeFallback: '取引',
+      attribution: 'Recorded by you',
+      linkInvalid: 'リンクが無効または期限切れの可能性があります。',
+      copied: 'リンクをコピーしました'
+    }
   }
 }

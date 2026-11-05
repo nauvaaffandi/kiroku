@@ -518,5 +518,48 @@ export default {
     '10': 'Oktober',
     '11': 'November',
     '12': 'Desember'
+  },
+  shared: {
+    access: {
+      title: 'Akses Berbagi',
+      createShare: 'Buat Berbagi',
+      link: 'Tautan',
+      copyLink: 'Salin Tautan',
+      copyFullLink: 'Salin tautan penuh',
+      created: 'Dibuat',
+      expires: 'Berakhir',
+      lastAccessed: 'Akses Terakhir',
+      never: 'Belum pernah',
+      revoke: 'Batal',
+      revokeConfirm: 'Apakah Anda yakin ingin membatalkan share link ini?',
+      createdSuccess: 'Berhasil membuat share link',
+      revokedSuccess: 'Share dibatalkan',
+      warning: 'Siapa pun dengan tautan ini dapat melihat akun (hanya baca).',
+      noShares: 'Belum ada share link',
+      noSharesDesc: 'Buat share link untuk memberikan akses baca-only ke akun',
+      account: 'Akun',
+      accountBadge: 'ID Akun',
+      expiresAt: 'Tanggal Berakhir (opsional)',
+      expiresHint: 'Kosongkan untuk tidak ada kadaluarsa',
+      cancel: 'Batal',
+      done: 'Selesai',
+      copy: 'Salin',
+      loading: 'Membuat...',
+      failLoad: 'Gagal memuat data',
+      failCreate: 'Gagal membuat share',
+      failRevoke: 'Gagal membatalkan share',
+      noAccount: 'Tidak ada akun yang tersedia'
+    },
+    view: {
+      title: 'Akun Terbagi',
+      loading: 'Mengambil data share...',
+      error: 'Tidak dapat mengambil data share',
+      transactions: 'Transaksi',
+      noTransactions: 'Di dalam akun ini tidak ada transaksi.',
+      payeeFallback: 'Transaksi',
+      attribution: 'Recorded by you',
+      linkInvalid: 'Tautan mungkin tidak valid atau telah kadaluarsa.',
+      copied: 'Tautan telah disalin'
+    }
   }
 }

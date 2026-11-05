@@ -1,19 +1,19 @@
 <template>
   <div class="shared-view-page">
     <header class="shared-header">
-      <div class="shared-header-content">
-        <div class="brand">
-          <h1>Kiroku</h1>
-          <span class="shared-badge">Shared Account</span>
-        </div>
-        <div class="attribution" v-if="data?.attribution">
-          {{ data.attribution }}
-        </div>
+<div class="shared-header-content">
+      <div class="brand">
+        <h1>Kiroku</h1>
+        <span class="shared-badge">{{ t('shared.view.title') }}</span>
       </div>
+      <div class="attribution" v-if="data?.attribution">
+        {{ data.attribution }}
+      </div>
+    </div>
     </header>
 
     <div class="shared-container" v-if="loading">
-      <div class="loading-state">Loading shared account...</div>
+      <div class="loading-state">{{ t('shared.view.loading') }}</div>
     </div>
 
     <div class="shared-container" v-else-if="error">
@@ -23,7 +23,7 @@
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         </svg>
-        <h2>Unable to load shared account</h2>
+        <h2>{{ t('shared.view.error') }}</h2>
         <p>{{ error }}</p>
       </div>
     </div>
@@ -40,28 +40,28 @@
       </div>
 
       <div class="transactions-section">
-        <h3>Transactions</h3>
+        <h3>{{ t('shared.view.transactions') }}</h3>
         <div class="transactions-list" v-if="data.transactions && data.transactions.length > 0">
           <div class="transaction-item" v-for="tx in data.transactions" :key="tx.id">
             <div class="tx-left">
-              <span class="tx-category-icon" :style="{ backgroundColor: tx.category_color || '#e2e8f0' }">
+              <span class="tx-category-icon" :style="{ backgroundColor: tx.category_color || '#e2e8f0' }" aria-hidden="true">
                 {{ tx.category_icon || '📦' }}
               </span>
               <div class="tx-info">
-                <span class="tx-payee">{{ tx.payee || tx.category || 'Transaction' }}</span>
+                <span class="tx-payee">{{ tx.payee || tx.category || t('shared.view.payeeFallback') }}</span>
                 <span class="tx-note" v-if="tx.note">{{ tx.note }}</span>
                 <span class="tx-date">{{ formatDate(tx.date) }}</span>
               </div>
             </div>
             <div class="tx-right">
-              <span class="tx-amount" :class="tx.type">
+              <span class="tx-amount" :class="tx.type" :aria-label="tx.type === 'income' ? t('transactions.typeIncome') : t('transactions.typeExpense')">
                 {{ tx.type === 'income' ? '+' : '-' }}{{ formatCurrency(tx.amount, data.account.currency) }}
               </span>
             </div>
           </div>
         </div>
         <div class="empty-transactions" v-else>
-          <p>No transactions found in this account.</p>
+          <p>{{ t('shared.view.noTransactions') }}</p>
         </div>
       </div>
     </div>
@@ -72,12 +72,13 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
-import { formatAmountForDisplay, getCurrencySymbol } from '@/utils/amountDisplay'
-import axios from 'axios'
+import { useI18n } from '@/locales'
+import { api } from '@/api/client'
 
 const route = useRoute()
 const token = route.params.token as string
 const settingsStore = useSettingsStore()
+const { t } = useI18n()
 
 const data = ref<any>(null)
 const loading = ref(true)
@@ -87,29 +88,36 @@ const fetchSharedData = async () => {
   loading.value = true
   error.value = null
   try {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
-    const res = await axios.get(`${backendUrl}/shared/public/${token}`)
+    const res = await api.get(`/shared/public/${token}`)
     data.value = res.data
   } catch (e: any) {
-    error.value = e.response?.data || 'Link may be invalid or expired.'
+    error.value = e.response?.data?.error || t('shared.view.error')
   } finally {
     loading.value = false
   }
 }
 
-const formatCurrency = (amount: number, currency = 'JPY', type?: 'income' | 'expense' | 'transfer') => {
-  if (settingsStore.isHideAmounts && type) {
-    return formatAmountForDisplay(amount, type)
+const formatCurrency = (amount: number, currency?: string) => {
+  if (settingsStore.isHideAmounts) {
+    return '*****'
   }
-  if (settingsStore.isHideAmounts && !type) {
-    const symbol = getCurrencySymbol(currency)
-    return `${symbol}*****`
-  }
-  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency }).format(amount)
+  const baseCurrency = settingsStore.baseCurrency || 'USD'
+  const fmtCurrency = currency || baseCurrency
+  return new Intl.NumberFormat(
+    settingsStore.language === 'ja' ? 'ja-JP' : settingsStore.language === 'id' ? 'id-ID' : 'en-US',
+    { style: 'currency', currency: fmtCurrency }
+  ).format(amount)
 }
 
 const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' })
+  const locale = settingsStore.language === 'ja' ? 'ja-JP' : settingsStore.language === 'id' ? 'id-ID' : 'en-US'
+  return new Date(dateStr).toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 onMounted(fetchSharedData)

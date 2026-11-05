@@ -35,12 +35,12 @@ func (h *Handler) GetBudgetSummary(w http.ResponseWriter, r *http.Request) {
 		SELECT c.id, c.name, c.icon, c.color, c.budget_amount, c.budget_period,
 			COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount * COALESCE(r.rate, 1) ELSE 0 END), 0) as spent
 		FROM categories c
-		LEFT JOIN transactions t ON t.category_id = c.id AND t.deleted_at IS NULL AND t.date >= ? AND t.date <= ?
+		LEFT JOIN transactions t ON t.category_id = c.id AND t.deleted_at IS NULL AND date(t.date_time) >= ? AND date(t.date_time) <= ?
 		LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-		WHERE c.user_id = ? AND c.budget_amount > 0 AND c.budget_period != ''
+		WHERE c.budget_amount > 0 AND c.budget_period != ''
 		GROUP BY c.id, c.name, c.icon, c.color, c.budget_amount, c.budget_period
 	`
-	rows, err := h.db.Query(query, dateFrom, dateTo, baseCurrency, userID)
+	rows, err := h.db.Query(query, dateFrom, dateTo, baseCurrency)
 	if err != nil {
 		log.Error().Err(err).Msg("analytics: budget categories")
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -110,9 +110,9 @@ func (h *Handler) GetBudgetVsActual(w http.ResponseWriter, r *http.Request) {
 	query := `
 		SELECT c.id, c.name, c.icon, c.color, c.budget_amount, c.budget_period
 		FROM categories c
-		WHERE c.user_id = ? AND c.budget_amount > 0 AND c.budget_period != ''
+		WHERE c.budget_amount > 0 AND c.budget_period != ''
 	`
-	args := []interface{}{userID}
+	args := []interface{}{}
 	if categoryID != "" {
 		query += " AND c.id = ?"
 		args = append(args, categoryID)
@@ -135,9 +135,9 @@ func (h *Handler) GetBudgetVsActual(w http.ResponseWriter, r *http.Request) {
 			SELECT COALESCE(SUM(t.amount * COALESCE(r.rate, 1)), 0)
 			FROM transactions t
 			LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-			WHERE t.user_id = ? AND t.category_id = ? AND t.type = 'expense'
-				AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL
-		`, baseCurrency, userID, item.CategoryID, dateFrom, dateTo).Scan(&spent)
+			WHERE t.category_id = ? AND t.type = 'expense'
+				AND date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL
+		`, baseCurrency, item.CategoryID, dateFrom, dateTo).Scan(&spent)
 
 		item.ActualSpent = spent
 		item.Variance = spent - item.BudgetAmount

@@ -28,7 +28,7 @@ func (h *Handler) GetStatsByCurrency(w http.ResponseWriter, r *http.Request) {
 		baseCurrency = "JPY"
 	}
 
-	query := `
+		query := `
 		SELECT a.currency,
 			COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount * COALESCE(r.rate, 1) ELSE 0 END), 0) as income,
 			COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount * COALESCE(r.rate, 1) ELSE 0 END), 0) as expense,
@@ -36,10 +36,10 @@ func (h *Handler) GetStatsByCurrency(w http.ResponseWriter, r *http.Request) {
 		FROM transactions t
 		JOIN accounts a ON t.from_account_id = a.id
 		LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-		WHERE t.user_id = ? AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL
+		WHERE date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL
 		GROUP BY a.currency
 	`
-	rows, err := h.db.Query(query, baseCurrency, userID, dateFrom, dateTo)
+	rows, err := h.db.Query(query, baseCurrency, dateFrom, dateTo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -80,7 +80,7 @@ func (h *Handler) GetStatsByAccount(w http.ResponseWriter, r *http.Request) {
 		baseCurrency = "JPY"
 	}
 
-	query := `
+		query := `
 		SELECT a.id, a.name, a.currency,
 			COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount * COALESCE(r.rate, 1) ELSE 0 END), 0) as income,
 			COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount * COALESCE(r.rate, 1) ELSE 0 END), 0) as expense,
@@ -88,11 +88,11 @@ func (h *Handler) GetStatsByAccount(w http.ResponseWriter, r *http.Request) {
 		FROM transactions t
 		JOIN accounts a ON (t.from_account_id = a.id OR t.to_account_id = a.id)
 		LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-		WHERE t.user_id = ? AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL AND a.archived_at IS NULL
+		WHERE date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL AND a.archived = 0
 		GROUP BY a.id, a.name, a.currency
 		ORDER BY income + expense DESC
 	`
-	rows, err := h.db.Query(query, baseCurrency, userID, dateFrom, dateTo)
+	rows, err := h.db.Query(query, baseCurrency, dateFrom, dateTo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

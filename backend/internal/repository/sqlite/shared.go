@@ -63,11 +63,7 @@ func (r *SharedRepo) List(ctx context.Context, userID string) ([]domain.Share, e
 		if err := rows.Scan(&s.ID, &s.AccountID, &s.AccountName, &token, &expiresAt, &s.CreatedAt, &lastAccessedAt); err != nil {
 			continue
 		}
-		if len(token) > 8 {
-			s.Token = token[:8] + "..."
-		} else {
-			s.Token = token
-		}
+		s.Token = token
 		if expiresAt.Valid {
 			s.ExpiresAt = &expiresAt.Time
 		}

@@ -508,5 +508,48 @@ export default {
     '10': 'October',
     '11': 'November',
     '12': 'December'
+  },
+  shared: {
+    access: {
+      title: 'Shared Access',
+      createShare: 'Create Share',
+      link: 'Link',
+      copyLink: 'Copy Link',
+      copyFullLink: 'Copy full link',
+      created: 'Created',
+      expires: 'Expires',
+      lastAccessed: 'Last Accessed',
+      never: 'Never',
+      revoke: 'Revoke',
+      revokeConfirm: 'Are you sure you want to revoke this share link?',
+      createdSuccess: 'Share link created successfully',
+      revokedSuccess: 'Share revoked',
+      warning: 'Anyone with this link can view the account (read-only).',
+      noShares: 'No shared links yet',
+      noSharesDesc: 'Create a share link to give read-only access to an account',
+      account: 'Account',
+      accountBadge: 'Account ID',
+      expiresAt: 'Expires At (optional)',
+      expiresHint: 'Leave empty for no expiration',
+      cancel: 'Cancel',
+      done: 'Done',
+      copy: 'Copy',
+      loading: 'Creating...',
+      failLoad: 'Failed to load data',
+      failCreate: 'Failed to create share',
+      failRevoke: 'Failed to revoke share',
+      noAccount: 'No accounts available'
+    },
+    view: {
+      title: 'Shared Account',
+      loading: 'Loading shared account...',
+      error: 'Unable to load shared account',
+      transactions: 'Transactions',
+      noTransactions: 'No transactions found in this account.',
+      payeeFallback: 'Transaction',
+      attribution: 'Recorded by you',
+      linkInvalid: 'Link may be invalid or expired.',
+      copied: 'Link copied'
+    }
   }
 }

@@ -62,8 +62,8 @@ func (h *Handler) GetCashFlowStats(w http.ResponseWriter, r *http.Request) {
 				COALESCE(SUM(CASE WHEN type = 'expense' THEN amount * COALESCE(r.rate, 1) ELSE 0 END), 0)
 			FROM transactions t
 			LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-			WHERE t.user_id = ? AND t.date >= ? AND t.date < ? AND t.deleted_at IS NULL
-		`, baseCurrency, userID, currStart.Format("2006-01-02"), currEnd.Format("2006-01-02")).Scan(&income, &expense)
+			WHERE date(t.date_time) >= ? AND date(t.date_time) < ? AND t.deleted_at IS NULL
+		`, baseCurrency, currStart.Format("2006-01-02"), currEnd.Format("2006-01-02")).Scan(&income, &expense)
 
 		series = append(series, models.CashFlowSeriesPoint{
 			Period:  periodStr,
@@ -104,8 +104,8 @@ func (h *Handler) GetNetWorth(w http.ResponseWriter, r *http.Request) {
 	rows, err := h.db.Query(`
 		SELECT a.id, a.name, a.currency, COALESCE(a.balance, 0)
 		FROM accounts a
-		WHERE a.user_id = ? AND a.archived_at IS NULL
-	`, userID)
+		WHERE a.archived = 0
+	`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -17,9 +17,9 @@ func (h *Handler) getAccountBalances(userID, accountID, baseCurrency string) ([]
 		FROM accounts a
 		LEFT JOIN transactions t ON (t.from_account_id = a.id OR t.to_account_id = a.id) AND t.deleted_at IS NULL
 		LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-		WHERE a.user_id = ? AND a.archived_at IS NULL
+		WHERE a.archived = 0
 	`
-	args := []interface{}{baseCurrency, userID}
+	args := []interface{}{baseCurrency}
 	if accountID != "" {
 		query += " AND a.id = ?"
 		args = append(args, accountID)
@@ -49,16 +49,16 @@ func (h *Handler) getAccountBalances(userID, accountID, baseCurrency string) ([]
 
 func (h *Handler) getScheduledTransactions(userID string, dateFrom, dateTo time.Time, accountID, baseCurrency string) ([]models.ScheduledItem, error) {
 	query := `
-		SELECT s.id, s.name, s.amount, s.type, s.account_id, s.currency,
-			c.name as category_name, s.rrule
-		FROM scheduled_transactions s
-		LEFT JOIN categories c ON s.category_id = c.id
-		LEFT JOIN accounts a ON s.account_id = a.id
-		WHERE s.user_id = ? AND s.enabled = 1 AND a.archived_at IS NULL
+		SELECT s.id, s.rrule, s.transaction_template_json,
+			c.name as category_name
+		FROM scheduled s
+		LEFT JOIN categories c ON c.id = json_unquote(json_extract(s.transaction_template_json, '$.category_id'))
+		LEFT JOIN accounts a ON a.id = json_unquote(json_extract(s.transaction_template_json, '$.from_account_id'))
+		WHERE s.enabled = 1 AND (a.archived = 0 OR a.id IS NULL)
 	`
-	args := []interface{}{userID}
+	args := []interface{}{}
 	if accountID != "" {
-		query += " AND s.account_id = ?"
+		query += " AND json_unquote(json_extract(s.transaction_template_json, '$.from_account_id')) = ?"
 		args = append(args, accountID)
 	}
 
@@ -73,8 +73,28 @@ func (h *Handler) getScheduledTransactions(userID string, dateFrom, dateTo time.
 		var item models.ScheduledItem
 		var rrule sql.NullString
 		var catName sql.NullString
-		if err := rows.Scan(&item.ID, &item.Name, &item.Amount, &item.Type, &item.AccountID, &item.Currency, &catName, &rrule); err != nil {
+		var tmplJSON string
+		if err := rows.Scan(&item.ID, &rrule, &tmplJSON, &catName); err != nil {
 			return nil, err
+		}
+		var tmpl map[string]interface{}
+		if err := json.Unmarshal([]byte(tmplJSON), &tmpl); err != nil {
+			return nil, err
+		}
+		if name, ok := tmpl["note"].(string); ok {
+			item.Name = name
+		}
+		if amt, ok := tmpl["amount"].(float64); ok {
+			item.Amount = amt
+		}
+		if t, ok := tmpl["type"].(string); ok {
+			item.Type = t
+		}
+		if acct, ok := tmpl["from_account_id"].(string); ok {
+			item.AccountID = acct
+		}
+		if cur, ok := tmpl["currency"].(string); ok {
+			item.Currency = cur
 		}
 		if catName.Valid {
 			item.Category = catName.String
@@ -106,11 +126,11 @@ func (h *Handler) getFutureTransactions(userID string, dateFrom, dateTo time.Tim
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
 		LEFT JOIN accounts a ON t.from_account_id = a.id
-		WHERE t.user_id = ? AND t.deleted_at IS NULL AND t.date_time > datetime('now')
+		WHERE t.deleted_at IS NULL AND t.date_time > datetime('now')
 			AND t.date_time >= ? AND t.date_time <= ?
-			AND a.archived_at IS NULL
+			AND a.archived = 0
 	`
-	args := []interface{}{userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02 23:59:59")}
+	args := []interface{}{dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02 23:59:59")}
 	if accountID != "" {
 		query += " AND t.from_account_id = ?"
 		args = append(args, accountID)
@@ -150,11 +170,11 @@ func (h *Handler) getHistoricalTransactions(userID string, dateFrom, dateTo time
 		FROM transactions t
 		LEFT JOIN categories c ON t.category_id = c.id
 		LEFT JOIN accounts a ON t.from_account_id = a.id
-		WHERE t.user_id = ? AND t.deleted_at IS NULL AND t.date_time < datetime('now')
+		WHERE t.deleted_at IS NULL AND t.date_time < datetime('now')
 			AND t.date_time >= ? AND t.date_time <= ?
-			AND a.archived_at IS NULL
+			AND a.archived = 0
 	`
-	args := []interface{}{userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02 23:59:59")}
+	args := []interface{}{dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02 23:59:59")}
 	if accountID != "" {
 		query += " AND t.from_account_id = ?"
 		args = append(args, accountID)
@@ -192,10 +212,10 @@ func (h *Handler) getHistoricalTransactions(userID string, dateFrom, dateTo time
 }
 
 func (h *Handler) calculateBalanceForRange(userID, dateFrom, dateTo, accountID string) (float64, float64, float64) {
-	query := `SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount WHEN type = 'expense' THEN -amount ELSE 0 END), 0) FROM transactions WHERE user_id = ? AND date >= ? AND date < ? AND deleted_at IS NULL`
-	args := []interface{}{userID, dateFrom, dateTo}
+	query := `SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount WHEN type = 'expense' THEN -amount ELSE 0 END), 0) FROM transactions WHERE date(date_time) >= ? AND date(date_time) < ? AND deleted_at IS NULL`
+	args := []interface{}{dateFrom, dateTo}
 	if accountID != "" {
-		query += ` AND from_account_id = ?`
+		query += " AND from_account_id = ?"
 		args = append(args, accountID)
 	}
 	var net float64
@@ -205,22 +225,22 @@ func (h *Handler) calculateBalanceForRange(userID, dateFrom, dateTo, accountID s
 
 func (h *Handler) calculateBalanceForAccountRange(userID string, accountID int64, dateFrom, dateTo string) (float64, float64, float64) {
 	var opening, net float64
-	h.db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount WHEN type = 'expense' THEN -amount ELSE 0 END), 0) FROM transactions WHERE user_id = ? AND from_account_id = ? AND date < ? AND deleted_at IS NULL`, userID, accountID, dateFrom).Scan(&opening)
-	h.db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount WHEN type = 'expense' THEN -amount ELSE 0 END), 0) FROM transactions WHERE user_id = ? AND from_account_id = ? AND date >= ? AND date <= ? AND deleted_at IS NULL`, userID, accountID, dateFrom, dateTo).Scan(&net)
+	h.db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount WHEN type = 'expense' THEN -amount ELSE 0 END), 0) FROM transactions WHERE from_account_id = ? AND date(date_time) < ? AND deleted_at IS NULL`, accountID, dateFrom).Scan(&opening)
+	h.db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount WHEN type = 'expense' THEN -amount ELSE 0 END), 0) FROM transactions WHERE from_account_id = ? AND date(date_time) >= ? AND date(date_time) <= ? AND deleted_at IS NULL`, accountID, dateFrom, dateTo).Scan(&net)
 	return opening, opening + net, net
 }
 
 func (h *Handler) calculateBalanceForCurrencyRange(userID, currency, dateFrom, dateTo string) (float64, float64, float64) {
 	var opening, net float64
-	h.db.QueryRow(`SELECT COALESCE(SUM(t.amount * CASE WHEN t.type = 'income' THEN 1 WHEN t.type = 'expense' THEN -1 ELSE 0 END), 0) FROM transactions t JOIN accounts a ON t.from_account_id = a.id WHERE a.user_id = ? AND a.currency = ? AND t.date < ? AND t.deleted_at IS NULL`, userID, currency, dateFrom).Scan(&opening)
-	h.db.QueryRow(`SELECT COALESCE(SUM(t.amount * CASE WHEN t.type = 'income' THEN 1 WHEN t.type = 'expense' THEN -1 ELSE 0 END), 0) FROM transactions t JOIN accounts a ON t.from_account_id = a.id WHERE a.user_id = ? AND a.currency = ? AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL`, userID, currency, dateFrom, dateTo).Scan(&net)
+	h.db.QueryRow(`SELECT COALESCE(SUM(t.amount * CASE WHEN t.type = 'income' THEN 1 WHEN t.type = 'expense' THEN -1 ELSE 0 END), 0) FROM transactions t JOIN accounts a ON t.from_account_id = a.id WHERE a.archived = 0 AND a.currency = ? AND date(t.date_time) < ? AND t.deleted_at IS NULL`, currency, dateFrom).Scan(&opening)
+	h.db.QueryRow(`SELECT COALESCE(SUM(t.amount * CASE WHEN t.type = 'income' THEN 1 WHEN t.type = 'expense' THEN -1 ELSE 0 END), 0) FROM transactions t JOIN accounts a ON t.from_account_id = a.id WHERE a.archived = 0 AND a.currency = ? AND date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL`, currency, dateFrom, dateTo).Scan(&net)
 	return opening, opening + net, net
 }
 
 func (h *Handler) getPeriodStats(userID, dateFrom, dateTo string) map[string]float64 {
 	var income, expense float64
 	var count int
-	h.db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0), COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0), COUNT(*) FROM transactions WHERE user_id = ? AND date >= ? AND date <= ? AND deleted_at IS NULL`, userID, dateFrom, dateTo).Scan(&income, &expense, &count)
+	h.db.QueryRow(`SELECT COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0), COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0), COUNT(*) FROM transactions WHERE date(date_time) >= ? AND date(date_time) <= ? AND deleted_at IS NULL`, dateFrom, dateTo).Scan(&income, &expense, &count)
 	return map[string]float64{
 		"income":  income,
 		"expense": expense,

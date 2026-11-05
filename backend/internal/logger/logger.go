@@ -110,6 +110,20 @@ func GetLogger() *zerolog.Logger {
 	return &l
 }
 
+// LogHTTPServerError logs critical server errors (HTTP 5xx) at Error level.
+// No log is emitted for status < 500.
+func LogHTTPServerError(status int, method, path, requestID string) {
+	if status < 500 {
+		return
+	}
+	log.Error().
+		Int("status", status).
+		Str("method", method).
+		Str("path", path).
+		Str("request_id", requestID).
+		Msg("critical: server error")
+}
+
 // LogFilePath returns the path of today's log file, used by the CLI tool.
 func LogFilePath() string {
 	return filepath.Join(logsDir(), time.Now().Format("2006-01-02")+logFileExt)

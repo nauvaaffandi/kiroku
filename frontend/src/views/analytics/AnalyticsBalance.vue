@@ -84,7 +84,7 @@ async function fetchBalanceByAccounts() {
   accountsLoading.value = true
   try {
     const res = await api.get<{ accounts: AccountBalanceSummary[]; total_by_currency: Record<string, number> }>(
-      `/api/v1/analytics/balance/by-accounts?date_from=${dateFrom.value}&date_to=${dateTo.value}`
+      `/api/v1/analytics/balance/accounts?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     accountsData.value = res.data.accounts
   } catch (e) {
@@ -98,7 +98,7 @@ async function fetchBalanceByCurrencies() {
   currenciesLoading.value = true
   try {
     const res = await api.get<{ currencies: CurrencyBalanceSummary[] }>(
-      `/api/v1/analytics/balance/by-currencies?date_from=${dateFrom.value}&date_to=${dateTo.value}`
+      `/api/v1/analytics/balance/currencies?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     currenciesData.value = res.data.currencies
   } catch (e) {

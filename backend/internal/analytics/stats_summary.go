@@ -78,12 +78,12 @@ func (h *Handler) GetStatsByCategory(w http.ResponseWriter, r *http.Request) {
 		FROM transactions t
 		JOIN categories c ON t.category_id = c.id
 		LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-		WHERE t.user_id = ? AND t.type = ? AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL
+		WHERE t.type = ? AND date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL
 		GROUP BY c.id, c.name, c.icon, c.color
 		ORDER BY total DESC
 		LIMIT ?
 	`
-	rows, err := h.db.Query(query, baseCurrency, userID, txnType, dateFrom, dateTo, limit)
+	rows, err := h.db.Query(query, baseCurrency, txnType, dateFrom, dateTo, limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

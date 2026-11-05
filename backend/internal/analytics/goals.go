@@ -34,9 +34,9 @@ func (h *Handler) GetGoalsProgress(w http.ResponseWriter, r *http.Request) {
 	query := `
 		SELECT c.id, c.name, c.icon, c.color, c.budget_amount, c.budget_period
 		FROM categories c
-		WHERE c.user_id = ? AND c.budget_amount > 0 AND c.budget_period != ''
+		WHERE c.budget_amount > 0 AND c.budget_period != ''
 	`
-	rows, err := h.db.Query(query, userID)
+	rows, err := h.db.Query(query)
 	if err != nil {
 		log.Error().Err(err).Msg("analytics: goals categories")
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -60,9 +60,9 @@ func (h *Handler) GetGoalsProgress(w http.ResponseWriter, r *http.Request) {
 			SELECT COALESCE(SUM(t.amount * COALESCE(r.rate, 1)), 0)
 			FROM transactions t
 			LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ?
-			WHERE t.user_id = ? AND t.category_id = ? AND t.type = 'expense'
-				AND t.date >= ? AND t.date <= ? AND t.deleted_at IS NULL
-		`, baseCurrency, userID, item.CategoryID, dateFrom, dateTo).Scan(&currentAmount)
+			WHERE t.category_id = ? AND t.type = 'expense'
+				AND date(t.date_time) >= ? AND date(t.date_time) <= ? AND t.deleted_at IS NULL
+		`, baseCurrency, item.CategoryID, dateFrom, dateTo).Scan(&currentAmount)
 
 		item.CurrentAmount = currentAmount
 		item.Remaining = item.TargetAmount - currentAmount
@@ -161,9 +161,9 @@ func (h *Handler) GetGoalProjection(w http.ResponseWriter, r *http.Request) {
 		h.db.QueryRow(`
 			SELECT COALESCE(SUM(amount), 0)
 			FROM transactions
-			WHERE user_id = ? AND category_id = ? AND type = 'expense'
-			AND date >= ? AND date < ? AND deleted_at IS NULL
-		`, userID, categoryID, currStart.Format("2006-01-02"), currEnd.Format("2006-01-02")).Scan(&actualAmount)
+			WHERE category_id = ? AND type = 'expense'
+			AND date(date_time) >= ? AND date(date_time) < ? AND deleted_at IS NULL
+		`, categoryID, currStart.Format("2006-01-02"), currEnd.Format("2006-01-02")).Scan(&actualAmount)
 
 		cumulativeActual += actualAmount
 

@@ -1,7 +1,7 @@
 package analytics
 
 import (
-	"database/sql"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -23,14 +23,7 @@ func (h *Handler) GetPlannedByCategory(w http.ResponseWriter, r *http.Request) {
 		txnType = "expense"
 	}
 
-	query := `
-		SELECT c.id, c.name, c.icon, c.color, COALESCE(SUM(s.amount), 0) as total
-		FROM scheduled_transactions s
-		JOIN categories c ON s.category_id = c.id
-		WHERE s.user_id = ? AND s.type = ? AND s.enabled = 1
-		GROUP BY c.id, c.name, c.icon, c.color
-	`
-	rows, err := h.db.Query(query, userID, txnType)
+	rows, err := h.db.Query(`SELECT id, rrule, transaction_template_json, enabled FROM scheduled WHERE enabled = 1`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -39,11 +32,50 @@ func (h *Handler) GetPlannedByCategory(w http.ResponseWriter, r *http.Request) {
 
 	var categories []models.CategoryPlanned
 	var grandTotal float64
+	type catAgg struct {
+		id, name, icon, color string
+		total                 float64
+	}
+	aggMap := make(map[string]*catAgg)
 	for rows.Next() {
-		var cp models.CategoryPlanned
-		rows.Scan(&cp.CategoryID, &cp.CategoryName, &cp.Icon, &cp.Color, &cp.TotalAmount)
-		categories = append(categories, cp)
-		grandTotal += cp.TotalAmount
+		var sid, rrule, tmplJSON string
+		if err := rows.Scan(&sid, &rrule, &tmplJSON); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		var tmpl map[string]interface{}
+		if err := json.Unmarshal([]byte(tmplJSON), &tmpl); err != nil {
+			continue
+		}
+		tType, _ := tmpl["type"].(string)
+		if tType != txnType {
+			continue
+		}
+		amt := 0.0
+		if a, ok := tmpl["amount"].(float64); ok {
+			amt = a
+		}
+		cid, _ := tmpl["category_id"].(string)
+		if cid == "" {
+			continue
+		}
+		var catName, catIcon, catColor string
+		h.db.QueryRow(`SELECT name, icon, color FROM categories WHERE id = ?`, cid).Scan(&catName, &catIcon, &catColor)
+		if agg, ok := aggMap[cid]; ok {
+			agg.total += amt
+		} else {
+			aggMap[cid] = &catAgg{id: cid, name: catName, icon: catIcon, color: catColor, total: amt}
+		}
+		grandTotal += amt
+	}
+	for _, agg := range aggMap {
+		categories = append(categories, models.CategoryPlanned{
+			CategoryID:   agg.id,
+			CategoryName: agg.name,
+			Icon:         agg.icon,
+			Color:        agg.color,
+			TotalAmount:  agg.total,
+		})
 	}
 
 	writeJSON(w, map[string]interface{}{
@@ -74,7 +106,7 @@ func (h *Handler) GetPlannedByTimeline(w http.ResponseWriter, r *http.Request) {
 	start, _ := time.Parse("2006-01-02", dateFrom)
 	end, _ := time.Parse("2006-01-02", dateTo)
 
-	rows, err := h.db.Query(`SELECT id, amount, type, rrule FROM scheduled_transactions WHERE user_id = ? AND enabled = 1`, userID)
+	rows, err := h.db.Query(`SELECT id, rrule, transaction_template_json, enabled FROM scheduled WHERE enabled = 1`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -82,15 +114,17 @@ func (h *Handler) GetPlannedByTimeline(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type schedItem struct {
-		id     int64
-		amount float64
-		tType  string
-		rrule  sql.NullString
+		id       string
+		rrule    string
+		tmplJSON string
 	}
 	var items []schedItem
 	for rows.Next() {
 		var si schedItem
-		rows.Scan(&si.id, &si.amount, &si.tType, &si.rrule)
+		if err := rows.Scan(&si.id, &si.rrule, &si.tmplJSON); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		items = append(items, si)
 	}
 
@@ -115,13 +149,22 @@ func (h *Handler) GetPlannedByTimeline(w http.ResponseWriter, r *http.Request) {
 
 		var income, expense float64
 		for _, item := range items {
-			dates := h.expandRRULE(item.rrule.String, curr, next)
+			var tmpl map[string]interface{}
+			if err := json.Unmarshal([]byte(item.tmplJSON), &tmpl); err != nil {
+				continue
+			}
+			amt := 0.0
+			if a, ok := tmpl["amount"].(float64); ok {
+				amt = a
+			}
+			tType, _ := tmpl["type"].(string)
+			dates := h.expandRRULE(item.rrule, curr, next)
 			count := float64(len(dates))
 			if count > 0 {
-				if item.tType == "income" {
-					income += item.amount * count
+				if tType == "income" {
+					income += amt * count
 				} else {
-					expense += item.amount * count
+					expense += amt * count
 				}
 			}
 		}

@@ -98,7 +98,7 @@ async function fetchPlannedByCategory() {
   categoryLoading.value = true
   try {
     const res = await api.get<{ categories: PlannedCategory[] }>(
-      `/analytics/outlook/planned-by-category?date_from=${dateFrom.value}&date_to=${dateTo.value}`
+      `/api/v1/analytics/outlook/category?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     categoryData.value = res.data.categories
   } catch (e) {
@@ -112,7 +112,7 @@ async function fetchPlannedByTimeline() {
   timelineLoading.value = true
   try {
     const res = await api.get<{ timeline: TimelinePoint[] }>(
-      `/analytics/outlook/planned-by-timeline?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${timelineInterval.value}`
+      `/api/v1/analytics/outlook/timeline?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${timelineInterval.value}`
     )
     timelineData.value = res.data.timeline
   } catch (e) {
@@ -126,7 +126,7 @@ async function fetchBalanceForecast() {
   forecastLoading.value = true
   try {
     const res = await api.get<{ forecast: ForecastPoint[] }>(
-      `/analytics/outlook/balance-forecast?date_from=${dateFrom.value}&date_to=${dateTo.value}`
+      `/api/v1/analytics/outlook/forecast?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     forecastData.value = res.data.forecast
   } catch (e) {

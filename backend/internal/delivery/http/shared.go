@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"kiroku/backend/internal/auth"
 	"kiroku/backend/internal/repository/sqlite"
 )
 
@@ -32,7 +33,11 @@ func (h *SharedHandler) PublicRoutes() chi.Router {
 }
 
 func (h *SharedHandler) CreateShare(w http.ResponseWriter, r *http.Request) {
-	userID := "system"
+	userID := auth.GetUserID(r)
+	if userID == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	var req struct {
 		AccountID string  `json:"account_id"`
 		ExpiresAt *string `json:"expires_at"`
@@ -48,7 +53,11 @@ func (h *SharedHandler) CreateShare(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	share, err := h.repo.Create(r.Context(), userID, req.AccountID, expiresAt)
-	if err != nil || share == nil {
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if share == nil {
 		http.Error(w, "account not found", http.StatusNotFound)
 		return
 	}
@@ -56,12 +65,16 @@ func (h *SharedHandler) CreateShare(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"id":        share.ID,
 		"token":     share.Token,
-		"share_url": "/shared/" + share.Token,
+		"share_url": "/shared/public/" + share.Token,
 	})
 }
 
 func (h *SharedHandler) ListShares(w http.ResponseWriter, r *http.Request) {
-	userID := "system"
+	userID := auth.GetUserID(r)
+	if userID == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	shares, err := h.repo.List(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -72,10 +85,18 @@ func (h *SharedHandler) ListShares(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *SharedHandler) RevokeShare(w http.ResponseWriter, r *http.Request) {
-	userID := "system"
+	userID := auth.GetUserID(r)
+	if userID == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	id := chi.URLParam(r, "id")
 	revoked, err := h.repo.Revoke(r.Context(), userID, id)
-	if err != nil || !revoked {
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	if !revoked {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}

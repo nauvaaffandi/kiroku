@@ -1,11 +1,15 @@
 package logger
 
 import (
+	"bytes"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,4 +46,41 @@ func TestCleanupOldLogs(t *testing.T) {
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
+}
+
+// setupErrorLogWriter replaces the package-level zerolog logger with one that
+// writes to an in-memory buffer. Returns the buffer to inspect.
+func setupErrorLogWriter(t *testing.T) *bytes.Buffer {
+	var buf bytes.Buffer
+	newLogger := zerolog.New(&buf).Level(zerolog.ErrorLevel)
+	oldLogger := log.Logger
+	log.Logger = newLogger
+	t.Cleanup(func() { log.Logger = oldLogger })
+	return &buf
+}
+
+// TestLogHTTPServerError_LogsAtErrorLevel verifies that LogHTTPServerError
+// logs at Error level with the expected fields when status >= 500.
+func TestLogHTTPServerError_LogsAtErrorLevel(t *testing.T) {
+	buf := setupErrorLogWriter(t)
+
+	LogHTTPServerError(http.StatusInternalServerError, "GET", "/api/transactions", "req-123")
+
+	output := buf.String()
+	require.NotEmpty(t, output, "expected log output to not be empty")
+	require.Contains(t, output, `"status":500`)
+	require.Contains(t, output, `"method":"GET"`)
+	require.Contains(t, output, `"path":"/api/transactions"`)
+	require.Contains(t, output, `"request_id":"req-123"`)
+}
+
+// TestLogHTTPServerError_DoesNotLogWhenStatusLessThan500 verifies that
+// LogHTTPServerError does not log when status < 500.
+func TestLogHTTPServerError_DoesNotLogWhenStatusLessThan500(t *testing.T) {
+	buf := setupErrorLogWriter(t)
+
+	LogHTTPServerError(http.StatusOK, "GET", "/api/transactions", "req-123")
+
+	output := buf.String()
+	assert.Empty(t, output, "expected no log output when status < 500")
 }

@@ -14,6 +14,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	_ "kiroku/backend/docs"
+	"kiroku/backend/internal/analytics"
 	"kiroku/backend/internal/auth"
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/db"
@@ -128,7 +129,7 @@ func main() {
 			fxHandler := httpdelivery.NewFXHandler(fxRepo)
 			r.Mount("/fx", fxHandler.Routes())
 
-			analyticsHandler := httpdelivery.NewAnalyticsHandler(sqlite.NewAnalyticsRepo(database))
+			analyticsHandler := analytics.NewHandler(database, config.FXBaseCurrency())
 			r.Mount("/analytics", analyticsHandler.Routes())
 
 			labelsHandler := httpdelivery.NewLabelsHandler(labelsRepo)
@@ -347,10 +348,29 @@ func corsMiddleware(allowedOrigins []string, devMode bool) func(http.Handler) ht
 	}
 }
 
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func newStatusRecorder(w http.ResponseWriter) *statusRecorder {
+	return &statusRecorder{ResponseWriter: w, status: 200}
+}
+
+func (sr *statusRecorder) WriteHeader(statusCode int) {
+	sr.status = statusCode
+	sr.ResponseWriter.WriteHeader(statusCode)
+}
+
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		next.ServeHTTP(w, r)
-		log.Debug().Dur("duration", time.Since(start)).Str("path", r.URL.Path).Msg("HTTP request")
+		sr := newStatusRecorder(w)
+		next.ServeHTTP(sr, r)
+		duration := time.Since(start)
+		log.Debug().Dur("duration", duration).Str("path", r.URL.Path).Msg("HTTP request")
+		if sr.status >= 500 {
+			logger.LogHTTPServerError(sr.status, r.Method, r.URL.Path, middleware.GetReqID(r.Context()))
+		}
 	})
 }

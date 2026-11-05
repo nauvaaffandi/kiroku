@@ -83,7 +83,7 @@ func (h *Handler) GetBalanceByAccounts(w http.ResponseWriter, r *http.Request) {
 		dateTo = time.Now().Format("2006-01-02")
 	}
 
-	rows, err := h.db.Query(`SELECT id, name, currency, color, COALESCE(balance, 0) as balance FROM accounts WHERE user_id = ? AND archived_at IS NULL`, userID)
+	rows, err := h.db.Query(`SELECT id, name, currency, color, COALESCE(balance, 0) as balance FROM accounts WHERE archived = 0`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -128,7 +128,7 @@ func (h *Handler) GetBalanceByCurrencies(w http.ResponseWriter, r *http.Request)
 		dateTo = time.Now().Format("2006-01-02")
 	}
 
-	rows, err := h.db.Query(`SELECT a.currency, SUM(COALESCE(a.balance, 0)) as total_bal FROM accounts a WHERE a.user_id = ? AND a.archived_at IS NULL GROUP BY a.currency`, userID)
+	rows, err := h.db.Query(`SELECT a.currency, SUM(COALESCE(a.balance, 0)) as total_bal FROM accounts a WHERE archived = 0 GROUP BY a.currency`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

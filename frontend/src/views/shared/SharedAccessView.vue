@@ -2,13 +2,13 @@
   <div class="shared-access-page">
     <header class="page-header">
       <div class="header-content">
-        <h1>Shared Access</h1>
-        <button @click="showCreateModal = true" class="btn-primary">
+        <h1>{{ t('shared.access.title') }}</h1>
+        <button @click="showCreateModal = true" class="btn-primary" :aria-label="t('shared.access.createShare')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          Create Share
+          {{ t('shared.access.createShare') }}
         </button>
       </div>
     </header>
@@ -64,9 +64,9 @@
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
           <polyline points="22 6 12 16 10 14"></polyline>
         </svg>
-        <h3>No shared links yet</h3>
-        <p>Create a share link to give read-only access to an account</p>
-        <button @click="showCreateModal = true" class="btn-primary">Create Share</button>
+        <h3>{{ t('shared.access.noShares') }}</h3>
+        <p>{{ t('shared.access.noSharesDesc') }}</p>
+        <button @click="showCreateModal = true" class="btn-primary">{{ t('shared.access.createShare') }}</button>
       </div>
     </div>
 
@@ -74,8 +74,8 @@
       <div v-if="showCreateModal" class="modal-overlay" @click.self="closeCreateModal">
         <div class="modal" @click.stop>
           <div class="modal-header">
-            <h2>Create Share Link</h2>
-            <button @click="closeCreateModal" class="modal-close" aria-label="Close">
+            <h2>{{ t('shared.access.createShare') }}</h2>
+            <button @click="closeCreateModal" class="modal-close" aria-label="{{ t('shared.access.cancel') }}">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -84,29 +84,29 @@
           </div>
           <form @submit.prevent="createShare" class="modal-form">
             <div class="form-group">
-              <label for="account_id">Account</label>
+              <label for="account_id">{{ t('shared.access.account') }} *</label>
               <select id="account_id" v-model="createForm.account_id" required class="form-input">
-                <option value="">Select an account</option>
+                <option value="">{{ t('shared.access.select') }}</option>
                 <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
                   {{ acc.name }} ({{ acc.currency }})
                 </option>
               </select>
             </div>
             <div class="form-group">
-              <label for="expires_at">Expires At (optional)</label>
+              <label for="expires_at">{{ t('shared.access.expiresAt') }} (optional)</label>
               <input
                 id="expires_at"
                 v-model="createForm.expires_at"
                 type="datetime-local"
                 class="form-input"
               />
-              <p class="form-hint">Leave empty for no expiration</p>
+              <p class="form-hint">{{ t('shared.access.expiresHint') }}</p>
             </div>
             <div class="modal-actions">
-              <button type="button" @click="closeCreateModal" class="btn-secondary">Cancel</button>
+              <button type="button" @click="closeCreateModal" class="btn-secondary">{{ t('shared.access.cancel') }}</button>
               <button type="submit" :disabled="loading" class="btn-primary">
-                <span v-if="loading">Creating...</span>
-                <span v-else>Create Share</span>
+                <span v-if="loading">{{ t('shared.access.loading') }}</span>
+                <span v-else>{{ t('shared.access.createShare') }}</span>
               </button>
             </div>
           </form>
@@ -118,19 +118,19 @@
       <div v-if="createdShare" class="modal-overlay" @click.self="closeCreatedModal">
         <div class="modal" @click.stop>
           <div class="modal-header">
-            <h2>Share Created</h2>
+            <h2>{{ t('shared.access.createdSuccess') }}</h2>
           </div>
           <div class="modal-form">
             <div class="share-result">
-              <p>Share link created successfully. Copy and share this link:</p>
+              <p>{{ t('shared.access.createdSuccess') }}. {{ t('shared.access.warning') }}</p>
               <div class="share-url-display">
                 <input :value="fullShareUrl" readonly class="form-input" />
-                <button @click="copyFullShareUrl" class="btn-secondary">Copy</button>
+                <button @click="copyFullShareUrl" class="btn-secondary" aria-label="{{ t('shared.access.copied') }}">{{ t('shared.access.copy') }}</button>
               </div>
-              <p class="share-warning">Anyone with this link can view the account (read-only).</p>
+              <p class="share-warning">{{ t('shared.access.warning') }}</p>
             </div>
             <div class="modal-actions">
-              <button @click="closeCreatedModal" class="btn-primary">Done</button>
+              <button @click="closeCreatedModal" class="btn-primary">{{ t('shared.access.done') }}</button>
             </div>
           </div>
         </div>
@@ -142,68 +142,94 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useUIStore } from '@/stores/ui'
+import { useI18n } from '@/locales'
 import { api } from '@/api/client'
 
+const { t, locale: i18nLocale } = useI18n()
 const uiStore = useUIStore()
 
-const shares = ref<any[]>([])
-const accounts = ref<any[]>([])
+interface Share {
+  id: string
+  account_id: string
+  account_name: string
+  token: string
+  expires_at?: string | null
+  created_at?: string
+  last_accessed_at?: string | null
+}
+
+interface Account {
+  id: string
+  name: string
+  currency: string
+  archived?: boolean
+}
+
+interface CreateShareForm {
+  account_id: string
+  expires_at: string
+}
+
+const shares = ref<Share[]>([])
+const accounts = ref<Account[]>([])
 const loading = ref(false)
 const showCreateModal = ref(false)
-const createdShare = ref<any>(null)
-const createForm = ref({ account_id: '', expires_at: '' })
+const createdShare = ref<Share | null>(null)
+const createForm = ref<CreateShareForm>({ account_id: '', expires_at: '' })
 
 const loadData = async () => {
   try {
     const [sharesRes, accountsRes] = await Promise.all([
-      api.get('/api/v1/shares'),
+      api.get('/api/v1/shared'),
       api.get('/api/v1/accounts')
     ])
     shares.value = sharesRes.data || []
-    accounts.value = accountsRes.data.filter((a: any) => !a.archived) || []
+    accounts.value = accountsRes.data.filter((a: Account) => !a.archived) || []
   } catch (e) {
-    uiStore.error('Failed to load data')
+    uiStore.error(t('shared.access.failLoad'))
   }
 }
 
 const createShare = async () => {
   loading.value = true
   try {
-    const payload: any = { account_id: createForm.value.account_id }
+    const payload: { account_id: string; expires_at?: string } = {
+      account_id: createForm.value.account_id
+    }
     if (createForm.value.expires_at) {
       payload.expires_at = new Date(createForm.value.expires_at).toISOString()
     }
-    const res = await api.post('/api/v1/shares', payload)
+    const res = await api.post('/api/v1/shared', payload)
     createdShare.value = res.data
     showCreateModal.value = false
     await loadData()
   } catch (e: any) {
-    uiStore.error(e.response?.data?.error || 'Failed to create share')
+    uiStore.error(e.response?.data?.error || t('shared.access.failCreate'))
   } finally {
     loading.value = false
   }
 }
 
 const revokeShare = async (id: string) => {
-  if (!confirm('Are you sure you want to revoke this share link?')) return
+  if (!confirm(t('shared.access.revokeConfirm'))) return
   try {
-    await api.delete(`/api/v1/shares/${id}`)
-    uiStore.success('Share revoked')
+    await api.delete(`/api/v1/shared/${id}`)
+    uiStore.success(t('shared.access.revokedSuccess'))
     await loadData()
   } catch (e) {
-    uiStore.error('Failed to revoke share')
+    uiStore.error(t('shared.access.failRevoke'))
   }
 }
 
 const copyShareUrl = async (token: string) => {
-  const url = `${window.location.origin}/shared/${token}`
+	const url = `${window.location.origin}/shared/public/${token}`
   await navigator.clipboard.writeText(url)
-  uiStore.success('Link copied to clipboard')
+  uiStore.success(t('shared.access.copied'))
 }
 
 const copyFullShareUrl = async () => {
   await navigator.clipboard.writeText(fullShareUrl.value)
-  uiStore.success('Link copied to clipboard')
+  uiStore.success(t('shared.access.copied'))
 }
 
 const closeCreateModal = () => {
@@ -217,11 +243,12 @@ const closeCreatedModal = () => {
 
 const fullShareUrl = computed(() => {
   if (!createdShare.value) return ''
-  return `${window.location.origin}/shared/${createdShare.value.token}`
+	return `${window.location.origin}/shared/public/${createdShare.value.token}`
 })
 
-const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+const formatDate = (dateStr?: string | null) => {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString(i18nLocale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 onMounted(loadData)
