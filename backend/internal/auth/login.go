@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/models"
@@ -18,6 +19,10 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := ValidatePIN(string(req.PIN)); err != nil {
+		log.Warn().
+			Str("component", "auth").
+			Str("request_id", middleware.GetReqID(r.Context())).
+			Msg("auth: invalid pin")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -36,6 +41,10 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	ok, err := VerifyPin(string(req.PIN), hash)
 	if err != nil || !ok {
+		log.Warn().
+			Str("component", "auth").
+			Str("request_id", middleware.GetReqID(r.Context())).
+			Msg("auth: invalid pin")
 		http.Error(w, "invalid pin", http.StatusUnauthorized)
 		return
 	}
@@ -58,11 +67,21 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	setAuthCookies(w, accessToken, refreshToken, accessTTL, refreshTTL)
 
+	log.Info().
+		Str("component", "auth").
+		Str("user_id", userID).
+		Str("request_id", middleware.GetReqID(r.Context())).
+		Msg("auth: login success")
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	log.Info().
+		Str("component", "auth").
+		Str("request_id", middleware.GetReqID(r.Context())).
+		Msg("auth: logout")
 	clearAuthCookies(w)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})

@@ -45,6 +45,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to open database")
 	}
 	defer database.Close()
+	log.Info().Str("path", config.FullDBPath(config.DataDir())).Msg("db: connected")
 
 	if err := auth.EnsureGenesisUser(database); err != nil {
 		log.Debug().Err(err).Msg("Failed to ensure genesis user")
@@ -78,8 +79,7 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(realIP)
 	r.Use(corsMiddleware(allowedOrigins, devMode))
-	r.Use(middleware.Recoverer)
-	r.Use(loggingMiddleware)
+	r.Use(logger.RequestLoggingMiddleware)
 
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -346,31 +346,4 @@ func corsMiddleware(allowedOrigins []string, devMode bool) func(http.Handler) ht
 			next.ServeHTTP(w, r)
 		})
 	}
-}
-
-type statusRecorder struct {
-	http.ResponseWriter
-	status int
-}
-
-func newStatusRecorder(w http.ResponseWriter) *statusRecorder {
-	return &statusRecorder{ResponseWriter: w, status: 200}
-}
-
-func (sr *statusRecorder) WriteHeader(statusCode int) {
-	sr.status = statusCode
-	sr.ResponseWriter.WriteHeader(statusCode)
-}
-
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		sr := newStatusRecorder(w)
-		next.ServeHTTP(sr, r)
-		duration := time.Since(start)
-		log.Debug().Dur("duration", duration).Str("path", r.URL.Path).Msg("HTTP request")
-		if sr.status >= 500 {
-			logger.LogHTTPServerError(sr.status, r.Method, r.URL.Path, middleware.GetReqID(r.Context()))
-		}
-	})
 }
