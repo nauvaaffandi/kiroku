@@ -275,7 +275,8 @@ export default {
     subtitle: '予算 vs 実績の比較',
     weekly: '週次',
     monthly: '月次',
-    yearly: '年次'
+    yearly: '年次',
+    total: '合計'
   },
   reports: {
     title: 'レポート',
@@ -447,6 +448,132 @@ export default {
     requiredName: 'ラベル名は必須です',
     invalidColor: '無効なカラー形式です'
   },
+  outlook: {
+    title: 'Outlook',
+    subtitle: '予定支払いのカテゴリ別・タイムライン別・残高予測',
+    plannedByCategory: 'カテゴリ別予定',
+    plannedByTimeline: 'タイムライン別予定',
+    balanceForecast: '残高予測',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+    intervalDay: '日次',
+    intervalWeek: '週次',
+    intervalMonth: '月次',
+    income: '収入',
+    expense: '支出',
+    net: '純額',
+    projectedBalance: '予測残高'
+  },
+  analytics: {
+    cashflow: {
+      title: 'キャッシュフロー分析',
+      subtitle: 'キャッシュフローのウォーターフォール・トレンド・期間比較',
+      comparison: {
+        title: '期間比較',
+        incomeChange: '収入変化',
+        expenseChange: '支出変化',
+        netChange: '純額変化',
+        periodAIncome: '期間A 収入',
+        periodAExpense: '期間A 支出',
+        periodBIncome: '期間B 収入',
+        periodBExpense: '期間B 支出',
+        income: '収入',
+        expense: '支出',
+        net: '純額'
+      },
+      periodPicker: {
+        periodA: '期間 A (比較元)',
+        periodB: '期間 B (比較先)',
+        ellipsis: '〜'
+      },
+      trend: {
+        title: 'キャッシュフロー・トレンド',
+        intervalDay: '日次',
+        intervalWeek: '週次',
+        intervalMonth: '月次',
+        income: '収入',
+        expense: '支出',
+        net: '純額',
+        cumulative: '累積'
+      },
+      waterfall: {
+        title: 'キャッシュフロー・ウォーターフォール',
+        openingBalance: '期首残高',
+        incomePrefix: '収入: ',
+        expensePrefix: '支出: ',
+        closingBalance: '期末残高',
+        amount: '金額'
+      }
+    },
+    spendingByLabel: {
+      title: 'ラベル別支出',
+      count: '件',
+      unclassified: '未分類',
+      seriesName: 'ラベル別支出'
+    },
+    spendingByCategory: {
+      title: 'カテゴリ別支出',
+      groupByCategory: 'カテゴリ別',
+      groupByParent: '親カテゴリ別',
+      seriesName: '支出'
+    },
+    spendingByNature: {
+      title: '支出の性質',
+      count: '件',
+      unclassified: '未分類',
+      must: 'Must (必需)',
+      have: 'Have (必要)',
+      want: 'Want (欲求)'
+    },
+    goals: {
+      remaining: '残り',
+      projectedCompletion: '予測完了',
+      period: '期間',
+      onTrack: '順調',
+      behind: '遅れ',
+      achieved: '達成'
+    },
+    goalsSummary: {
+      totalTarget: '総目標額',
+      currentAmount: '現在額',
+      overallProgress: '全体進捗',
+      achieved: '達成',
+      onTrack: '順調',
+      behind: '遅れ'
+    },
+    goalDetail: {
+      targetAmount: '目標額',
+      currentAmount: '現在額',
+      remaining: '残り',
+      progress: '進捗',
+      predictionTitle: '進捗予測',
+      achievedCumulative: '実績累計',
+      targetCumulative: '目標累計',
+      totalTarget: '目標総額',
+      yen: '円'
+    },
+    budgetTable: {
+      title: 'カテゴリ別 予算 vs 実績',
+      category: 'カテゴリ',
+      budget: '予算',
+      actual: '実績',
+      difference: '差額',
+      percent: '%',
+      status: 'ステータス',
+      progressBar: '進捗バー',
+      under: '未達',
+      over: '超過',
+      onTrack: '順調'
+    },
+    budgetSummary: {
+      totalBudget: '総予算',
+      totalActual: '総実績',
+      difference: '差額',
+      overCategories: '超過カテゴリ',
+      underCategories: '未達カテゴリ'
+    }
+  },
   balanceAnalytics: {
     title: '残高分析',
     subtitle: '残高のトレンド、口座、通貨別内訳',
@@ -487,23 +614,6 @@ export default {
       fri: '金',
       sat: '土'
     }
-  },
-  outlook: {
-    title: 'Outlook 分析',
-    subtitle: '予定支払いのカテゴリ別・タイムライン別・残高予測',
-    plannedByCategory: 'カテゴリ別予定',
-    plannedByTimeline: 'タイムライン別予定',
-    balanceForecast: '残高予測',
-    high: 'High',
-    medium: 'Medium',
-    low: 'Low',
-    intervalDay: '日次',
-    intervalWeek: '週次',
-    intervalMonth: '月次',
-    income: '収入',
-    expense: '支出',
-    net: '純額',
-    projectedBalance: '予測残高'
   },
   months: {
     '1': '1月',

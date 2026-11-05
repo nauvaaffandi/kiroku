@@ -2,8 +2,8 @@
   <div class="analytics-goals-view">
     <div class="page-header">
       <div class="header-left">
-        <h1>目標管理</h1>
-        <p class="page-subtitle">「Want」カテゴリの予算目標と進捗</p>
+        <h1>{{ t('analytics.goals.title') }}</h1>
+        <p class="page-subtitle">{{ t('analytics.goals.subtitle') }}</p>
       </div>
       <div class="header-actions">
         <router-link to="/categories" class="btn-primary">
@@ -11,7 +11,7 @@
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          目標を追加
+          {{ t('analytics.goals.addGoal') }}
         </router-link>
       </div>
     </div>
@@ -20,10 +20,10 @@
 
     <div class="controls-bar">
       <select v-model="statusFilter" class="filter-select">
-        <option value="all">すべて</option>
-        <option value="on_track">順調</option>
-        <option value="behind">遅れ</option>
-        <option value="achieved">達成</option>
+        <option value="all">{{ t('analytics.goals.filterAll') }}</option>
+        <option value="on_track">{{ t('analytics.goals.filterOnTrack') }}</option>
+        <option value="behind">{{ t('analytics.goals.filterBehind') }}</option>
+        <option value="achieved">{{ t('analytics.goals.filterAchieved') }}</option>
       </select>
     </div>
 
@@ -45,9 +45,9 @@
           <path d="M2 17l10 5 10-5"></path>
           <path d="M2 12l10 5 10-5"></path>
         </svg>
-        <h3>目標が設定されていません</h3>
-        <p>カテゴリ設定で「Want」種類かつ予算額を設定すると、ここに目標として表示されます</p>
-        <router-link to="/categories" class="btn-primary">カテゴリを設定する</router-link>
+        <h3>{{ t('analytics.goals.emptyTitle') }}</h3>
+        <p>{{ t('analytics.goals.emptyDesc') }}</p>
+        <router-link to="/categories" class="btn-primary">{{ t('analytics.goals.setCategory') }}</router-link>
       </div>
     </div>
 
@@ -68,6 +68,7 @@
 import { ref, onMounted, watchEffect, computed } from 'vue'
 import { api } from '@/api/client'
 import { useUIStore } from '@/stores/ui'
+import { useI18n } from '@/locales'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import GoalsSummaryCardsWidget from '@/widgets/analytics/GoalsSummaryCardsWidget.vue'
 import GoalCardWidget from '@/widgets/analytics/GoalCardWidget.vue'
@@ -80,6 +81,7 @@ const props = defineProps<{
 }>()
 
 const uiStore = useUIStore()
+const { t } = useI18n()
 const loading = ref(true)
 const statusFilter = ref('all')
 const selectedGoal = ref<GoalItem | null>(null)
@@ -113,7 +115,7 @@ async function fetchData() {
     summary.value = res.data.summary
   } catch (e) {
     console.error('Failed to fetch goals:', e)
-    uiStore.error('目標の取得に失敗しました')
+    uiStore.error(t('analytics.goals.fetchError'))
   } finally {
     loading.value = false
   }

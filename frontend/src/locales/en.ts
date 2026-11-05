@@ -275,7 +275,8 @@ export default {
     subtitle: 'Budget vs Actual Comparison',
     weekly: 'Weekly',
     monthly: 'Monthly',
-    yearly: 'Yearly'
+    yearly: 'Yearly',
+    total: 'Total'
   },
   reports: {
     title: 'Reports',
@@ -417,6 +418,132 @@ export default {
     acknowledgments: 'Acknowledgments',
     acknowledgmentsDesc: 'Built with open source technologies. Thanks to all contributors and the open source community.'
   },
+  outlook: {
+    title: 'Outlook',
+    subtitle: 'Scheduled payments by category, timeline, and balance forecast',
+    plannedByCategory: 'Planned by Category',
+    plannedByTimeline: 'Planned by Timeline',
+    balanceForecast: 'Balance Forecast',
+    high: 'High',
+    medium: 'Medium',
+    low: 'Low',
+    intervalDay: 'Daily',
+    intervalWeek: 'Weekly',
+    intervalMonth: 'Monthly',
+    income: 'Income',
+    expense: 'Expense',
+    net: 'Net',
+    projectedBalance: 'Projected Balance'
+  },
+  analytics: {
+    cashflow: {
+      title: 'Cashflow Analysis',
+      subtitle: 'Cashflow waterfall, trend, and period comparison',
+      comparison: {
+        title: 'Period Comparison',
+        incomeChange: 'Income Change',
+        expenseChange: 'Expense Change',
+        netChange: 'Net Change',
+        periodAIncome: 'Period A Income',
+        periodAExpense: 'Period A Expense',
+        periodBIncome: 'Period B Income',
+        periodBExpense: 'Period B Expense',
+        income: 'Income',
+        expense: 'Expense',
+        net: 'Net'
+      },
+      periodPicker: {
+        periodA: 'Period A (Reference)',
+        periodB: 'Period B (Comparison)',
+        ellipsis: '–'
+      },
+      trend: {
+        title: 'Cashflow Trend',
+        intervalDay: 'Daily',
+        intervalWeek: 'Weekly',
+        intervalMonth: 'Monthly',
+        income: 'Income',
+        expense: 'Expense',
+        net: 'Net',
+        cumulative: 'Cumulative'
+      },
+      waterfall: {
+        title: 'Cashflow Waterfall',
+        openingBalance: 'Opening Balance',
+        incomePrefix: 'Income: ',
+        expensePrefix: 'Expense: ',
+        closingBalance: 'Closing Balance',
+        amount: 'Amount'
+      }
+    },
+    spendingByLabel: {
+      title: 'Spending by Label',
+      count: 'items',
+      unclassified: 'Uncategorized',
+      seriesName: 'Spending by Label'
+    },
+    spendingByCategory: {
+      title: 'Spending by Category',
+      groupByCategory: 'By Category',
+      groupByParent: 'By Parent Category',
+      seriesName: 'Expense'
+    },
+    spendingByNature: {
+      title: 'Nature of Spending',
+      count: 'items',
+      unclassified: 'Uncategorized',
+      must: 'Must (Essential)',
+      have: 'Have (Needed)',
+      want: 'Want (Desired)'
+    },
+    goals: {
+      remaining: 'Remaining',
+      projectedCompletion: 'Projected Completion',
+      period: 'Period',
+      onTrack: 'On Track',
+      behind: 'Behind',
+      achieved: 'Achieved'
+    },
+    goalsSummary: {
+      totalTarget: 'Total Target',
+      currentAmount: 'Current Amount',
+      overallProgress: 'Overall Progress',
+      achieved: 'Achieved',
+      onTrack: 'On Track',
+      behind: 'Behind'
+    },
+    goalDetail: {
+      targetAmount: 'Target Amount',
+      currentAmount: 'Current Amount',
+      remaining: 'Remaining',
+      progress: 'Progress',
+      predictionTitle: 'Progress Forecast',
+      achievedCumulative: 'Actual Cumulative',
+      targetCumulative: 'Target Cumulative',
+      totalTarget: 'Total Target',
+      yen: 'yen'
+    },
+    budgetTable: {
+      title: 'Budget vs Actual by Category',
+      category: 'Category',
+      budget: 'Budget',
+      actual: 'Actual',
+      difference: 'Difference',
+      percent: '%',
+      status: 'Status',
+      progressBar: 'Progress Bar',
+      under: 'Under',
+      over: 'Over',
+      onTrack: 'On Track'
+    },
+    budgetSummary: {
+      totalBudget: 'Total Budget',
+      totalActual: 'Total Actual',
+      difference: 'Difference',
+      overCategories: 'Over Categories',
+      underCategories: 'Under Categories'
+    }
+  },
   balanceAnalytics: {
     title: 'Balance Analytics',
     subtitle: 'Balance trends, accounts, and currency breakdown',
@@ -477,23 +604,6 @@ export default {
       fri: 'Fri',
       sat: 'Sat'
     }
-  },
-  outlook: {
-    title: 'Outlook',
-    subtitle: 'Scheduled payments by category, timeline, and balance forecast',
-    plannedByCategory: 'Planned by Category',
-    plannedByTimeline: 'Planned by Timeline',
-    balanceForecast: 'Balance Forecast',
-    high: 'High',
-    medium: 'Medium',
-    low: 'Low',
-    intervalDay: 'Daily',
-    intervalWeek: 'Weekly',
-    intervalMonth: 'Monthly',
-    income: 'Income',
-    expense: 'Expense',
-    net: 'Net',
-    projectedBalance: 'Projected Balance'
   },
   months: {
     '1': 'January',

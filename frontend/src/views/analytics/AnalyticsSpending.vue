@@ -1,8 +1,8 @@
 <template>
   <div class="analytics-spending-view">
     <div class="page-header">
-      <h1>支出分析</h1>
-      <p class="page-subtitle">カテゴリ別・ラベル別・性質別（Must/Have/Want）の支出内訳</p>
+      <h1>{{ t('analytics.spending.title') }}</h1>
+      <p class="page-subtitle">{{ t('analytics.spending.subtitle') }}</p>
     </div>
 
     <DateFilterBar @change="onDateChange" />
@@ -31,6 +31,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api } from '@/api/client'
+import { useI18n } from '@/locales'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import SpendingByCategoryWidget from '@/widgets/analytics/SpendingByCategoryWidget.vue'
 import SpendingByLabelWidget from '@/widgets/analytics/SpendingByLabelWidget.vue'
@@ -60,6 +61,8 @@ interface NatureSpending {
   count: number
   percentage: number
 }
+
+const { t } = useI18n()
 
 const dateFrom = ref('')
 const dateTo = ref('')

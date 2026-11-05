@@ -1,11 +1,11 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>カテゴリ別支出</h2>
+      <h2>{{ t('analytics.spendingByCategory.title') }}</h2>
       <div class="widget-controls">
         <select :value="groupBy" @change="$emit('update:groupBy', ($event.target as HTMLSelectElement).value)" class="interval-select">
-          <option value="category">カテゴリ別</option>
-          <option value="parent_category">親カテゴリ別</option>
+          <option value="category">{{ t('analytics.spendingByCategory.groupByCategory') }}</option>
+          <option value="parent_category">{{ t('analytics.spendingByCategory.groupByParent') }}</option>
         </select>
       </div>
     </div>
@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface CategorySpending {
   id: string
@@ -53,6 +54,8 @@ defineEmits<{
   'update:groupBy': [val: string]
 }>()
 
+const { t } = useI18n()
+
 const chartRef = ref<HTMLElement>()
 let chart: echarts.ECharts | null = null
 
@@ -71,7 +74,7 @@ function renderChart() {
     },
     series: [
       {
-        name: '支出',
+        name: t('analytics.spendingByCategory.seriesName'),
         type: 'treemap',
         data: data.map((d, i) => ({
           name: d.name,

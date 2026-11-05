@@ -1,7 +1,7 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>ラベル別支出</h2>
+      <h2>{{ t('analytics.spendingByLabel.title') }}</h2>
     </div>
     <div class="widget-content" v-if="!loading">
       <div class="chart-container" ref="chartRef" />
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface LabelSpending {
   label: string
@@ -29,6 +30,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   data: () => [] as LabelSpending[]
 })
+
+const { t } = useI18n()
 
 const chartRef = ref<HTMLElement>()
 let chart: echarts.ECharts | null = null
@@ -48,7 +51,7 @@ function renderChart() {
     legend: { orient: 'vertical', right: 0, top: 'center' },
     series: [
       {
-        name: 'ラベル別支出',
+        name: t('analytics.spendingByLabel.seriesName'),
         type: 'pie',
         radius: ['50%', '70%'],
         avoidLabelOverlap: false,

@@ -1,7 +1,7 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>キャッシュフロー・ウォーターフォール</h2>
+      <h2>{{ t('analytics.cashflow.waterfall.title') }}</h2>
     </div>
     <div class="widget-content" v-if="!loading">
       <div class="chart-container" ref="flowChartRef" />
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface FlowResponse {
   opening_balance: number
@@ -36,6 +37,8 @@ const props = defineProps<{
   data: FlowResponse | null
 }>()
 
+const { t } = useI18n()
+
 const flowChartRef = ref<HTMLElement>()
 let flowChart: echarts.ECharts | null = null
 
@@ -48,12 +51,12 @@ function renderFlowChart() {
   const categories = data.by_category.filter(c => c.net !== 0).slice(0, 8)
 
   const seriesData = [
-    { name: '期首残高', value: data.opening_balance },
+    { name: t('analytics.cashflow.waterfall.openingBalance'), value: data.opening_balance },
     ...categories.flatMap(c => [
-      { name: `収入: ${c.name}`, value: c.income },
-      { name: `支出: ${c.name}`, value: -c.expense },
+      { name: `${t('analytics.cashflow.waterfall.incomePrefix')}: ${c.name}`, value: c.income },
+      { name: `${t('analytics.cashflow.waterfall.expensePrefix')}: ${c.name}`, value: -c.expense },
     ]),
-    { name: '期末残高', value: data.closing_balance },
+    { name: t('analytics.cashflow.waterfall.closingBalance'), value: data.closing_balance },
   ]
 
   flowChart.setOption({
@@ -69,7 +72,7 @@ function renderFlowChart() {
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
       {
-        name: '金額',
+        name: t('analytics.cashflow.waterfall.amount'),
         type: 'bar',
         data: seriesData.map((d, i) => ({
           value: d.value,

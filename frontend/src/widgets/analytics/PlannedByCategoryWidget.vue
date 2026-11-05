@@ -65,14 +65,14 @@ function renderChart() {
     yAxis: { type: 'category', data: names, axisLabel: { interval: 0 } },
     series: [
       {
-        name: '収入',
+        name: t('analytics.outlook.income'),
         type: 'bar',
         stack: 'total',
         data: income.map((v, i) => ({ value: v, itemStyle: { color: colors[i] } })),
         label: { show: false },
       },
       {
-        name: '支出',
+        name: t('analytics.outlook.expense'),
         type: 'bar',
         stack: 'total',
         data: expense.map(v => ({ value: v, itemStyle: { color: '#dc3545' } })),

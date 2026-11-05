@@ -1,18 +1,18 @@
 <template>
   <div class="comparison-periods" v-if="showComparisonPeriods">
     <div class="period-picker">
-      <label>期間 A (比較元)</label>
+      <label>{{ t('analytics.cashflow.periodPicker.periodA') }}</label>
       <div class="period-inputs">
         <input type="date" :value="periodAFrom" @input="$emit('update:periodAFrom', ($event.target as HTMLInputElement).value)" class="date-input" />
-        <span>〜</span>
+        <span>{{ t('analytics.cashflow.periodPicker.ellipsis') }}</span>
         <input type="date" :value="periodATo" @input="$emit('update:periodATo', ($event.target as HTMLInputElement).value)" class="date-input" />
       </div>
     </div>
     <div class="period-picker">
-      <label>期間 B (比較先)</label>
+      <label>{{ t('analytics.cashflow.periodPicker.periodB') }}</label>
       <div class="period-inputs">
         <input type="date" :value="periodBFrom" @input="$emit('update:periodBFrom', ($event.target as HTMLInputElement).value)" class="date-input" />
-        <span>〜</span>
+        <span>{{ t('analytics.cashflow.periodPicker.ellipsis') }}</span>
         <input type="date" :value="periodBTo" @input="$emit('update:periodBTo', ($event.target as HTMLInputElement).value)" class="date-input" />
       </div>
     </div>
@@ -20,6 +20,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
+
 defineProps<{
   showComparisonPeriods: boolean
   periodAFrom: string

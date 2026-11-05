@@ -275,7 +275,8 @@ export default {
     subtitle: 'Perbandingan Anggaran vs Aktual',
     weekly: 'Mingguan',
     monthly: 'Bulanan',
-    yearly: 'Tahunan'
+    yearly: 'Tahunan',
+    total: 'Total'
   },
   reports: {
     title: 'Laporan',
@@ -446,6 +447,115 @@ export default {
     inlineCreate: 'Buat label',
     requiredName: 'Nama label wajib diisi',
     invalidColor: 'Format warna tidak valid'
+  },
+  analytics: {
+    cashflow: {
+      title: 'Analisis Arus Kas',
+      subtitle: 'Arus kas air terjun, tren, dan perbandingan periode',
+      comparison: {
+        title: 'Perbandingan Periode',
+        incomeChange: 'Perubahan Pemasukan',
+        expenseChange: 'Perubahan Pengeluaran',
+        netChange: 'Perubahan Bersih',
+        periodAIncome: 'Periode A Pemasukan',
+        periodAExpense: 'Periode A Pengeluaran',
+        periodBIncome: 'Periode B Pemasukan',
+        periodBExpense: 'Periode B Pengeluaran',
+        income: 'Pemasukan',
+        expense: 'Pengeluaran',
+        net: 'Bersih'
+      },
+      periodPicker: {
+        periodA: 'Periode A (Referensi)',
+        periodB: 'Periode B (Perbandingan)',
+        ellipsis: '–'
+      },
+      trend: {
+        title: 'Tren Arus Kas',
+        intervalDay: 'Harian',
+        intervalWeek: 'Mingguan',
+        intervalMonth: 'Bulanan',
+        income: 'Pemasukan',
+        expense: 'Pengeluaran',
+        net: 'Bersih',
+        cumulative: 'Kumulatif'
+      },
+      waterfall: {
+        title: 'Air Terjun Arus Kas',
+        openingBalance: 'Saldo Awal',
+        incomePrefix: 'Pemasukan: ',
+        expensePrefix: 'Pengeluaran: ',
+        closingBalance: 'Saldo Akhir',
+        amount: 'Jumlah'
+      }
+    },
+    spendingByLabel: {
+      title: 'Pengeluaran per Label',
+      count: 'item',
+      unclassified: 'Tidak Dikategorikan',
+      seriesName: 'Pengeluaran per Label'
+    },
+    spendingByCategory: {
+      title: 'Pengeluaran per Kategori',
+      groupByCategory: 'Berdasarkan Kategori',
+      groupByParent: 'Berdasarkan Kategori Induk',
+      seriesName: 'Pengeluaran'
+    },
+    spendingByNature: {
+      title: 'Jenis Pengeluaran',
+      count: 'item',
+      unclassified: 'Tidak Dikategorikan',
+      must: 'Must (Penting)',
+      have: 'Have (Diperlukan)',
+      want: 'Want (Inginkan)'
+    },
+    goals: {
+      remaining: 'Sisa',
+      projectedCompletion: 'Perkiraan Selesai',
+      period: 'Periode',
+      onTrack: 'On Track',
+      behind: 'Tertunda',
+      achieved: 'Ter Capai'
+    },
+    goalsSummary: {
+      totalTarget: 'Target Total',
+      currentAmount: 'Jumlah Saat Ini',
+      overallProgress: 'Progres Keseluruhan',
+      achieved: 'Ter Capai',
+      onTrack: 'On Track',
+      behind: 'Tertunda'
+    },
+    goalDetail: {
+      targetAmount: 'Target',
+      currentAmount: 'Saat Ini',
+      remaining: 'Sisa',
+      progress: 'Progres',
+      predictionTitle: 'Prakara Progres',
+      achievedCumulative: 'Kumulatif Aktual',
+      targetCumulative: 'Kumulatif Target',
+      totalTarget: 'Target Total',
+      yen: 'yen'
+    },
+    budgetTable: {
+      title: 'Anggaran vs Aktual per Kategori',
+      category: 'Kategori',
+      budget: 'Anggaran',
+      actual: 'Aktual',
+      difference: 'Selisih',
+      percent: '%',
+      status: 'Status',
+      progressBar: 'Bar Progres',
+      under: 'Di Bawah',
+      over: 'Melebihi',
+      onTrack: 'On Track'
+    },
+    budgetSummary: {
+      totalBudget: 'Total Anggaran',
+      totalActual: 'Total Aktual',
+      difference: 'Selisih',
+      overCategories: 'Kategori Melebihi',
+      underCategories: 'Kategori Di Bawah'
+    }
   },
   balanceAnalytics: {
     title: 'Analisis Saldo',

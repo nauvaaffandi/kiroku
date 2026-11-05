@@ -115,7 +115,7 @@ function exportCSV() {
     b.variance_pct.toFixed(1) + '%',
     statusLabel(b.status)
   ])
-  rows.push(['合計', formatCurrency(summary.value.total_budget), formatCurrency(summary.value.total_actual), formatCurrency(summary.value.total_variance), '', ''])
+  rows.push([t('budgetAnalysis.total'), formatCurrency(summary.value.total_budget), formatCurrency(summary.value.total_actual), formatCurrency(summary.value.total_variance), '', ''])
 
   const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n')
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })

@@ -1,27 +1,27 @@
 <template>
   <div class="summary-cards" v-if="!loading">
     <div class="summary-card">
-      <span class="summary-label">総目標額</span>
+      <span class="summary-label">{{ t('analytics.goalsSummary.totalTarget') }}</span>
       <span class="summary-value">{{ formatCurrency(summary.total_targets) }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">現在額</span>
+      <span class="summary-label">{{ t('analytics.goalsSummary.currentAmount') }}</span>
       <span class="summary-value">{{ formatCurrency(summary.total_current) }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">全体進捗</span>
+      <span class="summary-label">{{ t('analytics.goalsSummary.overallProgress') }}</span>
       <span class="summary-value">{{ summary.overall_progress.toFixed(1) }}%</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">達成</span>
+      <span class="summary-label">{{ t('analytics.goalsSummary.achieved') }}</span>
       <span class="summary-value positive">{{ summary.goals_achieved }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">順調</span>
+      <span class="summary-label">{{ t('analytics.goalsSummary.onTrack') }}</span>
       <span class="summary-value positive">{{ summary.goals_on_track }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">遅れ</span>
+      <span class="summary-label">{{ t('analytics.goalsSummary.behind') }}</span>
       <span class="summary-value negative">{{ summary.goals_behind }}</span>
     </div>
   </div>
@@ -34,6 +34,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
+
 interface Summary {
   total_targets: number
   total_current: number
@@ -42,6 +44,8 @@ interface Summary {
   goals_on_track: number
   goals_behind: number
 }
+
+const { t } = useI18n()
 
 defineProps<{
   loading: boolean

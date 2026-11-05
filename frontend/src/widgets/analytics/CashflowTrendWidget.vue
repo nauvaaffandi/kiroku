@@ -1,11 +1,11 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>キャッシュフロー・トレンド</h2>
+      <h2>{{ t('analytics.cashflow.trend.title') }}</h2>
       <select :value="interval" @change="$emit('update:interval', ($event.target as HTMLSelectElement).value)" class="interval-select">
-        <option value="day">日次</option>
-        <option value="week">週次</option>
-        <option value="month">月次</option>
+        <option value="day">{{ t('analytics.cashflow.trend.intervalDay') }}</option>
+        <option value="week">{{ t('analytics.cashflow.trend.intervalWeek') }}</option>
+        <option value="month">{{ t('analytics.cashflow.trend.intervalMonth') }}</option>
       </select>
     </div>
     <div class="widget-content" v-if="!loading">
@@ -20,6 +20,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface TrendPoint {
   period: string
@@ -36,6 +37,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   data: () => [] as TrendPoint[]
 })
+
+const { t } = useI18n()
 
 defineEmits<{
   'update:interval': [val: string]
@@ -66,13 +69,13 @@ function renderTrendChart() {
         return res
       },
     },
-    legend: { data: ['収入', '支出', '純額', '累積'], bottom: 0 },
+    legend: { data: [t('analytics.cashflow.trend.income'), t('analytics.cashflow.trend.expense'), t('analytics.cashflow.trend.net'), t('analytics.cashflow.trend.cumulative')], bottom: 0 },
     grid: { left: 40, right: 20, top: 10, bottom: 40 },
     xAxis: { type: 'category', data: periods },
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
       {
-        name: '収入',
+        name: t('analytics.cashflow.trend.income'),
         type: 'line',
         data: income,
         smooth: true,
@@ -80,7 +83,7 @@ function renderTrendChart() {
         areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(40,167,69,0.3)' }, { offset: 1, color: 'rgba(40,167,69,0)' }] } },
       },
       {
-        name: '支出',
+        name: t('analytics.cashflow.trend.expense'),
         type: 'line',
         data: expense,
         smooth: true,
@@ -88,14 +91,14 @@ function renderTrendChart() {
         areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(220,53,69,0.3)' }, { offset: 1, color: 'rgba(220,53,69,0)' }] } },
       },
       {
-        name: '純額',
+        name: t('analytics.cashflow.trend.net'),
         type: 'line',
         data: net,
         smooth: true,
         lineStyle: { color: '#4a90d9', width: 3 },
       },
       {
-        name: '累積',
+        name: t('analytics.cashflow.trend.cumulative'),
         type: 'line',
         data: cumulative,
         smooth: true,

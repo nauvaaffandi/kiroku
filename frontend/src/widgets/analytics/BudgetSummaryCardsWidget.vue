@@ -1,25 +1,25 @@
 <template>
   <div class="summary-cards" v-if="!loading">
     <div class="summary-card">
-      <span class="summary-label">総予算</span>
+      <span class="summary-label">{{ t('analytics.budgetSummary.totalBudget') }}</span>
       <span class="summary-value">{{ formatCurrency(summary.total_budget) }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">総実績</span>
+      <span class="summary-label">{{ t('analytics.budgetSummary.totalActual') }}</span>
       <span class="summary-value">{{ formatCurrency(summary.total_actual) }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">差額</span>
+      <span class="summary-label">{{ t('analytics.budgetSummary.difference') }}</span>
       <span class="summary-value" :class="summary.total_variance >= 0 ? 'positive' : 'negative'">
         {{ summary.total_variance >= 0 ? '+' : '' }}{{ formatCurrency(summary.total_variance) }}
       </span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">超過カテゴリ</span>
+      <span class="summary-label">{{ t('analytics.budgetSummary.overCategories') }}</span>
       <span class="summary-value negative">{{ summary.categories_over_budget }}</span>
     </div>
     <div class="summary-card">
-      <span class="summary-label">未達カテゴリ</span>
+      <span class="summary-label">{{ t('analytics.budgetSummary.underCategories') }}</span>
       <span class="summary-value positive">{{ summary.categories_under_budget }}</span>
     </div>
   </div>
@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
+
 interface Summary {
   total_budget: number
   total_actual: number
@@ -39,6 +41,8 @@ interface Summary {
   categories_over_budget: number
   categories_under_budget: number
 }
+
+const { t } = useI18n()
 
 defineProps<{
   loading: boolean

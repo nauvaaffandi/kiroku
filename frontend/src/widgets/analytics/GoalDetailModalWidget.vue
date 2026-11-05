@@ -17,21 +17,21 @@
         <div class="modal-body">
           <div class="detail-summary">
             <div class="summary-item">
-              <span class="summary-label">目標額</span>
+              <span class="summary-label">{{ t('analytics.goalDetail.targetAmount') }}</span>
               <span class="summary-value">{{ formatCurrency(goal.target_amount) }}</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">現在額</span>
+              <span class="summary-label">{{ t('analytics.goalDetail.currentAmount') }}</span>
               <span class="summary-value">{{ formatCurrency(goal.current_amount) }}</span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">残り</span>
+              <span class="summary-label">{{ t('analytics.goalDetail.remaining') }}</span>
               <span class="summary-value" :class="goal.remaining > 0 ? 'negative' : 'positive'">
                 {{ formatCurrency(goal.remaining) }}
               </span>
             </div>
             <div class="summary-item">
-              <span class="summary-label">進捗</span>
+              <span class="summary-label">{{ t('analytics.goalDetail.progress') }}</span>
               <span class="summary-value">{{ goal.progress_pct.toFixed(1) }}%</span>
             </div>
           </div>
@@ -41,7 +41,6 @@
     </div>
   </Teleport>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { api } from '@/api/client'
@@ -49,8 +48,17 @@ import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
+import { useI18n } from '@/locales'
 
 echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent, CanvasRenderer])
+
+const { t } = useI18n()
+
+function formatCurrencyShort(val: number): string {
+  if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
+  if (Math.abs(val) >= 1e4) return (val / 1e4).toFixed(1) + '万'
+  return val.toLocaleString('ja-JP')
+}
 
 interface GoalItem {
   category_id: string
@@ -64,6 +72,14 @@ interface GoalItem {
   remaining: number
   projected_completion: string
   status: 'on_track' | 'behind' | 'achieved'
+}
+
+function formatCurrency(val: number): string {
+  return new Intl.NumberFormat('ja-JP', { 
+    style: 'currency', 
+    currency: 'JPY',
+    maximumFractionDigits: 0 
+  }).format(val)
 }
 
 const props = defineProps<{
@@ -91,15 +107,15 @@ async function renderProjectionChart(goal: GoalItem) {
 
     projectionChartInstance = echarts.init(projectionChartRef.value)
     projectionChartInstance.setOption({
-      title: { text: '進捗予測', left: 'center' },
+      title: { text: t('analytics.goalDetail.predictionTitle'), left: 'center' },
       tooltip: { trigger: 'axis' },
-      legend: { data: ['実績累計', '目標累計', '目標総額'], bottom: 0 },
+      legend: { data: [t('analytics.goalDetail.achievedCumulative'), t('analytics.goalDetail.targetCumulative'), t('analytics.goalDetail.totalTarget')], bottom: 0 },
       grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
       xAxis: { type: 'category', data: projection.map(p => p.period) },
-      yAxis: { type: 'value', axisLabel: { formatter: '{value}円' } },
+      yAxis: { type: 'value', axisLabel: { formatter: (v: number) => `${formatCurrencyShort(v)} ${t('analytics.goalDetail.yen')}` } },
       series: [
         {
-          name: '実績累計',
+          name: t('analytics.goalDetail.achievedCumulative'),
           type: 'line',
           data: projection.map(p => p.actual_cumulative),
           smooth: true,
@@ -107,7 +123,7 @@ async function renderProjectionChart(goal: GoalItem) {
           lineStyle: { width: 3 }
         },
         {
-          name: '目標累計',
+          name: t('analytics.goalDetail.targetCumulative'),
           type: 'line',
           data: projection.map(p => p.target_cumulative),
           smooth: true,
@@ -115,7 +131,7 @@ async function renderProjectionChart(goal: GoalItem) {
           lineStyle: { type: 'dashed', width: 2 }
         },
         {
-          name: '目標総額',
+          name: t('analytics.goalDetail.totalTarget'),
           type: 'line',
           data: projection.map(p => p.target_total),
           smooth: true,
@@ -127,14 +143,6 @@ async function renderProjectionChart(goal: GoalItem) {
   } catch (e) {
     console.error('Failed to fetch projection:', e)
   }
-}
-
-function formatCurrency(val: number): string {
-  return new Intl.NumberFormat('ja-JP', { 
-    style: 'currency', 
-    currency: 'JPY',
-    maximumFractionDigits: 0 
-  }).format(val)
 }
 
 watch(() => props.goal, async (newGoal) => {

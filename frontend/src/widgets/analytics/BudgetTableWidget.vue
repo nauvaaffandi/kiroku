@@ -1,7 +1,7 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>カテゴリ別 予算 vs 実績</h2>
+      <h2>{{ t('analytics.budgetTable.title') }}</h2>
       <button @click="$emit('export')" class="btn-secondary" style="padding: 0.375rem 0.75rem; font-size: 0.75rem;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -16,13 +16,13 @@
         <table class="budget-table">
           <thead>
             <tr>
-              <th>カテゴリ</th>
-              <th class="text-right">予算</th>
-              <th class="text-right">実績</th>
-              <th class="text-right">差額</th>
-              <th class="text-right">%</th>
-              <th>ステータス</th>
-              <th>進捗バー</th>
+              <th>{{ t('analytics.budgetTable.category') }}</th>
+              <th class="text-right">{{ t('analytics.budgetTable.budget') }}</th>
+              <th class="text-right">{{ t('analytics.budgetTable.actual') }}</th>
+              <th class="text-right">{{ t('analytics.budgetTable.difference') }}</th>
+              <th class="text-right">{{ t('analytics.budgetTable.percent') }}</th>
+              <th>{{ t('analytics.budgetTable.status') }}</th>
+              <th>{{ t('analytics.budgetTable.progressBar') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +69,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
+
 interface BudgetItem {
   category_id: string
   category_name: string
@@ -82,6 +84,8 @@ interface BudgetItem {
   status: 'under' | 'over' | 'on_track'
 }
 
+const { t } = useI18n()
+
 defineProps<{
   loading: boolean
   budgets: BudgetItem[]
@@ -93,9 +97,9 @@ defineEmits<{
 
 function statusLabel(status: string): string {
   const labels: Record<string, string> = {
-    under: '未達',
-    over: '超過',
-    on_track: '順調'
+    under: t('analytics.budgetTable.under'),
+    over: t('analytics.budgetTable.over'),
+    on_track: t('analytics.budgetTable.onTrack')
   }
   return labels[status] || status
 }

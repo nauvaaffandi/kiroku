@@ -1,8 +1,8 @@
 <template>
   <div class="analytics-cashflow-view">
     <div class="page-header">
-      <h1>キャッシュフロー分析</h1>
-      <p class="page-subtitle">キャッシュフローのウォーターフォール・トレンド・期間比較</p>
+      <h1>{{ t('analytics.cashflow.title') }}</h1>
+      <p class="page-subtitle">{{ t('analytics.cashflow.subtitle') }}</p>
     </div>
 
     <div class="filter-section">
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from '@/locales'
 import { api } from '@/api/client'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import CashflowWaterfallWidget from '@/widgets/analytics/CashflowWaterfallWidget.vue'
@@ -86,6 +87,8 @@ interface ComparisonResponse {
     net_pct: number
   }
 }
+
+const { t } = useI18n()
 
 const dateFrom = ref('')
 const dateTo = ref('')

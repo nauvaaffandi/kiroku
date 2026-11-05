@@ -71,7 +71,7 @@ formatter: (params: any) => {
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
       {
-        name: '収入',
+        name: t('analytics.cashflow.trend.income'),
         type: 'line',
         data: income,
         smooth: true,
@@ -79,7 +79,7 @@ formatter: (params: any) => {
         lineStyle: { color: '#28a745', width: 2 },
       },
       {
-        name: '支出',
+        name: t('analytics.cashflow.trend.expense'),
         type: 'line',
         data: expense,
         smooth: true,
@@ -87,7 +87,7 @@ formatter: (params: any) => {
         lineStyle: { color: '#dc3545', width: 2 },
       },
       {
-        name: '純額',
+        name: t('analytics.cashflow.trend.net'),
         type: 'line',
         data: net,
         smooth: true,

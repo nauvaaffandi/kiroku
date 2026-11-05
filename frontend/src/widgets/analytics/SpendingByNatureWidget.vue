@@ -1,7 +1,7 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>支出の性質</h2>
+      <h2>{{ t('analytics.spendingByNature.title') }}</h2>
     </div>
     <div class="widget-content" v-if="!loading">
       <div class="nature-charts">
@@ -11,16 +11,16 @@
             <h3 class="nature-title" :class="nature">{{ natureLabels[nature] }}</h3>
             <p class="nature-amount">{{ formatCurrencyShort(data[nature]?.amount || 0) }}</p>
             <p class="nature-pct">{{ data[nature]?.percentage?.toFixed(1) || 0 }}%</p>
-            <p class="nature-count">{{ data[nature]?.count || 0 }} 件</p>
+            <p class="nature-count">{{ data[nature]?.count || 0 }} {{ t('analytics.spendingByNature.count') }}</p>
           </div>
         </div>
         <div class="nature-donut unclassified">
           <div class="donut-container" ref="donutRefs.unclassified" />
           <div class="nature-summary">
-            <h3 class="nature-title unclassified">未分類</h3>
+            <h3 class="nature-title unclassified">{{ t('analytics.spendingByNature.unclassified') }}</h3>
             <p class="nature-amount">{{ formatCurrencyShort(data.unclassified?.amount || 0) }}</p>
             <p class="nature-pct">{{ data.unclassified?.percentage?.toFixed(1) || 0 }}%</p>
-            <p class="nature-count">{{ data.unclassified?.count || 0 }} 件</p>
+            <p class="nature-count">{{ data.unclassified?.count || 0 }} {{ t('analytics.spendingByNature.count') }}</p>
           </div>
         </div>
       </div>
@@ -34,6 +34,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
 
 interface NatureSpending {
   amount: number
@@ -45,6 +46,8 @@ const props = defineProps<{
   loading: boolean
   data: Record<string, NatureSpending>
 }>()
+
+const { t } = useI18n()
 
 const donutRefs = ref<Record<string, HTMLElement | null>>({
   must: null,
@@ -60,10 +63,10 @@ const donutCharts: Record<string, echarts.ECharts | null> = {
 }
 
 const natureLabels: Record<string, string> = {
-  must: 'Must (必需)',
-  have: 'Have (必要)',
-  want: 'Want (欲求)',
-  unclassified: '未分類',
+  must: t('analytics.spendingByNature.must'),
+  have: t('analytics.spendingByNature.have'),
+  want: t('analytics.spendingByNature.want'),
+  unclassified: t('analytics.spendingByNature.unclassified'),
 }
 
 const natureColors: Record<string, string> = {
@@ -93,7 +96,7 @@ function renderDonutCharts() {
           radius: ['60%', '80%'],
           avoidLabelOverlap: false,
           data: [
-            { value: amount, name: '支出', itemStyle: { color: natureColors[nature] } },
+            { value: amount,         name: t('analytics.spendingByNature.seriesName'), itemStyle: { color: natureColors[nature] } },
             { value: 100 - pct, name: '', itemStyle: { color: '#eee' }, label: { show: false } },
           ],
           label: { show: false },

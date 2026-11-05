@@ -29,15 +29,15 @@
     </div>
     <div class="goal-details">
       <div class="detail-row">
-        <span class="detail-label">残り</span>
+        <span class="detail-label">{{ t('analytics.goals.remaining') }}</span>
         <span class="detail-value">{{ formatCurrencyShort(goal.remaining) }}</span>
       </div>
       <div class="detail-row" v-if="goal.projected_completion">
-        <span class="detail-label">予測完了</span>
+        <span class="detail-label">{{ t('analytics.goals.projectedCompletion') }}</span>
         <span class="detail-value">{{ goal.projected_completion }}</span>
       </div>
       <div class="detail-row" v-else>
-        <span class="detail-label">期間</span>
+        <span class="detail-label">{{ t('analytics.goals.period') }}</span>
         <span class="detail-value">{{ goal.target_period }}</span>
       </div>
     </div>
@@ -45,6 +45,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
+
 interface GoalItem {
   category_id: string
   category_name: string
@@ -59,6 +61,8 @@ interface GoalItem {
   status: 'on_track' | 'behind' | 'achieved'
 }
 
+const { t } = useI18n()
+
 defineProps<{
   goal: GoalItem
 }>()
@@ -69,9 +73,9 @@ defineEmits<{
 
 function statusLabel(status: string): string {
   const labels: Record<string, string> = {
-    on_track: '順調',
-    behind: '遅れ',
-    achieved: '達成'
+    on_track: t('analytics.goals.onTrack'),
+    behind: t('analytics.goals.behind'),
+    achieved: t('analytics.goals.achieved')
   }
   return labels[status] || status
 }

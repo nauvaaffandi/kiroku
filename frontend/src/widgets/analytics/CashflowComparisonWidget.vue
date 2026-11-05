@@ -1,21 +1,21 @@
 <template>
   <div class="widget-card">
     <div class="widget-header">
-      <h2>期間比較</h2>
+      <h2>{{ t('analytics.cashflow.comparison.title') }}</h2>
     </div>
     <div class="widget-content" v-if="!loading">
       <div class="chart-container" ref="comparisonChartRef" />
       <div class="delta-summary">
         <div class="delta-card" :class="delta.income_pct >= 0 ? 'positive' : 'negative'">
-          <span class="delta-label">収入変化</span>
+          <span class="delta-label">{{ t('analytics.cashflow.comparison.incomeChange') }}</span>
           <span class="delta-value">{{ delta.income_pct >= 0 ? '+' : '' }}{{ delta.income_pct.toFixed(1) }}%</span>
         </div>
         <div class="delta-card" :class="delta.expense_pct >= 0 ? 'negative' : 'positive'">
-          <span class="delta-label">支出変化</span>
+          <span class="delta-label">{{ t('analytics.cashflow.comparison.expenseChange') }}</span>
           <span class="delta-value">{{ delta.expense_pct >= 0 ? '+' : '' }}{{ delta.expense_pct.toFixed(1) }}%</span>
         </div>
         <div class="delta-card" :class="delta.net_pct >= 0 ? 'positive' : 'negative'">
-          <span class="delta-label">純額変化</span>
+          <span class="delta-label">{{ t('analytics.cashflow.comparison.netChange') }}</span>
           <span class="delta-value">{{ delta.net_pct >= 0 ? '+' : '' }}{{ delta.net_pct.toFixed(1) }}%</span>
         </div>
       </div>
@@ -29,6 +29,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick, computed } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from '@/locales'
+
+const { t } = useI18n()
 
 interface ComparisonResponse {
   period_a: {
@@ -82,15 +85,15 @@ function renderComparisonChart() {
         return res
       },
     },
-    legend: { data: ['期間A 収入', '期間A 支出', '期間B 収入', '期間B 支出'], bottom: 0 },
+    legend: { data: [t('analytics.cashflow.comparison.periodAIncome'), t('analytics.cashflow.comparison.periodAExpense'), t('analytics.cashflow.comparison.periodBIncome'), t('analytics.cashflow.comparison.periodBExpense')], bottom: 0 },
     grid: { left: 40, right: 20, top: 10, bottom: 40 },
-    xAxis: { type: 'category', data: ['収入', '支出', '純額'] },
+    xAxis: { type: 'category', data: [t('analytics.cashflow.comparison.income'), t('analytics.cashflow.comparison.expense'), t('analytics.cashflow.comparison.net')] },
     yAxis: { type: 'value', axisLabel: { formatter: (v: number) => formatCurrencyShort(v) } },
     series: [
-      { name: '期間A 収入', type: 'bar', data: [data.period_a.income, 0, 0], itemStyle: { color: '#28a745' } },
-      { name: '期間A 支出', type: 'bar', data: [0, data.period_a.expense, 0], itemStyle: { color: '#dc3545' } },
-      { name: '期間B 収入', type: 'bar', data: [data.period_b.income, 0, 0], itemStyle: { color: '#28a745', opacity: 0.6 } },
-      { name: '期間B 支出', type: 'bar', data: [0, data.period_b.expense, 0], itemStyle: { color: '#dc3545', opacity: 0.6 } },
+      { name: t('analytics.cashflow.comparison.periodAIncome'), type: 'bar', data: [data.period_a.income, 0, 0], itemStyle: { color: '#28a745' } },
+      { name: t('analytics.cashflow.comparison.periodAExpense'), type: 'bar', data: [0, data.period_a.expense, 0], itemStyle: { color: '#dc3545' } },
+      { name: t('analytics.cashflow.comparison.periodBIncome'), type: 'bar', data: [data.period_b.income, 0, 0], itemStyle: { color: '#28a745', opacity: 0.6 } },
+      { name: t('analytics.cashflow.comparison.periodBExpense'), type: 'bar', data: [0, data.period_b.expense, 0], itemStyle: { color: '#dc3545', opacity: 0.6 } },
     ],
   })
 }
