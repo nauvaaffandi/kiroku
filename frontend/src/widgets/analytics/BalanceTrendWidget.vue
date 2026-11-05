@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
 import type { BalanceTrendPoint } from '@/types/report'
 import { useSettingsStore } from '@/stores/settings'
@@ -27,11 +27,13 @@ import { useI18n } from '@/locales'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   interval: string
   loading: boolean
   data: BalanceTrendPoint[]
-}>()
+}>(), {
+  data: () => [] as BalanceTrendPoint[]
+})
 
 defineEmits<{
   'update:interval': [val: string]
@@ -42,7 +44,7 @@ let trendChart: echarts.ECharts | null = null
 const settingsStore = useSettingsStore()
 
 function renderTrendChart() {
-  if (!trendChartRef.value || props.data.length === 0) return
+  if (!trendChartRef.value || !props.data || props.data.length === 0) return
   if (trendChart) trendChart.dispose()
 
   trendChart = echarts.init(trendChartRef.value)

@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick, computed } from 'vue'
+import { ref, onMounted, watch, nextTick, computed, withDefaults } from 'vue'
 import * as echarts from 'echarts'
 import type { AccountBalanceSummary } from '@/types/report'
 import { useSettingsStore } from '@/stores/settings'
@@ -60,10 +60,12 @@ import { useI18n } from '@/locales'
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   loading: boolean
   data: AccountBalanceSummary[]
-}>()
+}>(), {
+  data: () => [] as AccountBalanceSummary[]
+})
 
 const accountsChartRef = ref<HTMLElement>()
 let accountsChart: echarts.ECharts | null = null
@@ -73,7 +75,7 @@ const totalClosing = computed(() => props.data.reduce((sum, a) => sum + a.closin
 const totalNet = computed(() => props.data.reduce((sum, a) => sum + a.net_change, 0))
 
 function renderAccountsChart() {
-  if (!accountsChartRef.value || props.data.length === 0) return
+  if (!accountsChartRef.value || !props.data || props.data.length === 0) return
   if (accountsChart) accountsChart.dispose()
 
   accountsChart = echarts.init(accountsChartRef.value)

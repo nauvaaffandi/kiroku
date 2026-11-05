@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
 
 interface LabelSpending {
@@ -23,16 +23,18 @@ interface LabelSpending {
   percentage: number
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   loading: boolean
   data: LabelSpending[]
-}>()
+}>(), {
+  data: () => [] as LabelSpending[]
+})
 
 const chartRef = ref<HTMLElement>()
 let chart: echarts.ECharts | null = null
 
 function renderChart() {
-  if (!chartRef.value || props.data.length === 0) return
+  if (!chartRef.value || !props.data || props.data.length === 0) return
   if (chart) chart.dispose()
 
   chart = echarts.init(chartRef.value)

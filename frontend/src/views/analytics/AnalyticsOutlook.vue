@@ -100,8 +100,9 @@ async function fetchPlannedByCategory() {
     const res = await api.get<{ categories: PlannedCategory[] }>(
       `/api/v1/analytics/outlook/category?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
-    categoryData.value = res.data.categories
+    categoryData.value = res.data.categories ?? []
   } catch (e) {
+    categoryData.value = []
     console.error('Failed to fetch planned by category:', e)
   } finally {
     categoryLoading.value = false
@@ -114,8 +115,9 @@ async function fetchPlannedByTimeline() {
     const res = await api.get<{ timeline: TimelinePoint[] }>(
       `/api/v1/analytics/outlook/timeline?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${timelineInterval.value}`
     )
-    timelineData.value = res.data.timeline
+    timelineData.value = res.data.timeline ?? []
   } catch (e) {
+    timelineData.value = []
     console.error('Failed to fetch planned by timeline:', e)
   } finally {
     timelineLoading.value = false
@@ -128,8 +130,9 @@ async function fetchBalanceForecast() {
     const res = await api.get<{ forecast: ForecastPoint[] }>(
       `/api/v1/analytics/outlook/forecast?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
-    forecastData.value = res.data.forecast
+    forecastData.value = res.data.forecast ?? []
   } catch (e) {
+    forecastData.value = []
     console.error('Failed to fetch balance forecast:', e)
   } finally {
     forecastLoading.value = false

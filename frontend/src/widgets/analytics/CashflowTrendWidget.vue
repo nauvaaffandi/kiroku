@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
 
 interface TrendPoint {
@@ -29,11 +29,13 @@ interface TrendPoint {
   cumulative_net: number
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   interval: string
   loading: boolean
   data: TrendPoint[]
-}>()
+}>(), {
+  data: () => [] as TrendPoint[]
+})
 
 defineEmits<{
   'update:interval': [val: string]
@@ -43,7 +45,7 @@ const trendChartRef = ref<HTMLElement>()
 let trendChart: echarts.ECharts | null = null
 
 function renderTrendChart() {
-  if (!trendChartRef.value || props.data.length === 0) return
+  if (!trendChartRef.value || !props.data || props.data.length === 0) return
   if (trendChart) trendChart.dispose()
 
   trendChart = echarts.init(trendChartRef.value)

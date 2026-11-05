@@ -30,7 +30,7 @@ func (h *Handler) GetPlannedByCategory(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var categories []models.CategoryPlanned
+	categories := make([]models.CategoryPlanned, 0)
 	var grandTotal float64
 	type catAgg struct {
 		id, name, icon, color string
@@ -128,7 +128,7 @@ func (h *Handler) GetPlannedByTimeline(w http.ResponseWriter, r *http.Request) {
 		items = append(items, si)
 	}
 
-	var timeline []models.TimelinePoint
+	timeline := make([]models.TimelinePoint, 0)
 	curr := start
 	for curr.Before(end) {
 		var next time.Time
@@ -223,7 +223,7 @@ func (h *Handler) GetBalanceForecast(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var forecast []models.ForecastPoint
+	forecast := make([]models.ForecastPoint, 0)
 	curr := start
 	running := currentBalance
 	for !curr.After(end) {
