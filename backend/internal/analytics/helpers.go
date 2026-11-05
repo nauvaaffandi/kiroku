@@ -52,13 +52,13 @@ func (h *Handler) getScheduledTransactions(userID string, dateFrom, dateTo time.
 		SELECT s.id, s.rrule, s.transaction_template_json,
 			c.name as category_name
 		FROM scheduled s
-		LEFT JOIN categories c ON c.id = json_unquote(json_extract(s.transaction_template_json, '$.category_id'))
-		LEFT JOIN accounts a ON a.id = json_unquote(json_extract(s.transaction_template_json, '$.from_account_id'))
+		LEFT JOIN categories c ON c.id = json_extract(s.transaction_template_json, '$.category_id')
+		LEFT JOIN accounts a ON a.id = json_extract(s.transaction_template_json, '$.from_account_id')
 		WHERE s.enabled = 1 AND (a.archived = 0 OR a.id IS NULL)
 	`
 	args := []interface{}{}
 	if accountID != "" {
-		query += " AND json_unquote(json_extract(s.transaction_template_json, '$.from_account_id')) = ?"
+		query += " AND json_extract(s.transaction_template_json, '$.from_account_id') = ?"
 		args = append(args, accountID)
 	}
 
