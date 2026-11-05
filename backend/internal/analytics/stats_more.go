@@ -101,35 +101,26 @@ func (h *Handler) GetNetWorth(w http.ResponseWriter, r *http.Request) {
 		baseCurrency = "JPY"
 	}
 
-	rows, err := h.db.Query(`
-		SELECT a.id, a.name, a.currency, COALESCE(a.balance, 0)
-		FROM accounts a
-		WHERE a.archived = 0
-	`)
+	computedAccounts, err := h.getAccountBalances(userID, "", baseCurrency)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
 
 	var accounts []models.NetWorthAccount
 	var totalAssets, totalLiabilities float64
-	for rows.Next() {
-		var acc models.NetWorthAccount
-		var bal float64
-		rows.Scan(&acc.AccountID, &acc.Name, &acc.Currency, &bal)
-
-		if acc.Currency != baseCurrency {
-			rate := h.getFxRate(acc.Currency, baseCurrency)
-			bal *= rate
-			acc.Currency = baseCurrency
+	for _, accBal := range computedAccounts {
+		acc := models.NetWorthAccount{
+			AccountID: accBal.ID,
+			Name:       accBal.Name,
+			Balance:    accBal.Balance,
+			Currency:   baseCurrency,
 		}
-		acc.Balance = bal
-		acc.Type = "asset"
-		if bal < 0 {
+		if bal := acc.Balance; bal < 0 {
 			acc.Type = "liability"
 			totalLiabilities += -bal
 		} else {
+			acc.Type = "asset"
 			totalAssets += bal
 		}
 		accounts = append(accounts, acc)

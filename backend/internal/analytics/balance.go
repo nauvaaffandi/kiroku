@@ -83,7 +83,7 @@ func (h *Handler) GetBalanceByAccounts(w http.ResponseWriter, r *http.Request) {
 		dateTo = time.Now().Format("2006-01-02")
 	}
 
-	rows, err := h.db.Query(`SELECT id, name, currency, color, COALESCE(balance, 0) as balance FROM accounts WHERE archived = 0`)
+	rows, err := h.db.Query(`SELECT id, name, currency, color FROM accounts WHERE archived = 0`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,8 +95,7 @@ func (h *Handler) GetBalanceByAccounts(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var acc models.AccountBalanceSummary
-		var baseBalance float64
-		rows.Scan(&acc.ID, &acc.Name, &acc.Currency, &acc.Color, &baseBalance)
+		rows.Scan(&acc.ID, &acc.Name, &acc.Currency, &acc.Color)
 
 		opening, closing, net := h.calculateBalanceForAccountRange(userID, acc.ID, dateFrom, dateTo)
 		acc.OpeningBalance = opening
@@ -128,7 +127,7 @@ func (h *Handler) GetBalanceByCurrencies(w http.ResponseWriter, r *http.Request)
 		dateTo = time.Now().Format("2006-01-02")
 	}
 
-	rows, err := h.db.Query(`SELECT a.currency, SUM(COALESCE(a.balance, 0)) as total_bal FROM accounts a WHERE archived = 0 GROUP BY a.currency`)
+	rows, err := h.db.Query(`SELECT a.currency FROM accounts a WHERE archived = 0 GROUP BY a.currency`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -138,8 +137,7 @@ func (h *Handler) GetBalanceByCurrencies(w http.ResponseWriter, r *http.Request)
 	var currencies []models.CurrencyBalanceSummary
 	for rows.Next() {
 		var curr string
-		var totalBal float64
-		rows.Scan(&curr, &totalBal)
+		rows.Scan(&curr)
 
 		opening, closing, net := h.calculateBalanceForCurrencyRange(userID, curr, dateFrom, dateTo)
 		currencies = append(currencies, models.CurrencyBalanceSummary{
