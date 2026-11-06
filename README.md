@@ -1,5 +1,3 @@
-<div align="center">
-
 # 記録 (Kiroku)
 
 ### Enterprise-Grade, Self-Hosted Personal Finance Tracker & Wealth Management Platform
@@ -11,8 +9,6 @@
 [![SQLite](https://img.shields.io/badge/SQLite-WAL-%23003B57?style=for-the-badge&logo=sqlite)](https://sqlite.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-</div>
-
 ---
 
 ## 📖 Table of Contents
@@ -22,11 +18,13 @@
 3. [Key Features & Capabilities](#-key-features--capabilities)
 4. [Monorepo Architecture Overview](#-monorepo-architecture-overview)
 5. [Deep Dive: Backend Architecture (`backend/`)](#-deep-dive-backend-architecture-backend)
+   - [Composition Root (`cmd/server`)](#composition-root-cmdserver)
    - [Domain Layer & Business Entities](#domain-layer--business-entities)
    - [SQLite Persistence & Pure Go Driver (`modernc.org/sqlite`)](#sqlite-persistence--pure-go-driver-moderncorgsqlite)
    - [Embedded Migrations & Schema Management](#embedded-migrations--schema-management)
    - [HTTP Delivery Layer (Chi v5)](#http-delivery-layer-chi-v5)
    - [Configuration & Environment Management (`Koanf`)](#configuration--environment-management-koanf)
+   - [Logging (`zerolog`)](#logging-zerolog)
 6. [Deep Dive: Frontend Architecture (`frontend/`)](#-deep-dive-frontend-architecture-frontend)
    - [Vue 3 Composition API & TypeScript](#vue-3-composition-api--typescript)
    - [Pinia State Management Stores](#pinia-state-management-stores)
@@ -35,14 +33,17 @@
    - [Internationalization (i18n): EN, JA, ID](#internationalization-i18n-en-ja-id)
    - [Progressive Web App (PWA) & Offline Capabilities](#progressive-web-app-pwa--offline-capabilities)
 7. [Complete Database Schema Reference](#-complete-database-schema-reference)
-8. [Getting Started & Local Development](#-getting-started--local-development)
+8. [Dependencies](#-dependencies)
+   - [Backend (Go modules)](#backend-go-modules)
+   - [Frontend (npm packages)](#frontend-npm-packages)
+9. [Getting Started & Local Development](#-getting-started--local-development)
    - [Prerequisites](#prerequisites)
    - [Running the Backend](#running-the-backend)
    - [Running the Frontend](#running-the-frontend)
    - [Running Tests & Builds](#running-tests--builds)
-9. [Deployment & Operations Guide](#-deployment--operations-guide)
-10. [Known Security Considerations & Architectural Gaps](#-known-security-considerations--architectural-gaps)
-11. [Contributing & License](#-contributing--license)
+10. [Deployment & Operations Guide](#-deployment--operations-guide)
+11. [Known Security Considerations & Architectural Gaps](#-known-security-considerations--architectural-gaps)
+12. [Contributing & License](#-contributing--license)
 
 ---
 
@@ -74,7 +75,9 @@ Kiroku is built upon several non-negotiable engineering and product tenets:
 - **Cash Flow Projections:** Visualize future financial health using ECharts-driven projection curves that extrapolate recurring income and committed expenses.
 - **Budgeting & Spending Limits:** Establish monthly or custom-period budgets per category with real-time visual progress indicators and threshold alerts.
 - **Receipt Scanning & OCR Integration:** Capture paper receipts via camera or file upload, processed asynchronously through backend ingestion pipelines (`receipt_jobs`).
+- **Spending Reports & Cashflow Table:** Category-based spending breakdowns with parent category grouping, per-account filtering, and interval-based cashflow summaries (day/week/month/quarter/year).
 - **Secure Authentication:** PIN and password-protected sessions powered by Argon2 hashing and secure JWT authentication cookies.
+- **Shared Access:** Generate time-limited public share tokens to expose specific account activity without exposing full credentials.
 
 ---
 
@@ -84,7 +87,8 @@ Kiroku is structured as a tightly integrated monorepo containing both the Go bac
 
 - **`backend/`**: A modular Go 1.27 backend following clean architecture principles. It exposes a RESTful JSON API under `/api/v1` and manages persistence via SQLite.
 - **`frontend/`**: A Vue 3 single-page application built with Vite, Pinia, Vue Router, and Tailwind CSS v4, compiled into an installable PWA.
-- **`start.sh`**: Operational wrapper script for process management (PM2) and cloud tunnel orchestration.
+- **`start.sh`**: Operational wrapper script for process management and cloud tunnel orchestration.
+- **`AGENTS.md` / `DESIGN.md`**: Binding project instructions and design system rules for AI coding agents and contributors.
 
 ---
 
@@ -94,25 +98,57 @@ The backend is structured as a modular monolith. It deliberately avoids heavy fr
 
 ```
 backend/
-├── cmd/server/main.go          # Application composition root
-├── domain/                     # Core business entities & repository interfaces
+├── cmd/server/main.go          # Application composition root (wiring + router setup)
 ├── internal/
-│   ├── config/                 # Koanf configuration loader
-│   └── db/                     # SQLite pool & migration runner
-│       └── migrations/         # Versioned SQL files (001_initial.sql...)
-├── repository/sqlite/          # Concrete SQLite repository adapters
-└── delivery/http/              # Chi HTTP routing & REST JSON handlers
+│   ├── config/                 # Koanf + dotenv configuration loader
+│   ├── db/                     # SQLite pool, migration runner, WAL mode
+│   │   └── migrations/         # Versioned SQL files (001_initial.sql ... 020_backup_multi_provider_state.sql)
+│   ├── models/                 # Shared DTOs / request-response models
+│   ├── auth/                   # JWT, PIN, Argon2, TOTP, genesis user, rate limiting
+│   ├── logger/                 # zerolog structured logging (console + lumberjack rotation)
+│   ├── tunnel/                 # Cloudflared tunnel manager
+│   ├── delivery/http/          # Chi HTTP routing & REST JSON handlers
+│   ├── domain/                 # Core business entities & repository interfaces
+│   ├── repository/sqlite/      # Concrete SQLite repository adapters
+│   ├── analytics/              # Analytics cashflow, balance, outlook, budget, goals, stats
+│   ├── transactions/           # Transaction CRUD, list, batch, search, summary
+│   ├── accounts/               # Account CRUD & summary
+│   ├── categories/             # Category tree CRUD & helpers
+│   ├── scheduled/              # Scheduled/recurring transaction CRUD
+│   ├── settings/               # Settings CRUD
+│   ├── fx/                     # Foreign exchange rates & conversion
+│   ├── templates/              # Transaction templates
+│   ├── labels/                 # Transaction labels
+│   ├── push/                   # Web Push subscriptions
+│   ├── shared/                 # Public share token management (authenticated + public view)
+│   ├── receipts/               # Receipt ingestion & OCR pipeline
+│   ├── impexp/                 # Import/export pipeline
+│   ├── backup/                 # Encrypted backup scheduler & providers (local/git/gdrive)
+│   └── telegram/               # Telegram bot service
+├── docs/                       # Swagger handler stubs
+└── go.mod                      # Go module definition (module kiroku/backend)
 ```
+
+### Composition Root (`cmd/server`)
+`cmd/server/main.go` wires the application together:
+1. Loads configuration (`config.Load()`).
+2. Opens SQLite (`db.Open()`).
+3. Ensures genesis user (`auth.EnsureGenesisUser`).
+4. Instantiates repositories (`NewAccountsRepo`, `NewCategoriesRepo`, `NewTransactionsRepo`, `NewReportsRepo`, etc.).
+5. Mounts handlers under `/api/v1` behind `auth.AuthMiddleware(cfg)`.
+6. Mounts shared public routes at `/shared/public/{token}`.
+7. Starts the HTTP server and (optionally) the Cloudflare tunnel manager.
 
 ### Domain Layer & Business Entities
 The `domain/` package houses pure Go structs and interface contracts. By decoupling domain logic from HTTP delivery and SQL persistence, Kiroku ensures high testability. Key entities include:
-- `User`: Authentication and user profile settings.
-- `Account`: Financial accounts with balances and currency definitions.
-- `Category`: Income/expense classification trees.
-- `Transaction`: Ledger entries linking accounts, categories, amounts (stored as integers to prevent floating-point inaccuracies), dates, and notes.
+- `User` — Authentication and user profile settings.
+- `Account` — Financial accounts with balances and currency definitions.
+- `Category` — Income/expense classification trees with parent/child hierarchy.
+- `Transaction` — Ledger entries linking accounts, categories, amounts (stored as integers to prevent floating-point inaccuracies), dates, and notes.
+- `ScheduledTransaction`, `Template`, `Label`, `FXRate`, `Share`, `PushSubscription`.
 
 ### SQLite Persistence & Pure Go Driver (`modernc.org/sqlite`)
-To maintain portability across diverse server environments (Linux, macOS, Windows, ARM/x86), Kiroku uses `modernc.org/sqlite`. 
+To maintain portability across diverse server environments (Linux, macOS, Windows, ARM/x86), Kiroku uses `modernc.org/sqlite`:
 - **WAL Mode:** SQLite connection pools are explicitly configured in Write-Ahead Logging (`WAL`) mode to support concurrent reads while writes are executed.
 - **Foreign Keys:** Enforced at the database connection level (`PRAGMA foreign_keys = ON;`).
 - **Integer Money Representation:** Monetary amounts are stored as raw `INTEGER` values (representing minor currency units / cents) in SQLite to guarantee zero precision loss during arithmetic operations.
@@ -121,16 +157,32 @@ To maintain portability across diverse server environments (Linux, macOS, Window
 Database schema evolution is handled deterministically via embedded SQL migration scripts stored in `internal/db/migrations/`:
 - Migrations are embedded into the Go binary using `embed.FS`.
 - At startup, the migration runner queries the `schema_version` table and applies any outstanding `NNN_description.sql` files in ascending numerical order.
+- Current migration count: `001` through `020` (21 files).
 
 ### HTTP Delivery Layer (Chi v5)
 The HTTP server uses `go-chi/chi/v5` for lightweight, idiomatic routing:
 - Handlers in `delivery/http/` decode JSON payloads, validate input structures, invoke domain repository methods, and marshal responses back to JSON.
-- Middleware handles structured logging (`rs/zerolog`), CORS policies, and authentication verification.
+- Middleware handles structured logging (`rs/zerolog`), CORS policies, real-IP detection, and authentication verification.
 
 ### Configuration & Environment Management (`Koanf`)
-Configuration is managed via `github.com/knadh/koanf/v2`:
-- Default values are loaded from `backend/config.yaml`.
+Configuration is managed via `github.com/knadh/koanf/v2` combined with `.env` file loading:
+- Default values loaded from `config.yaml` / dotenv source.
 - Environment variables prefixed with `KIROKU_` override YAML settings by translating underscores into nested configuration keys.
+- Key environment variables include:
+  - `PORT` / `KIROKU_ADDR` — HTTP listen address.
+  - `DATA_DIR` — Absolute path to the data directory (database, persistent files).
+  - `JWT_SECRET` — JWT signing secret.
+  - `FX_BASE_CURRENCY` — Base currency for exchange rates (default `JPY`).
+  - `TELEGRAM_BOT_TOKEN` — Telegram bot token.
+  - `UPSTASH_REDIS_REST_URL` / `BACKEND_UPSTASH_REDIS_REST_TOKEN` — Upstash Redis REST for tunnel URL publishing.
+  - `CLOUDFLARE_TUNNEL_ENABLED` — Toggle cloudflared tunnel.
+  - `LOG_LEVEL`, `LOG_FORMAT`, `LOG_RETENTION` — Logging controls.
+  - `ARGON2_TIME`, `ARGON2_MEMORY`, `ARGON2_THREADS` — Argon2 password hashing costs.
+  - `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` — Web Push VAPID keys.
+  - `BACKUP_PASSPHRASE`, `BACKUP_REPO_PATH`, `BACKUP_GIT_TOKEN` — Backup encryption & storage.
+
+### Logging (`zerolog`)
+Backend code uses `github.com/rs/zerolog/log` at appropriate severity levels (`trace`, `debug`, `info`, `warn`, `error`, `panic`, `fatal`). Structured request logging is emitted via `logger.RequestLoggingMiddleware`, recording component, method, path, status, duration, client IP, and user agent. No sensitive request data (bodies, credentials, tokens) is logged.
 
 ---
 
@@ -141,20 +193,22 @@ The frontend is a modern Single Page Application (SPA) designed as an installabl
 ```
 frontend/
 ├── src/
-│   ├── api/                    # Axios instance & interceptors
+│   ├── api/                    # Axios client instance & interceptors
 │   ├── assets/                 # Global stylesheet (main.css) & design tokens
-│   ├── components/             # Reusable UI controls, widgets, & ECharts wrappers
-│   ├── locales/                # i18n dictionaries (en.ts, ja.ts, id.ts)
+│   ├── components/             # Reusable UI controls, widgets, charts, icons, layout
+│   ├── composables/            # Vue composables (useBiometric, useCurrencies, useDebounce, useHaptics, usePagination)
+│   ├── locales/                # i18n dictionaries (en.ts, ja.ts, id.ts, index.ts)
 │   ├── router/                 # Vue Router config & navigation guards
-│   ├── stores/                 # Pinia state stores (auth, accounts, transactions, ui)
-│   ├── types/                  # TypeScript interface definitions
-│   ├── utils/                  # Formatters, amount privacy masks, & helpers
-│   ├── views/                  # Route views (Dashboard, Accounts, Transactions, Settings)
+│   ├── stores/                 # Pinia state stores (auth, accounts, categories, transactions, scheduled, settings, reports, ui, labels, templates, push, backendUrl)
+│   ├── types/                  # TypeScript interface definitions (account, auth, category, report, settings, scheduled, transaction, ui, etc.)
+│   ├── utils/                  # Formatters (amountDisplay), exportExcel, categoryName
+│   ├── views/                  # Route views (Dashboard, Accounts, Transactions, Categories, Scheduled, Reports, Settings, Analytics*, Labels, Shared, Calendar, About, Login)
 │   ├── App.vue                 # Root shell component
 │   └── main.ts                 # Application bootstrapping
 ├── index.html                  # HTML entry point with PWA meta tags
-├── tailwind.config.js          # Tailwind CSS configuration
-└── vite.config.ts              # Vite & Vite PWA configuration
+├── vite.config.ts              # Vite & Vite PWA plugin configuration
+├── tailwind.config.js          # Tailwind CSS v4 configuration
+└── package.json                # npm scripts & dependencies
 ```
 
 ### Vue 3 Composition API & TypeScript
@@ -164,28 +218,38 @@ All components use Vue 3 `<script setup lang="ts">` syntax, providing strict typ
 Application state is organized into modular Pinia stores located in `src/stores/`:
 - Handles API communication via shared Axios clients (`src/api/client.ts`).
 - Manages reactive caching, optimistic UI updates, and synchronization with backend endpoints.
+- Stores: `auth`, `accounts`, `categories`, `transactions`, `scheduled`, `settings`, `reports`, `ui`, `labels`, `templates`, `push`, `backendUrl`, `i18n`.
 
 ### Routing & Navigation Guards
 Vue Router manages client-side page transitions between core views:
-- **Dashboard:** Financial overview, net worth summary, recent transactions, and quick-action widgets.
+- **Dashboard:** Financial overview, net worth summary, recent transactions.
 - **Accounts:** Detailed breakdown of asset and liability accounts.
-- **Transactions:** Filterable, searchable ledger management table.
-- **Analytics & Reports:** ECharts visual summaries of spending habits and cash flow trends.
-- **Settings:** User preferences, currency settings, theme toggle, and data export.
+- **Transactions:** Filterable, searchable ledger management table (incl. receipt scan).
+- **Categories:** Category tree management.
+- **Scheduled:** Recurring transaction management.
+- **Reports:** Spending report (category / parent_category / account filtering) and cashflow table.
+- **Analytics:** Balance trend, accounts, currencies, outlook (category/timeline/forecast), budget vs actual, cashflow projection, spending analytics, goals progress.
+- **Settings:** User preferences, currency settings, theme toggle, data export.
+- **SharedAccess / SharedView:** Create & view time-limited public share tokens.
+- **Labels:** Transaction label management.
+- **About / Calendar:** Miscellaneous utility views.
 
 ### Tailwind CSS v4 Styling & Semantic Design Tokens
-Kiroku adheres strictly to a design token system defined in `src/assets/main.css`. 
+Kiroku adheres strictly to a design token system defined in `src/assets/main.css`:
 - **Tailwind via Style Tag:** Tailwind is consumed exclusively inside component `<style scoped>` blocks via `@reference "tailwindcss";` and `@apply`.
-- **Semantic Color Variables:** Components reference semantic tokens (`--bg-primary`, `--bg-card`, `--text-primary`, `--accent`, `--border-primary`, etc.) rather than hardcoded hex codes or Tailwind palette classes. This guarantees instant, flicker-free light and dark mode transitions across all UI elements.
+- **Semantic Color Variables:** Components reference semantic tokens (`--bg-primary`, `--bg-card`, `--text-primary`, `--accent`, `--border-primary`, `--success`, `--error`, etc.) rather than hardcoded hex codes. This guarantees instant, flicker-free light and dark mode transitions across all UI elements.
+- **Theme Control:** Theme is controlled by `data-theme="light" | "dark"` on `<html>` (no attribute means follow OS). Dark mode selector is `:where([data-theme="dark"], [data-theme="dark"] *)`.
 
 ### Internationalization (i18n): EN, JA, ID
-To support global users, all UI text is externalized into three translation dictionaries:
+To support global users, all UI text is externalized into three translation dictionaries managed by `src/locales/index.ts`:
 - `en.ts` (English — Default fallback)
 - `ja.ts` (Japanese)
 - `id.ts` (Indonesian)
 
+Every new user-facing key must be added to all three files. The `useI18n()` composable provides the `t(key)` function with fallback to English.
+
 ### Progressive Web App (PWA) & Offline Capabilities
-Configured via Vite PWA plugin, Kiroku caches static assets and API responses (`NetworkFirst` strategy for `/api/v1/*`), allowing users to record transactions and review accounts even when completely offline.
+Configured via Vite PWA plugin (`vite-plugin-pwa`), Kiroku caches static assets and API responses (`NetworkFirst` strategy for `/api/v1/*`), allowing users to record transactions and review accounts even when completely offline.
 
 ---
 
@@ -195,15 +259,66 @@ Below is an overview of the core database tables managed by Kiroku's SQLite migr
 
 | Table Name | Description | Key Columns |
 |---|---|---|
-| `schema_version` | Tracks applied migration files | `version` (INTEGER, PK), `applied_at` (TIMESTAMP) |
-| `users` | User accounts & credentials | `id` (INTEGER, PK), `username`, `pin_hash`, `created_at` |
-| `accounts` | Financial accounts & wallets | `id` (INTEGER, PK), `user_id`, `name`, `type`, `currency`, `balance`, `deleted_at` |
-| `categories` | Income/Expense category tree | `id` (INTEGER, PK), `name`, `type` (income/expense), `parent_id`, `icon`, `color` |
-| `transactions` | Financial ledger movements | `id` (INTEGER, PK), `account_id`, `category_id`, `amount` (INTEGER in cents), `type`, `date`, `notes`, `deleted_at` |
-| `budgets` | Spending limits & thresholds | `id` (INTEGER, PK), `category_id`, `amount`, `period`, `start_date`, `end_date` |
-| `scheduled_transactions` | Recurrence & automation rules | `id` (INTEGER, PK), `account_id`, `amount`, `frequency`, `next_run`, `active` |
-| `receipts` | Receipt images & OCR metadata | `id` (INTEGER, PK), `image_path`, `merchant`, `total`, `parsed_data` |
-| `receipt_jobs` | Background OCR processing queue | `id` (INTEGER, PK), `status`, `payload`, `error`, `created_at` |
+| `schema_version` | Tracks applied migration files | `version` (INTEGER, PK), `applied_at` |
+| `users` | User accounts & credentials | `id`, `username`, `pin_hash`, `created_at` |
+| `accounts` | Financial accounts & wallets | `id`, `user_id`, `name`, `type`, `currency`, `balance`, `deleted_at` |
+| `categories` | Income/Expense category tree | `id`, `name`, `type`, `parent_id`, `icon`, `color`, `archived` |
+| `transactions` | Financial ledger movements | `id`, `from_account_id`, `to_account_id`, `category_id`, `amount` (INTEGER in cents), `type`, `date_time`, `notes`, `deleted_at` |
+| `budgets` | Spending limits & thresholds | `id`, `category_id`, `amount`, `period`, `start_date`, `end_date` |
+| `scheduled_transactions` | Recurrence & automation rules | `id`, `account_id`, `category_id`, `amount`, `frequency`, `next_run`, `active` |
+| `templates` | Reusable transaction templates | `id`, `account_id`, `category_id`, `amount`, `type`, `notes` |
+| `labels` | Transaction labels | `id`, `name`, `color`, `sort_order` |
+| `transaction_labels` | Transaction-label junction | `transaction_id`, `label_id` |
+| `fx_rates` | Foreign exchange rates | `base`, `quote`, `rate`, `updated_at` |
+| `settings` | User settings key-value | `key`, `value` |
+| `shares` | Public share tokens | `id`, `account_id`, `token`, `expires_at`, `revoked_at` |
+| `telegram_bindings` | Telegram chat binding | `user_id`, `chat_id`, `token` |
+| `push_subscriptions` | Web Push subscriptions | `id`, `endpoint`, `p256dh`, `auth` |
+| `login_attempts` | Login attempt log | `id`, `identifier`, `success`, `attempted_at` |
+| `receipts` | Receipt images & OCR metadata | `id`, `image_path`, `merchant`, `total`, `parsed_data` |
+| `receipt_jobs` | Background OCR processing queue | `id`, `status`, `payload`, `error`, `created_at` |
+| `backup_state` | Backup provider state | provider-specific state columns |
+| `backup_multi_provider_state` | Multi-provider backup state | provider-specific state columns |
+
+---
+
+## 📦 Dependencies
+
+### Backend (Go modules)
+Module path: `kiroku/backend`
+
+| Package | Purpose |
+|---|---|
+| `github.com/go-chi/chi/v5` | HTTP router |
+| `github.com/golang-jwt/jwt/v5` | JWT signing & validation |
+| `github.com/rs/zerolog` | Structured logging |
+| `modernc.org/sqlite` | Pure Go SQLite driver |
+| `github.com/natefinch/lumberjack` | Log rotation |
+| `github.com/pquerna/otp` | TOTP (two-factor) |
+| `golang.org/x/crypto` | Argon2 password hashing |
+| `github.com/teambition/rrule-go` | Recurrence rule generation |
+| `github.com/xuri/excelize/v2` | Excel export/import |
+| `github.com/swaggo/http-swagger/v2` | Swagger docs |
+| `github.com/stretchr/testify` | Test assertions |
+
+### Frontend (npm packages)
+Package name: `kiroku-frontend`
+
+| Package | Purpose |
+|---|---|
+| `vue` | Vue 3 framework |
+| `vue-router` | Client-side routing |
+| `pinia` | State management |
+| `axios` | HTTP client |
+| `echarts` / `vue-echarts` | Charts & visualizations |
+| `@lucide/vue` | Icon set |
+| `dayjs` | Date manipulation |
+| `tailwindcss` ^4 | CSS framework |
+| `@tailwindcss/vite` | Tailwind Vite integration |
+| `vite-plugin-pwa` | PWA service worker generation |
+| `vite` | Build tool & dev server |
+| `vue-tsc` / `typescript` | TypeScript type-checking |
+| `vitest` | Unit testing |
 
 ---
 
@@ -220,10 +335,14 @@ Ensure your development environment has the following installed:
    ```bash
    cd backend
    ```
-2. Configure your runtime settings in `config.yaml` or set environment variables.
+2. Configure your runtime settings (edit `config.yaml` or set environment variables).
 3. Start the Go server (with tunnel disabled for local testing):
    ```bash
    KIROKU_TUNNEL_ENABLED=false go run ./cmd/server
+   ```
+4. Build the static binary:
+   ```bash
+   CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bin/server ./cmd/server
    ```
 
 ### Running the Frontend
@@ -265,25 +384,35 @@ Ensure your development environment has the following installed:
 ## 🚢 Deployment & Operations Guide
 
 For production self-hosting:
+
 1. Compile the backend statically with CGO disabled:
    ```bash
+   cd backend
    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bin/server ./cmd/server
    ```
 2. Build the frontend static assets:
    ```bash
+   cd frontend
    npm run build
    ```
-3. Use the provided `start.sh` script to orchestrate PM2 process management and Cloudflare Tunnel exposure if remote access is required.
+3. Use the provided `start.sh` script to orchestrate process management:
+   ```bash
+   ./start.sh start be
+   ./start.sh start fe
+   ```
+4. For remote access, enable the Cloudflare tunnel (`CLOUDFLARE_TUNNEL_ENABLED=true`) and configure Upstash Redis for tunnel URL publishing.
 
 ---
 
 ## ⚠️ Known Security Considerations & Architectural Gaps
 
-*Operators deploying Kiroku in production should review the following known limitations:*
-1. **Data Route Authentication:** In `cmd/server/main.go`, certain data routes under `/api/v1` (such as `/accounts`, `/categories`, `/transactions`, `/reports`) are currently mounted without strict auth middleware enforcement.
+Operators deploying Kiroku in production should review the following known limitations:
+
+1. **Data Route Authentication:** In `cmd/server/main.go`, certain data routes under `/api/v1` (such as `/accounts`, `/categories`, `/transactions`, `/reports`) are mounted behind `auth.AuthMiddleware(cfg)`, but full coverage should be verified against all mounted sub-routers.
 2. **Default PIN:** Initial user provisioning automatically provisions the default user with a random 6-digit PIN written to `{DATA_DIR}/persistent/genesis-pin.txt`. The admin must retrieve this PIN from the file on first startup and change it immediately via the UI.
-3. **CORS Policy:** The default CORS configuration reflects any incoming `Origin` header with credentials allowed (`SameSite=None`), which should be restricted in strict multi-tenant or public deployments.
-4. **Unmounted Backend Packages:** Internal backend packages such as `analytics`, `backup`, and `receipts` are currently unmounted in `main.go`.
+3. **CORS Policy:** The default CORS configuration reflects incoming `Origin` headers with credentials allowed (`SameSite=None`), which should be restricted in strict multi-tenant or public deployments.
+4. **Unmounted Backend Packages:** Internal backend packages such as `backup` are not imported by `main.go`. The frontend already calls some of these routes that may not be served.
+5. **`.env.example` is partly decorative:** `PORT`, `DB_PATH`, `JWT_SECRET`, and `ARGON2_*` values are not all read from the environment; they must go in `config.yaml` or environment directly.
 
 ---
 
