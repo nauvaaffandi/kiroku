@@ -194,23 +194,23 @@ onMounted(fetchData)
 
 <style scoped>
 @reference "tailwindcss";
-.cashflow-table-widget { display: flex; flex-direction: column; gap: 1rem; }
-.widget-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background-color: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: var(--radius) var(--radius) 0 0; }
-.widget-header h2 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
-.widget-controls { display: flex; gap: 0.5rem; }
-.interval-select { padding: 0.25rem 0.5rem; font-size: 0.875rem; border: 1px solid var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); border-radius: var(--radius-sm); }
-.table-container { overflow-x: auto; border: 1px solid var(--border-primary); border-radius: 0 0 var(--radius) var(--radius); background-color: var(--bg-card); }
-.cashflow-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
-.cashflow-table th { background-color: var(--bg-secondary); padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; color: var(--text-secondary); border-bottom: 2px solid var(--border-primary); white-space: nowrap; }
-.cashflow-table th.col-group { text-align: center; }
-.cashflow-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-primary); color: var(--text-primary); white-space: nowrap; }
-.cashflow-table td.number { text-align: right; font-family: monospace; font-size: 0.75rem; }
-.cashflow-table td.income { color: var(--success); font-weight: 600; }
-.cashflow-table td.expense { color: var(--error); font-weight: 600; }
+.cashflow-table-widget { @apply flex flex-col gap-4; }
+.widget-header { @apply flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between border border-b-0; background-color: var(--bg-secondary); border-color: var(--border-primary); border-radius: var(--radius) var(--radius) 0 0; }
+.widget-header h2 { @apply text-base sm:text-lg font-semibold; color: var(--text-primary); }
+.widget-controls { @apply flex w-full flex-wrap gap-2 sm:w-auto; }
+.interval-select { @apply flex-1 sm:flex-initial min-w-[120px] px-2.5 py-1.5 text-sm border rounded-sm; border-color: var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); }
+.table-container { @apply w-full overflow-x-auto border; border-color: var(--border-primary); border-radius: 0 0 var(--radius) var(--radius); background-color: var(--bg-card); }
+.cashflow-table { @apply w-full border-collapse text-xs; }
+.cashflow-table th { @apply p-2 sm:p-3 text-left font-semibold whitespace-nowrap border-b-2; background-color: var(--bg-secondary); color: var(--text-secondary); border-color: var(--border-primary); }
+.cashflow-table th.col-group { @apply text-center; }
+.cashflow-table td { @apply p-2 sm:p-3 border-b whitespace-nowrap; border-color: var(--border-primary); color: var(--text-primary); }
+.cashflow-table td.number { @apply text-right font-mono text-xs; }
+.cashflow-table td.income { @apply font-semibold; color: var(--success); }
+.cashflow-table td.expense { @apply font-semibold; color: var(--error); }
 .cashflow-table tbody tr:hover { background-color: var(--bg-hover); }
-.period-cell { font-weight: 500; }
-.total-row { background-color: var(--bg-secondary); border-top: 2px solid var(--border-primary); }
-.table-actions { padding: 1rem; border-top: 1px solid var(--border-primary); display: flex; justify-content: flex-end; }
-.btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: 1px solid var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+.period-cell { @apply font-medium; }
+.total-row { @apply border-t-2; background-color: var(--bg-secondary); border-color: var(--border-primary); }
+.table-actions { @apply p-4 border-t flex justify-end; border-color: var(--border-primary); }
+.btn-secondary { @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-sm cursor-pointer transition-colors; border-color: var(--border-primary); background-color: var(--bg-card); color: var(--text-primary); }
 .btn-secondary:hover { background-color: var(--bg-hover); }
 </style>
