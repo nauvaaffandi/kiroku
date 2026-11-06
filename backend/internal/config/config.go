@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -220,9 +221,71 @@ func BackupProviders() string {
 	return os.Getenv("BACKUP_PROVIDERS")
 }
 
-// DataDir returns the data directory from DATA_DIR env var.
+// projectRoot is the directory containing backend/go.mod, resolved once at init
+// by walking up from the source file location (runtime.Caller) until a go.mod is
+// found, then falling back to walking up from the executable. Relative DATA_DIR
+// values are resolved against it. Works with `go run` because the source tree is
+// present. Assumes this file lives at backend/internal/config/config.go relative
+// to the project root.
+var projectRoot string
+
+func init() {
+	for _, dir := range sourceDirs() {
+		if root, ok := findGoModDir(dir); ok {
+			projectRoot = root
+			return
+		}
+	}
+}
+
+// sourceDirs returns candidate ancestor directories to search for go.mod,
+// in priority order: the directory of this source file, then the executable
+// directory (for compiled binaries deployed near the project).
+func sourceDirs() []string {
+	var dirs []string
+	if _, file, _, ok := runtime.Caller(0); ok {
+		if dir := filepath.Dir(file); dir != "" {
+			dirs = append(dirs, dir)
+		}
+	}
+	if exe, err := os.Executable(); err == nil {
+		if dir := filepath.Dir(exe); dir != "" {
+			dirs = append(dirs, dir)
+		}
+	}
+	return dirs
+}
+
+// findGoModDir walks up from dir until a directory containing go.mod is found.
+func findGoModDir(dir string) (string, bool) {
+	cur := dir
+	for {
+		if _, err := os.Stat(filepath.Join(cur, "go.mod")); err == nil {
+			return cur, true
+		}
+		parent := filepath.Dir(cur)
+		if parent == cur {
+			return "", false
+		}
+		cur = parent
+	}
+}
+
+// DataDir returns the data directory from DATA_DIR env var. Relative paths are
+// resolved against the project root (backend/). Absolute paths and empty values
+// are returned as-is (empty skips directory init).
 func DataDir() string {
-	return os.Getenv("DATA_DIR")
+	v := os.Getenv("DATA_DIR")
+	if v == "" {
+		return ""
+	}
+	if filepath.IsAbs(v) {
+		return v
+	}
+	if projectRoot == "" {
+		return v
+	}
+	return filepath.Join(projectRoot, v)
 }
 
 // ValidateDataDir ensures DATA_DIR is safe: absolute path, no traversal.
