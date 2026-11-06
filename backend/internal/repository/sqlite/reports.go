@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 	"kiroku/backend/internal/db"
 )
@@ -39,25 +40,38 @@ func (r *ReportsRepo) Spending(ctx context.Context, filter domain.SpendingFilter
 
 	var query string
 	if groupBy == "parent_category" {
-		query = `SELECT COALESCE(pc.id, c.id), COALESCE(pc.name, c.name), COALESCE(pc.color, c.color), SUM(t.amount * COALESCE(r.rate, 1)), COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN categories pc ON c.parent_id = pc.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY 1, 2, 3 ORDER BY total_amount DESC`
+		query = `SELECT COALESCE(pc.id, c.id), COALESCE(pc.name, c.name), COALESCE(pc.color, c.color), SUM(t.amount * COALESCE(r.rate, 1)) AS total_amount, COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN categories pc ON c.parent_id = pc.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY 1, 2, 3 ORDER BY total_amount DESC`
 		args = append(args, baseCurrency, baseCurrency)
 	} else {
-		query = `SELECT c.id, c.name, c.color, c.kind, SUM(t.amount * COALESCE(r.rate, 1)), COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY 1, 2, 3, 4 ORDER BY total_amount DESC`
+		query = `SELECT c.id, c.name, c.color, c.kind, SUM(t.amount * COALESCE(r.rate, 1)) AS total_amount, COUNT(*), ? FROM transactions t LEFT JOIN categories c ON t.category_id = c.id LEFT JOIN fx_rates r ON t.currency = r.base AND r.quote = ? ` + whereClause + ` GROUP BY 1, 2, 3, 4 ORDER BY total_amount DESC`
 		args = append(args, baseCurrency, baseCurrency)
 	}
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
+		log.Error().
+			Str("component", "sqlite").
+			Str("query", query).
+			Str("date_from", dateFrom).
+			Str("date_to", dateTo).
+			Str("period", period).
+			Err(err).
+			Msg("reports/spending query failed")
 		return nil, err
 	}
 	defer rows.Close()
 
-	var groups []domain.SpendingGroup
+	groups := make([]domain.SpendingGroup, 0)
 	for rows.Next() {
 		var g domain.SpendingGroup
 		var kind sql.NullString
 		var color sql.NullString
 		if err := rows.Scan(&g.ID, &g.Name, &color, &kind, &g.Amount, &g.Count, &g.Currency); err != nil {
+			log.Error().
+				Str("component", "sqlite").
+				Str("query", query).
+				Err(err).
+				Msg("reports/spending scan failed")
 			return nil, err
 		}
 		if color.Valid {

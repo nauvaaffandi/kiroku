@@ -183,7 +183,7 @@ const selectedCurrency = ref(settingsStore.baseCurrency)
 const spendingReport = ref({ period: '', groups: [] as any[] })
 const trendReport = ref({ series: [] as any[] })
 
-const totalAmount = computed(() => spendingReport.value.groups.reduce((sum, g) => sum + g.amount, 0))
+const totalAmount = computed(() => (spendingReport.value.groups ?? []).reduce((sum, g) => sum + g.amount, 0))
 
 const formatDisplayNumber = (num: number, type?: 'income' | 'expense' | 'transfer') => {
   if (settingsStore.isHideAmounts) {
@@ -212,7 +212,7 @@ const updateSpendingChart = () => {
   if (!spendingChart.value) return
   if (spendingChartInstance) spendingChartInstance.dispose()
   spendingChartInstance = echarts.init(spendingChart.value)
-  const data = spendingReport.value.groups.slice(0, 10).reverse()
+  const data = (spendingReport.value.groups ?? []).slice(0, 10).reverse()
   spendingChartInstance.setOption({
     title: { text: 'Top Categories', left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
     tooltip: { trigger: 'item', formatter: '{b}: ¥{c} ({d}%)' },

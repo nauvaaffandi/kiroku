@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 	"kiroku/backend/internal/repository/sqlite"
 )
@@ -36,6 +37,19 @@ func (h *ReportsHandler) Spending(w http.ResponseWriter, r *http.Request) {
 	}
 	groups, err := h.repo.Spending(r.Context(), filter, filter.GroupBy)
 	if err != nil {
+		log.Error().
+			Str("component", "http").
+			Str("path", r.URL.Path).
+			Str("period", filter.Period).
+			Str("group_by", filter.GroupBy).
+			Str("account_id", func() string {
+				if filter.AccountID != nil {
+					return *filter.AccountID
+				}
+				return ""
+			}()).
+			Err(err).
+			Msg("reports/spending failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
