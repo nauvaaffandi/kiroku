@@ -76,7 +76,7 @@
           <div class="tab-bar">
             <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'spending' }]" @click="activeTab = 'spending'">{{ t('reports.spendingReport') }}</button>
             <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'trend' }]" @click="activeTab = 'trend'">{{ t('reports.trendReport') }}</button>
-            <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'cashflow' }]" @click="activeTab = 'cashflow'">{{ t('reports.cashflowTable') }}</button>
+            <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'cashflow' }]" @click="activeTab = 'cashflow'">{{ t('reports.cashflowTable.title') }}</button>
           </div>
 
           <div v-if="activeTab === 'spending'" class="tab-content">

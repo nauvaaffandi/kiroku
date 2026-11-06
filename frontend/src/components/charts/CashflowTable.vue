@@ -1,19 +1,19 @@
-<template>
+  <template>
   <div class="cashflow-table-widget">
     <div class="widget-header">
-      <h2>キャッシュフロー テーブル</h2>
+      <h2>{{ t('reports.cashflowTable.title') }}</h2>
       <div class="widget-controls">
         <select v-model="interval" @change="fetchData" class="interval-select">
-          <option value="day">日次</option>
-          <option value="week">週次</option>
-          <option value="month">月次</option>
-          <option value="quarter">四半期</option>
-          <option value="year">年次</option>
+          <option value="day">{{ t('reports.cashflowTable.intervalDay') }}</option>
+          <option value="week">{{ t('reports.cashflowTable.intervalWeek') }}</option>
+          <option value="month">{{ t('reports.cashflowTable.intervalMonth') }}</option>
+          <option value="quarter">{{ t('reports.cashflowTable.intervalQuarter') }}</option>
+          <option value="year">{{ t('reports.cashflowTable.intervalYear') }}</option>
         </select>
         <select v-model="groupBy" @change="fetchData" class="interval-select">
-          <option value="none">グループなし</option>
-          <option value="category">カテゴリ別</option>
-          <option value="account">口座別</option>
+          <option value="none">{{ t('reports.cashflowTable.groupNone') }}</option>
+          <option value="category">{{ t('reports.cashflowTable.groupCategory') }}</option>
+          <option value="account">{{ t('reports.cashflowTable.groupAccount') }}</option>
         </select>
       </div>
     </div>
@@ -22,22 +22,22 @@
       <table class="cashflow-table">
         <thead>
           <tr>
-            <th>期間</th>
-            <th colspan="4" class="col-group">収入</th>
-            <th colspan="4" class="col-group">支出</th>
-            <th>純額</th>
-            <th>取引数</th>
+            <th>{{ t('reports.cashflowTable.period') }}</th>
+            <th colspan="4" class="col-group">{{ t('reports.cashflowTable.income') }}</th>
+            <th colspan="4" class="col-group">{{ t('reports.cashflowTable.expense') }}</th>
+            <th>{{ t('reports.cashflowTable.net') }}</th>
+            <th>{{ t('reports.cashflowTable.transactionCount') }}</th>
           </tr>
           <tr>
             <th></th>
-            <th>件数</th>
-            <th>日平均</th>
-            <th>取引平均</th>
-            <th>合計</th>
-            <th>件数</th>
-            <th>日平均</th>
-            <th>取引平均</th>
-            <th>合計</th>
+            <th>{{ t('reports.cashflowTable.count') }}</th>
+            <th>{{ t('reports.cashflowTable.avgPerDay') }}</th>
+            <th>{{ t('reports.cashflowTable.avgPerTxn') }}</th>
+            <th>{{ t('reports.cashflowTable.total') }}</th>
+            <th>{{ t('reports.cashflowTable.count') }}</th>
+            <th>{{ t('reports.cashflowTable.avgPerDay') }}</th>
+            <th>{{ t('reports.cashflowTable.avgPerTxn') }}</th>
+            <th>{{ t('reports.cashflowTable.total') }}</th>
             <th></th>
             <th></th>
           </tr>
@@ -64,7 +64,7 @@
         </tbody>
         <tfoot>
           <tr class="total-row">
-            <td><strong>合計</strong></td>
+            <td><strong>{{ t('reports.cashflowTable.total') }}</strong></td>
             <td class="number"><strong>{{ totals.income_count || 0 }}</strong></td>
             <td class="number"><strong>{{ formatCurrencyShort(totals.income_avg_day || 0, 'income') }}</strong></td>
             <td class="number"><strong>{{ formatCurrencyShort(totals.income_avg_txn || 0, 'income') }}</strong></td>
@@ -80,15 +80,16 @@
       </table>
 
       <div class="table-actions">
-        <button @click="exportCSV" class="btn-secondary">CSVエクスポート</button>
+        <button @click="exportCSV" class="btn-secondary">{{ t('reports.cashflowTable.exportCsv') }}</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 import { api } from '@/api/client'
+import { useI18n } from '@/locales'
 import { useSettingsStore } from '@/stores/settings'
 import { formatAmountForDisplay, formatNumber as formatBaseNumber } from '@/utils/amountDisplay'
 
@@ -124,6 +125,7 @@ const tableData = ref<PeriodData[]>([])
 const totals = ref<Totals>({ income: 0, expense: 0, net: 0, total_txns: 0 })
 const expandedPeriods = ref<Set<string>>(new Set())
 const settingsStore = useSettingsStore()
+const { t } = useI18n()
 
 async function fetchData() {
   loading.value = true
@@ -157,11 +159,23 @@ function formatCurrencyShort(val: number, type?: 'income' | 'expense' | 'transfe
   }
   if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
   if (Math.abs(val) >= 1e4) return (val / 1e4).toFixed(1) + '万'
-  return val.toLocaleString('ja-JP')
+  return val.toLocaleString(settingsStore.numberFormat)
 }
 
 function exportCSV() {
-  const headers = ['期間', '収入件数', '収入日平均', '収入取引平均', '収入合計', '支出件数', '支出日平均', '支出取引平均', '支出合計', '純額', '取引数']
+  const headers = [
+    t('reports.cashflowTable.period'),
+    `${t('reports.cashflowTable.income')} ${t('reports.cashflowTable.count')}`,
+    `${t('reports.cashflowTable.income')} ${t('reports.cashflowTable.avgPerDay')}`,
+    `${t('reports.cashflowTable.income')} ${t('reports.cashflowTable.avgPerTxn')}`,
+    `${t('reports.cashflowTable.income')} ${t('reports.cashflowTable.total')}`,
+    `${t('reports.cashflowTable.expense')} ${t('reports.cashflowTable.count')}`,
+    `${t('reports.cashflowTable.expense')} ${t('reports.cashflowTable.avgPerDay')}`,
+    `${t('reports.cashflowTable.expense')} ${t('reports.cashflowTable.avgPerTxn')}`,
+    `${t('reports.cashflowTable.expense')} ${t('reports.cashflowTable.total')}`,
+    t('reports.cashflowTable.net'),
+    t('reports.cashflowTable.transactionCount')
+  ]
   const rows = tableData.value.map(p => [
     p.period, p.income.count, formatCurrencyShort(p.income.avg_per_day), formatCurrencyShort(p.income.avg_per_txn), formatCurrencyShort(p.income.total),
     p.expense.count, formatCurrencyShort(p.expense.avg_per_day), formatCurrencyShort(p.expense.avg_per_txn), formatCurrencyShort(p.expense.total),
@@ -176,7 +190,6 @@ function exportCSV() {
 }
 
 onMounted(fetchData)
-watchEffect(fetchData)
 </script>
 
 <style scoped>
