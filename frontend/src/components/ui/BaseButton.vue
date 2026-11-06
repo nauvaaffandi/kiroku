@@ -1,6 +1,6 @@
 <template>
   <button
-    :class="['btn', variant, size, { disabled: disabled, loading: loading }]"
+    :class="['btn', `btn-${variant}`, `btn-${size}`, { disabled: disabled, loading: loading }]"
     :disabled="disabled || loading"
     :type="type"
     @click="$emit('click', $event)"
@@ -36,7 +36,7 @@ defineEmits<{
 @reference "tailwindcss";
 
 .btn {
-  @apply inline-flex items-center justify-center gap-2 font-medium rounded border-0 cursor-pointer transition-all font-sans whitespace-nowrap;
+  @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg border-0 cursor-pointer transition-all font-sans whitespace-nowrap;
   font-family: inherit;
 }
 
@@ -47,7 +47,7 @@ defineEmits<{
 
 .btn-primary {
   background-color: var(--accent);
-  color: var(--text-inverse);
+  color: #ffffff;
 }
 
 .btn-primary:hover:not(:disabled):not(.loading) {
@@ -93,15 +93,15 @@ defineEmits<{
 }
 
 .btn-sm {
-  @apply px-3 py-1 text-sm h-[32px];
+  @apply px-3 py-1 text-sm h-[36px];
 }
 
 .btn-md {
-  @apply px-4 py-2 text-sm h-[40px];
+  @apply px-4 py-2 text-sm h-[44px];
 }
 
 .btn-lg {
-  @apply px-6 py-3 text-base h-[48px];
+  @apply px-6 py-2.5 text-base h-[52px];
 }
 
 .btn-spinner {
