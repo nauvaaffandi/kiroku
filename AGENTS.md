@@ -180,6 +180,20 @@ Handlers depend on `domain` interfaces, never on `database/sql` directly. Keep n
 - Use zerolog (`github.com/rs/zerolog/log`). Do not use `fmt.Println` or the std `log`.
 - Return JSON for success and `http.Error` with a short message for failures. Never leak internals or secrets in error bodies.
 
+### Logging levels
+
+Backend code uses zerolog (`github.com/rs/zerolog/log`) at the appropriate level. Do not use `fmt.Println` or std `log`.
+
+- `trace` — very verbose tracing, development-only detail
+- `debug` — diagnostic detail for troubleshooting
+- `info` — normal operation lifecycle events (requests, startups, completions)
+- `warn` — unexpected but non-fatal conditions (retries, missing optional data)
+- `error` — errors that did not crash the request/handler; include `.Err(err)`
+- `panic` / `fatal` — unrecoverable failures that terminate the process
+- `zerolog.NoLevel` — message-level logging when no severity applies
+
+Never log secrets, PINs, tokens, raw request bodies, or `backend/data/` paths.
+
 ### Tests
 
 - Table-driven tests with testify. Run `go test ./...` from `backend/`.
