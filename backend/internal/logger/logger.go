@@ -45,25 +45,26 @@ func getEnv(key, def string) string {
 
 var (
 	levels = map[string]zerolog.Level{
-		"debug": zerolog.DebugLevel,
-		"info":  zerolog.InfoLevel,
-		"warn":  zerolog.WarnLevel,
-		"error": zerolog.ErrorLevel,
+		"trace":  zerolog.TraceLevel,
+		"debug":  zerolog.DebugLevel,
+		"info":   zerolog.InfoLevel,
+		"warn":   zerolog.WarnLevel,
+		"error":  zerolog.ErrorLevel,
+		"fatal":  zerolog.FatalLevel,
+		"panic":  zerolog.PanicLevel,
 	}
 )
 
 func initLevel() (zerolog.Level, bool) {
-	if v := os.Getenv("LOG_LEVEL"); v != "" {
-		lvl, ok := levels[strings.ToLower(v)]
-		if !ok {
-			return zerolog.InfoLevel, true
-		}
-		return lvl, false
+	v := strings.ToLower(os.Getenv("LOG_LEVEL"))
+	if v == "" {
+		return zerolog.InfoLevel, false
 	}
-	if isDev() {
-		return zerolog.DebugLevel, false
+	lvl, ok := levels[v]
+	if !ok {
+		return zerolog.InfoLevel, true
 	}
-	return zerolog.InfoLevel, false
+	return lvl, false
 }
 
 func initFormat() (string, bool) {
