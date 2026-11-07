@@ -560,12 +560,23 @@ export default {
       want: 'Want (欲求)'
     },
     goals: {
+      title: '目標',
+      subtitle: 'カテゴリ別の支出目標を追跡',
+      addGoal: '目標を追加',
+      filterAll: 'すべて',
+      filterOnTrack: '順調',
+      filterBehind: '遅延',
+      filterAchieved: '達成済み',
       remaining: '残り',
       projectedCompletion: '予測完了',
       period: '期間',
       onTrack: '順調',
       behind: '遅れ',
-      achieved: '達成'
+      achieved: '達成',
+      emptyTitle: '目標はまだありません',
+      emptyDesc: 'カテゴリの支出目標を設定して進捗を追跡しましょう。',
+      setCategory: 'カテゴリを設定',
+      fetchError: '目標の読み込みに失敗しました'
     },
     goalsSummary: {
       totalTarget: '総目標額',

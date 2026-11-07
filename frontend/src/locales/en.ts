@@ -530,12 +530,23 @@ export default {
       want: 'Want (Desired)'
     },
     goals: {
+      title: 'Goals',
+      subtitle: 'Track your category spending targets',
+      addGoal: 'Add Goal',
+      filterAll: 'All',
+      filterOnTrack: 'On Track',
+      filterBehind: 'Behind',
+      filterAchieved: 'Achieved',
       remaining: 'Remaining',
       projectedCompletion: 'Projected Completion',
       period: 'Period',
       onTrack: 'On Track',
       behind: 'Behind',
-      achieved: 'Achieved'
+      achieved: 'Achieved',
+      emptyTitle: 'No goals yet',
+      emptyDesc: 'Set spending targets for your categories to track progress.',
+      setCategory: 'Set Category',
+      fetchError: 'Failed to load goals'
     },
     goalsSummary: {
       totalTarget: 'Total Target',

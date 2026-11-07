@@ -543,12 +543,23 @@ export default {
       want: 'Want (Inginkan)'
     },
     goals: {
+      title: 'Tujuan',
+      subtitle: 'Lacak target pengeluaran per kategori',
+      addGoal: 'Tambah Tujuan',
+      filterAll: 'Semua',
+      filterOnTrack: 'On Track',
+      filterBehind: 'Tertunda',
+      filterAchieved: 'Ter Capai',
       remaining: 'Sisa',
       projectedCompletion: 'Perkiraan Selesai',
       period: 'Periode',
       onTrack: 'On Track',
       behind: 'Tertunda',
-      achieved: 'Ter Capai'
+      achieved: 'Ter Capai',
+      emptyTitle: 'Belum ada tujuan',
+      emptyDesc: 'Setel target pengeluaran untuk kategori Anda untuk melacak progres.',
+      setCategory: 'Tetapkan Kategori',
+      fetchError: 'Gagal memuat tujuan'
     },
     goalsSummary: {
       totalTarget: 'Target Total',
