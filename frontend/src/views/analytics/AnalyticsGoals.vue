@@ -65,7 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watchEffect, computed } from 'vue'
+import dayjs from 'dayjs'
+import { ref, watchEffect, computed } from 'vue'
 import { api } from '@/api/client'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
@@ -75,10 +76,8 @@ import GoalCardWidget from '@/widgets/analytics/GoalCardWidget.vue'
 import GoalDetailModalWidget from '@/widgets/analytics/GoalDetailModalWidget.vue'
 import type { GoalItem, GoalSummary } from '@/types/report'
 
-const props = defineProps<{
-  dateFrom: string
-  dateTo: string
-}>()
+const dateFrom = ref(dayjs().startOf('month').format('YYYY-MM-DD'))
+const dateTo = ref(dayjs().endOf('month').format('YYYY-MM-DD'))
 
 const uiStore = useUIStore()
 const { t } = useI18n()
@@ -101,15 +100,16 @@ const filteredGoals = computed(() => {
   return goals.value.filter(g => g.status === statusFilter.value)
 })
 
-function onDateChange(_payload: { dateFrom: string; dateTo: string }) {
-  // Parent handles date changes
+function onDateChange(payload: { dateFrom: string; dateTo: string }) {
+  dateFrom.value = payload.dateFrom
+  dateTo.value = payload.dateTo
 }
 
 async function fetchData() {
   loading.value = true
   try {
     const res = await api.get<{ goals: GoalItem[]; summary: GoalSummary }>(
-      `/api/v1/analytics/goals/progress?date_from=${props.dateFrom}&date_to=${props.dateTo}`
+      `/api/v1/analytics/goals/progress?date_from=${dateFrom.value}&date_to=${dateTo.value}`
     )
     goals.value = res.data.goals
     summary.value = res.data.summary
@@ -128,10 +128,6 @@ function openDetail(goal: GoalItem) {
 function closeDetail() {
   selectedGoal.value = null
 }
-
-onMounted(() => {
-  fetchData()
-})
 
 watchEffect(() => {
   fetchData()
