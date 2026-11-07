@@ -45,6 +45,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/categories/sub/:parentName',
+      name: 'SubCategories',
+      component: () => import('@/views/categories/SubCategoriesView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/scheduled',
       name: 'Scheduled',
       component: () => import('@/views/scheduled/ScheduledView.vue'),

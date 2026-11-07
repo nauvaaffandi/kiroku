@@ -189,7 +189,20 @@ export default {
     btnCreateSubcategory: 'Create Subcategory',
     btnCreateCategory: 'Create Category',
     filterActive: 'Active',
-    filterArchived: 'Archived'
+    filterArchived: 'Archived',
+    noCategories: 'No categories yet',
+    noCategoriesDescription: 'Create a category to get started',
+    actions: 'Actions',
+    edit: 'Edit',
+    delete: 'Delete',
+    archive: 'Archive',
+    addChild: 'Add Child',
+    transactions: '{{count}} transactions',
+    parentCategory: 'Parent category',
+    subcategoriesTitle: 'Subcategories of {{name}}',
+    subCategoriesCount: '{{count}} subcategories',
+    showSubcategories: 'Show subcategories',
+    hideSubcategories: 'Hide subcategories'
   },
   standardCategories: {
     cat_food: 'Food',

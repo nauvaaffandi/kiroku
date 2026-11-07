@@ -189,7 +189,20 @@ export default {
     btnCreateSubcategory: 'Buat Subkategori',
     btnCreateCategory: 'Buat Kategori',
     filterActive: 'Aktif',
-    filterArchived: 'Diarsipkan'
+    filterArchived: 'Diarsipkan',
+    noCategories: 'Kategori belum ada',
+    noCategoriesDescription: 'Buat kategori untuk memulai',
+    actions: 'Aksi',
+    edit: 'Edit',
+    delete: 'Hapus',
+    archive: 'Arsipkan',
+    addChild: 'Subkategori',
+    transactions: '{{count}} transaksi',
+    parentCategory: 'Kategori Induk',
+    subcategoriesTitle: 'Subkategori {{name}}',
+    subCategoriesCount: '{{count}} subkategori',
+    showSubcategories: 'Tampilkan Subkategori',
+    hideSubcategories: 'Sembunyikan Subkategori'
   },
   standardCategories: {
     cat_food: 'Makanan',

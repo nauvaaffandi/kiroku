@@ -9,6 +9,7 @@ export interface CategoryFilters {
 export interface Category {
   id: string
   parent_id: string | null
+  parent_name: string | null
   name: string
   icon: string
   color: string

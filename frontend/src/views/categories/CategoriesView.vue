@@ -21,13 +21,23 @@
       @search="handleSearch"
     />
 
-    <CategoryTree
-      :categories="categories"
-      @edit="handleEdit"
-      @create-child="handleCreateChild"
-      @delete="handleDelete"
-      @create="openCreateModal"
-    />
+    <section class="parent-section">
+      <header class="section-header">
+        <h2>{{ t('categories.parentCategory') }}</h2>
+      </header>
+
+      <CategoryParentRow
+        v-for="parent in parents"
+        :key="parent.id"
+        :category="parent"
+        @select="() => goToSub(parent.name)"
+      />
+
+      <div v-if="parents.length === 0" class="empty-state">
+        <p>{{ t('categories.noCategories') }}</p>
+        <p class="empty-desc">{{ t('categories.noCategoriesDescription') }}</p>
+      </div>
+    </section>
 
     <CategoryFormModal
       v-model="showFormModal"
@@ -39,17 +49,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCategoriesStore } from '@/stores/categories'
 import { useI18n } from '@/locales'
 import type { Category, CategoryFilters as CategoryFiltersType } from '@/types'
-import { CategoryTree, CategoryFormModal, CategoryFilters } from '@/widgets/categories'
+import { CategoryParentRow, CategoryFormModal, CategoryFilters } from '@/widgets/categories'
 import { BaseButton } from '@/components/ui'
 
 const categoriesStore = useCategoriesStore()
 const { t } = useI18n()
+const router = useRouter()
 
 const categories = computed(() => categoriesStore.categories)
+
+const parents = computed(() => categories.value.filter(c => c.parent_id === null))
 
 const showFormModal = ref(false)
 const editingCategory = ref<Category | null>(null)
@@ -90,22 +104,8 @@ const handleSearch = (value: string) => {
   searchQuery.value = value
 }
 
-const handleEdit = (category: Category) => {
-  editingCategory.value = category
-  creatingChildParent.value = null
-  showFormModal.value = true
-}
-
-const handleCreateChild = (parent: Category) => {
-  editingCategory.value = null
-  creatingChildParent.value = parent
-  showFormModal.value = true
-}
-
-const handleDelete = (id: string) => {
-  if (confirm(t('common.confirm') + '?')) {
-    categoriesStore.deleteCategory(id)
-  }
+function goToSub(parentName: string) {
+  router.push(`/categories/sub/${encodeURIComponent(parentName)}`)
 }
 
 const openCreateModal = () => {
@@ -115,13 +115,8 @@ const openCreateModal = () => {
 }
 
 const handleFormSubmit = async (data: Partial<Category>) => {
-  if (editingCategory.value) {
-    await categoriesStore.updateCategory(editingCategory.value.id, data)
-  } else if (creatingChildParent.value) {
-    await categoriesStore.createCategory({ ...data, parent_id: creatingChildParent.value.id })
-  } else {
-    await categoriesStore.createCategory(data)
-  }
+  await categoriesStore.createCategory(data)
+
   showFormModal.value = false
   editingCategory.value = null
   creatingChildParent.value = null
@@ -131,6 +126,11 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 
 <style scoped>
 @reference "tailwindcss";
+
+.categories-page {
+  @apply px-4 py-6;
+}
+
 .page-header {
   @apply flex justify-between items-start mb-6 gap-4;
 }
@@ -145,7 +145,33 @@ const handleFormSubmit = async (data: Partial<Category>) => {
   color: var(--text-muted);
 }
 
-.header-actions {
-  @apply flex gap-3 shrink-0;
+.parent-section {
+  @apply mb-6;
+}
+
+.section-header {
+  @apply mb-4 pb-3 border-b;
+  border-color: var(--border-primary);
+}
+
+.section-header h2 {
+  @apply text-lg font-semibold m-0;
+  color: var(--text-primary);
+}
+
+.empty-state {
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-primary);
+  color: var(--text-muted);
+  @apply text-center py-8 px-6 rounded-xl;
+}
+
+.empty-state p {
+  @apply mb-2;
+}
+
+.empty-desc {
+  @apply text-sm;
+  color: var(--text-secondary);
 }
 </style>

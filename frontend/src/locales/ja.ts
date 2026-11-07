@@ -189,7 +189,20 @@ export default {
     btnCreateSubcategory: 'サブカテゴリを作成',
     btnCreateCategory: 'カテゴリを作成',
     filterActive: '有効',
-    filterArchived: 'アーカイブ'
+    filterArchived: 'アーカイブ',
+    noCategories: 'カテゴリがありません',
+    noCategoriesDescription: 'カテゴリを作成して始めましょう',
+    actions: 'アクション',
+    edit: '編集',
+    delete: '削除',
+    archive: 'アーカイブ',
+    addChild: '子カテゴリを追加',
+    transactions: '{{count}} 件の取引',
+    parentCategory: '親カテゴリ',
+    subcategoriesTitle: '子カテゴリの {{name}}',
+    subCategoriesCount: '{{count}} 件のサブカテゴリ',
+    showSubcategories: '子カテゴリを表示',
+    hideSubcategories: '子カテゴリを非表示'
   },
   standardCategories: {
     cat_food: '食費',
