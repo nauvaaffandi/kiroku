@@ -52,13 +52,11 @@ Tailwind is used **only** from the component's `<style scoped>` block, through `
 @reference "tailwindcss";
 
 .hero {
-  @apply m-auto flex max-w-md flex-col gap-4 px-4 py-6;
-  background-color: var(--bg-card);
+  @apply m-auto flex max-w-md flex-col gap-4 px-4 py-6 bg(--bg-card);
 }
 
 .hero-title {
-  @apply text-xl font-semibold tracking-tight;
-  color: var(--text-primary);
+  @apply text-xl font-semibold tracking-tight text(--text-primary);
 }
 </style>
 ```
@@ -67,19 +65,39 @@ Tailwind is used **only** from the component's `<style scoped>` block, through `
 
 - **Class names in the template are semantic** (`.hero`, `.stat`, `.row-amount`). Do not put utility classes (`flex`, `px-4`, `dark:bg-zinc-900`) in `class="..."`.
 - **Use `@apply` for anything Tailwind can express**: layout, flex/grid, spacing, sizing, typography, radius, borders, transitions, states (`hover:`, `focus-visible:`, `disabled:`), responsive prefixes (`md:`).
-- **Plain CSS is allowed only for what `@apply` cannot do**: `@keyframes`, `var(--token)` colors, `env(safe-area-inset-*)`, `clip-path`, complex selectors. Keep it in the same style block, next to the rule that needs it.
+- CSS variables from `main.css` go through Tailwind utilities: `bg(--bg-card)`, `text(--text-primary)`, `border(--border-primary)`, `rounded(--radius)`. Add a type hint when ambiguous (`text(color:--color)`, `border(length:--border-color)`).
+- **Plain CSS is allowed only for what `@apply` cannot do**: `@keyframes`, `env(safe-area-inset-*)`, `clip-path`, complex selectors. Keep it in the same style block, next to the rule that needs it.
 - **Always `<style scoped>`.** Global styles belong in `src/assets/main.css` and need a reason.
 - **Never** write `@import "tailwindcss"` inside a component. `main.css` already does it once.
 - **State via semantic classes:** `:class="{ active: isActive }"` in the template, `.item.active { @apply ... }` in the style block.
 - **Arbitrary values are fine** when no utility exists: `@apply w-[7.5rem]`. Prefer scale values first.
 
+### Tailwind v4 + CSS variables
+
+Tailwind v4 accepts CSS custom properties in **every utility that takes a value**. Use the `utility-(--variable)` shorthand instead of `property: var(--token)` in a plain declaration.
+
+| Utility | v4 syntax |
+|---------|-----------|
+| `bg` | `bg(--bg-card)`, `bg(--color)/50` for opacity |
+| `text` | `text(--text-primary)`, `text(color:--color)` (type hint when ambiguous) |
+| `text-length` | `text(length:--font-size)` |
+| `border` | `border(--border-primary)`, `border(color:--color)`, `border(length:--border-color)` |
+| `rounded` | `rounded(--radius)`, `rounded(--radius-lg)` |
+| `shadow` | `shadow(--shadow-md)`, `shadow(color:--color)` |
+| `ring` | `ring(--ring-color)` |
+| `fill`, `stroke` | `fill(--fill)`, `stroke(--color)`, `stroke(length:--stroke)` |
+| `opacity` | `opacity(--opacity)` |
+| `z`, `top`, `left`, `translate-x`, `rotate`, `scale`, `duration`, `ease` | `z-(--z-index)`, `top-(--top)`, etc. |
+
+For properties without a Tailwind utility, use arbitrary properties: `[width:var(--w)]`, `[color:var(--c)]`, `[--my-var:1rem]`.
+
 ### Scope caveat: what `@reference "tailwindcss"` can see
 
 `@reference "tailwindcss"` loads **stock Tailwind only**. It does not load `src/assets/main.css`, so inside `@apply`:
 
-- Project `@theme` tokens (`bg-primary`, `text-danger`, ...) are **not** available. Use `var(--token)` in a normal declaration instead, as in the example above.
+- Project `@theme` tokens (`bg-primary`, `text-danger`, ...) are **not** available. Use Tailwind CSS variable syntax instead: `bg(--bg-card)`, `text(--text-primary)`, etc. See [Tailwind v4 + CSS variables](#tailwind-v4-css-variables).
 - The custom `dark` variant from `main.css` is **not** available. A `dark:` utility inside `@apply` would follow the OS setting, not the in-app theme switch. Do not use it.
-- Stock utilities are available, including the stock palette (`zinc-*`, `emerald-*`, ...). Prefer semantic CSS variables over palette classes for color.
+- Stock utilities are available, including the stock palette (`zinc-*`, `emerald-*`, ...). Prefer semantic CSS variables (`bg(--color)`, `text(--color)`) over palette classes for color.
 
 ### Dark mode
 
