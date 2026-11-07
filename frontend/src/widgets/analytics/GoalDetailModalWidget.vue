@@ -42,8 +42,11 @@
   </Teleport>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { api } from '@/api/client'
+import { useSettingsStore } from '@/stores/settings'
+import { useExchangeRate } from '@/composables/useExchangeRate'
+import { getCurrencySymbol } from '@/utils/amountDisplay'
 import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
@@ -53,6 +56,9 @@ import { useI18n } from '@/locales'
 echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent, CanvasRenderer])
 
 const { t } = useI18n()
+const settingsStore = useSettingsStore()
+const { toUsd } = useExchangeRate()
+const baseCurrency = computed(() => settingsStore.baseCurrency || 'USD')
 
 function formatCurrencyShort(val: number): string {
   if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
@@ -75,11 +81,10 @@ interface GoalItem {
 }
 
 function formatCurrency(val: number): string {
-  return new Intl.NumberFormat('ja-JP', { 
-    style: 'currency', 
-    currency: 'JPY',
-    maximumFractionDigits: 0 
-  }).format(val)
+  const usd = toUsd(val)
+  const symbol = getCurrencySymbol(baseCurrency.value)
+  const locale = settingsStore.numberFormat || 'en-US'
+  return `${symbol}${new Intl.NumberFormat(locale).format(Math.round(usd))}`
 }
 
 const props = defineProps<{
@@ -112,7 +117,7 @@ async function renderProjectionChart(goal: GoalItem) {
       legend: { data: [t('analytics.goalDetail.achievedCumulative'), t('analytics.goalDetail.targetCumulative'), t('analytics.goalDetail.totalTarget')], bottom: 0 },
       grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
       xAxis: { type: 'category', data: projection.map(p => p.period) },
-      yAxis: { type: 'value', axisLabel: { formatter: (v: number) => `${formatCurrencyShort(v)} ${t('analytics.goalDetail.yen')}` } },
+      yAxis: { type: 'value', axisLabel: { formatter: (v: number) => `${formatCurrencyShort(v)} ${baseCurrency.value}` } },
       series: [
         {
           name: t('analytics.goalDetail.achievedCumulative'),

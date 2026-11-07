@@ -27,7 +27,7 @@
       </select>
     </div>
 
-    <GoalsSummaryCardsWidget :loading="loading" :summary="summary" />
+    <GoalsSummaryCardsWidget :loading="loading" :summary="summary" :goals="filteredGoals" />
 
     <div class="goals-grid" v-if="!loading && filteredGoals.length > 0">
       <GoalCardWidget

@@ -2,27 +2,27 @@
   <div class="summary-cards" v-if="!loading">
     <div class="summary-card">
       <span class="summary-label">{{ t('analytics.goalsSummary.totalTarget') }}</span>
-      <span class="summary-value">{{ formatCurrency(summary.total_targets) }}</span>
+      <span class="summary-value">{{ formatCurrency(displayGoalsTotal) }}</span>
     </div>
     <div class="summary-card">
       <span class="summary-label">{{ t('analytics.goalsSummary.currentAmount') }}</span>
-      <span class="summary-value">{{ formatCurrency(summary.total_current) }}</span>
+      <span class="summary-value">{{ formatCurrency(displayGoalsCurrent) }}</span>
     </div>
     <div class="summary-card">
       <span class="summary-label">{{ t('analytics.goalsSummary.overallProgress') }}</span>
-      <span class="summary-value">{{ summary.overall_progress.toFixed(1) }}%</span>
+      <span class="summary-value">{{ displayOverallProgress.toFixed(1) }}%</span>
     </div>
     <div class="summary-card">
       <span class="summary-label">{{ t('analytics.goalsSummary.achieved') }}</span>
-      <span class="summary-value positive">{{ summary.goals_achieved }}</span>
+      <span class="summary-value positive">{{ displayAchieved }}</span>
     </div>
     <div class="summary-card">
       <span class="summary-label">{{ t('analytics.goalsSummary.onTrack') }}</span>
-      <span class="summary-value positive">{{ summary.goals_on_track }}</span>
+      <span class="summary-value positive">{{ displayOnTrack }}</span>
     </div>
     <div class="summary-card">
       <span class="summary-label">{{ t('analytics.goalsSummary.behind') }}</span>
-      <span class="summary-value negative">{{ summary.goals_behind }}</span>
+      <span class="summary-value negative">{{ displayBehind }}</span>
     </div>
   </div>
   <div class="summary-cards" v-else>
@@ -35,6 +35,10 @@
 
 <script setup lang="ts">
 import { useI18n } from '@/locales'
+import { computed } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
+import { useExchangeRate } from '@/composables/useExchangeRate'
+import { getCurrencySymbol } from '@/utils/amountDisplay'
 
 interface Summary {
   total_targets: number
@@ -45,19 +49,48 @@ interface Summary {
   goals_behind: number
 }
 
-const { t } = useI18n()
+interface GoalItem {
+  target_amount: number
+  current_amount: number
+  status: string
+}
 
-defineProps<{
+const { t } = useI18n()
+const settingsStore = useSettingsStore()
+const { toUsd } = useExchangeRate()
+const baseCurrency = computed(() => settingsStore.baseCurrency || 'USD')
+
+const props = defineProps<{
   loading: boolean
   summary: Summary
+  goals: GoalItem[]
 }>()
 
+const displayGoalsTotal = computed(() =>
+  props.goals.reduce((sum: number, g: GoalItem) => sum + g.target_amount, 0)
+)
+const displayGoalsCurrent = computed(() =>
+  props.goals.reduce((sum: number, g: GoalItem) => sum + g.current_amount, 0)
+)
+const displayOverallProgress = computed(() => {
+  const t = displayGoalsTotal.value
+  return t > 0 ? (displayGoalsCurrent.value / t) * 100 : 0
+})
+const displayAchieved = computed(() =>
+  props.goals.filter((g) => g.status === 'achieved').length
+)
+const displayOnTrack = computed(() =>
+  props.goals.filter((g) => g.status === 'on_track').length
+)
+const displayBehind = computed(() =>
+  props.goals.filter((g) => g.status === 'behind').length
+)
+
 function formatCurrency(val: number): string {
-  return new Intl.NumberFormat('ja-JP', { 
-    style: 'currency', 
-    currency: 'JPY',
-    maximumFractionDigits: 0 
-  }).format(val)
+  const usd = toUsd(val)
+  const symbol = getCurrencySymbol(baseCurrency.value)
+  const locale = settingsStore.numberFormat || 'en-US'
+  return `${symbol}${new Intl.NumberFormat(locale).format(Math.round(usd))}`
 }
 </script>
 

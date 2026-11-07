@@ -46,6 +46,10 @@
 
 <script setup lang="ts">
 import { useI18n } from '@/locales'
+import { computed } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
+import { useExchangeRate } from '@/composables/useExchangeRate'
+import { getCurrencySymbol } from '@/utils/amountDisplay'
 
 interface GoalItem {
   category_id: string
@@ -62,6 +66,9 @@ interface GoalItem {
 }
 
 const { t } = useI18n()
+const settingsStore = useSettingsStore()
+const { toUsd } = useExchangeRate()
+const baseCurrency = computed(() => settingsStore.baseCurrency || 'USD')
 
 defineProps<{
   goal: GoalItem
@@ -81,9 +88,12 @@ function statusLabel(status: string): string {
 }
 
 function formatCurrencyShort(val: number): string {
-  if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
-  if (Math.abs(val) >= 1e4) return (val / 1e4).toFixed(1) + '万'
-  return val.toLocaleString('ja-JP')
+  const usd = toUsd(val)
+  const symbol = getCurrencySymbol(baseCurrency.value)
+  if (Math.abs(usd) >= 1e8) return `${symbol}${(usd / 1e8).toFixed(1)}億`
+  if (Math.abs(usd) >= 1e4) return `${symbol}${(usd / 1e4).toFixed(1)}万`
+  const locale = settingsStore.numberFormat || 'en-US'
+  return `${symbol}${usd.toLocaleString(locale, { maximumFractionDigits: 0 })}`
 }
 
 function progressRingStyle(progressPct: number) {
