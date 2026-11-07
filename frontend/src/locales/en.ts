@@ -81,6 +81,7 @@ export default {
     analyticsGoals: 'Goals',
     accounts: 'Accounts',
     categories: 'Categories',
+    subCategories: 'Sub Categories',
     scheduled: 'Scheduled',
     reports: 'Reports',
     sharedAccess: 'Shared Access',

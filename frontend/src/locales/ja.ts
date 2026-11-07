@@ -81,6 +81,7 @@ export default {
     analyticsGoals: '目標管理',
     accounts: '口座管理',
     categories: 'カテゴリ管理',
+    subCategories: 'サブカテゴリ',
     scheduled: '定期取引',
     reports: 'レポート',
     sharedAccess: '共有アクセス',

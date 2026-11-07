@@ -81,6 +81,7 @@ export default {
     analyticsGoals: 'Tujuan',
     accounts: 'Akun',
     categories: 'Kategori',
+    subCategories: 'Sub Kategori',
     scheduled: 'Terjadwal',
     reports: 'Laporan',
     sharedAccess: 'Akses Berbagi',
