@@ -109,7 +109,7 @@ async function fetchData() {
   loading.value = true
   try {
     const res = await api.get<{ goals: GoalItem[]; summary: GoalSummary }>(
-      `/analytics/goals/progress?date_from=${props.dateFrom}&date_to=${props.dateTo}`
+      `/api/v1/analytics/goals/progress?date_from=${props.dateFrom}&date_to=${props.dateTo}`
     )
     goals.value = res.data.goals
     summary.value = res.data.summary
