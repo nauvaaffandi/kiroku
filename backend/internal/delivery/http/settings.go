@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -76,6 +77,12 @@ func (h *SettingsHandler) AddCurrency(w http.ResponseWriter, r *http.Request) {
 func (h *SettingsHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.repo.GetAll(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "GetAllSettings").
+			Str("path", r.URL.Path).
+			Msg("settings/get_all failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -105,6 +112,12 @@ func (h *SettingsHandler) UpdateAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.repo.UpdateAll(r.Context(), input); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "UpdateAllSettings").
+			Str("path", r.URL.Path).
+			Msg("settings/update_all failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -140,6 +153,13 @@ func (h *SettingsHandler) SetOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.repo.SetOne(r.Context(), key, req.Value); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "SetOneSetting").
+			Str("path", r.URL.Path).
+			Str("key", key).
+			Msg("settings/set_one failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

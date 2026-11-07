@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -31,6 +32,12 @@ func (h *CategoriesHandler) Routes() chi.Router {
 func (h *CategoriesHandler) List(w http.ResponseWriter, r *http.Request) {
 	list, err := h.repo.List(r.Context(), false)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ListCategories").
+			Str("path", r.URL.Path).
+			Msg("categories/list failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -44,6 +51,12 @@ func (h *CategoriesHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *CategoriesHandler) Tree(w http.ResponseWriter, r *http.Request) {
 	tree, err := h.repo.Tree(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "TreeCategories").
+			Str("path", r.URL.Path).
+			Msg("categories/tree failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -70,6 +83,12 @@ func (h *CategoriesHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	cat, err := h.repo.Create(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "CreateCategory").
+			Str("path", r.URL.Path).
+			Msg("categories/create failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -97,6 +116,13 @@ func (h *CategoriesHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.repo.Update(r.Context(), id, req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "UpdateCategory").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("categories/update failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -107,6 +133,13 @@ func (h *CategoriesHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *CategoriesHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.repo.Delete(r.Context(), id); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "DeleteCategory").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("categories/delete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -123,6 +156,12 @@ func (h *CategoriesHandler) Reorder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.repo.Reorder(r.Context(), req.Items); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ReorderCategories").
+			Str("path", r.URL.Path).
+			Msg("categories/reorder failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

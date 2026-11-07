@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -30,6 +31,12 @@ func (h *TemplatesHandler) Routes() chi.Router {
 func (h *TemplatesHandler) List(w http.ResponseWriter, r *http.Request) {
 	list, err := h.repo.List(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ListTemplates").
+			Str("path", r.URL.Path).
+			Msg("templates/list failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -45,6 +52,12 @@ func (h *TemplatesHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	t, err := h.repo.Create(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "CreateTemplate").
+			Str("path", r.URL.Path).
+			Msg("templates/create failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -72,6 +85,13 @@ func (h *TemplatesHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.repo.Update(r.Context(), id, req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "UpdateTemplate").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("templates/update failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -82,6 +102,13 @@ func (h *TemplatesHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *TemplatesHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.repo.Delete(r.Context(), id); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "DeleteTemplate").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("templates/delete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -39,6 +40,13 @@ func (h *FXHandler) GetRates(w http.ResponseWriter, r *http.Request) {
 	}
 	quotes, err := h.repo.GetQuotes(r.Context(), base, date)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "GetRates").
+			Str("path", r.URL.Path).
+			Str("base", base).
+			Msg("fx/rates failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

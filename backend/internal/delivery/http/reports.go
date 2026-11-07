@@ -70,6 +70,13 @@ func (h *ReportsHandler) Trend(w http.ResponseWriter, r *http.Request) {
 	}
 	series, err := h.repo.Trend(r.Context(), filter)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "TrendReports").
+			Str("path", r.URL.Path).
+			Int("months", filter.Months).
+			Msg("reports/trend failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

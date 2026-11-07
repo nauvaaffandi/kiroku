@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -30,6 +31,12 @@ func (h *AccountsHandler) Routes() chi.Router {
 func (h *AccountsHandler) List(w http.ResponseWriter, r *http.Request) {
 	list, err := h.repo.List(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ListAccounts").
+			Str("path", r.URL.Path).
+			Msg("accounts/list failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -48,6 +55,12 @@ func (h *AccountsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	acc, err := h.repo.Create(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "CreateAccount").
+			Str("path", r.URL.Path).
+			Msg("accounts/create failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -82,6 +95,13 @@ func (h *AccountsHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.repo.Update(r.Context(), id, req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "UpdateAccount").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("accounts/update failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -92,6 +112,13 @@ func (h *AccountsHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *AccountsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.repo.Delete(r.Context(), id); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "DeleteAccount").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("accounts/delete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -102,6 +129,12 @@ func (h *AccountsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 func (h *AccountsHandler) Summary(w http.ResponseWriter, r *http.Request) {
 	sum, err := h.repo.Summary(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "SummaryAccounts").
+			Str("path", r.URL.Path).
+			Msg("accounts/summary failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

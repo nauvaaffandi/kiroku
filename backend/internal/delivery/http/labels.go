@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -30,6 +31,12 @@ func (h *LabelsHandler) Routes() chi.Router {
 func (h *LabelsHandler) List(w http.ResponseWriter, r *http.Request) {
 	list, err := h.repo.List(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ListLabels").
+			Str("path", r.URL.Path).
+			Msg("labels/list failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -52,6 +59,12 @@ func (h *LabelsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	label, err := h.repo.Create(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "CreateLabel").
+			Str("path", r.URL.Path).
+			Msg("labels/create failed")
 		http.Error(w, "internal error or duplicate", http.StatusInternalServerError)
 		return
 	}
@@ -79,6 +92,15 @@ func (h *LabelsHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	label, err := h.repo.Update(r.Context(), id, req)
 	if err != nil || label == nil {
+		if err != nil {
+			log.Error().
+				Err(err).
+				Str("component", "http").
+				Str("method", "UpdateLabel").
+				Str("path", r.URL.Path).
+				Str("id", id).
+				Msg("labels/update failed")
+		}
 		http.Error(w, "internal error or not found", http.StatusInternalServerError)
 		return
 	}
@@ -89,6 +111,13 @@ func (h *LabelsHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *LabelsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.repo.Delete(r.Context(), id); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "DeleteLabel").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("labels/delete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -105,6 +134,12 @@ func (h *LabelsHandler) Reorder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.repo.Reorder(r.Context(), req.Items); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ReorderLabels").
+			Str("path", r.URL.Path).
+			Msg("labels/reorder failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

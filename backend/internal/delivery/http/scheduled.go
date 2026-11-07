@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -30,6 +31,12 @@ func (h *ScheduledHandler) Routes() chi.Router {
 func (h *ScheduledHandler) List(w http.ResponseWriter, r *http.Request) {
 	list, err := h.repo.List(r.Context())
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ListScheduled").
+			Str("path", r.URL.Path).
+			Msg("scheduled/list failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -45,6 +52,12 @@ func (h *ScheduledHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	s, err := h.repo.Create(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "CreateScheduled").
+			Str("path", r.URL.Path).
+			Msg("scheduled/create failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -72,6 +85,13 @@ func (h *ScheduledHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.repo.Update(r.Context(), id, req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "UpdateScheduled").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("scheduled/update failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -82,6 +102,13 @@ func (h *ScheduledHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *ScheduledHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.repo.Delete(r.Context(), id); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "DeleteScheduled").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("scheduled/delete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -93,6 +120,13 @@ func (h *ScheduledHandler) Toggle(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	_, err := h.repo.Toggle(r.Context(), id, true)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ToggleScheduled").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("scheduled/toggle failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

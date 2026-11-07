@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 )
 
@@ -69,6 +70,12 @@ func (h *TransactionsHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	list, err := h.repo.List(r.Context(), filter)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "ListTransactions").
+			Str("path", r.URL.Path).
+			Msg("transactions/list failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -87,6 +94,12 @@ func (h *TransactionsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	txn, err := h.repo.Create(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "CreateTransaction").
+			Str("path", r.URL.Path).
+			Msg("transactions/create failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -114,6 +127,13 @@ func (h *TransactionsHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := h.repo.Update(r.Context(), id, req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "UpdateTransaction").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("transactions/update failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -124,6 +144,13 @@ func (h *TransactionsHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *TransactionsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.repo.Delete(r.Context(), id); err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "DeleteTransaction").
+			Str("path", r.URL.Path).
+			Str("id", id).
+			Msg("transactions/delete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -135,6 +162,13 @@ func (h *TransactionsHandler) Search(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	list, err := h.repo.Search(r.Context(), q, 50)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "SearchTransactions").
+			Str("path", r.URL.Path).
+			Str("q", q).
+			Msg("transactions/search failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -146,6 +180,13 @@ func (h *TransactionsHandler) Autocomplete(w http.ResponseWriter, r *http.Reques
 	q := r.URL.Query().Get("q")
 	list, err := h.repo.Autocomplete(r.Context(), q, 10)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "AutocompleteTransactions").
+			Str("path", r.URL.Path).
+			Str("q", q).
+			Msg("transactions/autocomplete failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -167,6 +208,12 @@ func (h *TransactionsHandler) Summary(w http.ResponseWriter, r *http.Request) {
 	}
 	sum, err := h.repo.Summary(r.Context(), filter)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "SummaryTransactions").
+			Str("path", r.URL.Path).
+			Msg("transactions/summary failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -182,6 +229,12 @@ func (h *TransactionsHandler) Batch(w http.ResponseWriter, r *http.Request) {
 	}
 	affected, err := h.repo.Batch(r.Context(), req)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "http").
+			Str("method", "BatchTransactions").
+			Str("path", r.URL.Path).
+			Msg("transactions/batch failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
