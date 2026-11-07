@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/domain"
 	"kiroku/backend/internal/repository/sqlite"
 )
 
@@ -54,6 +56,13 @@ func (h *SharedHandler) CreateShare(w http.ResponseWriter, r *http.Request) {
 	}
 	share, err := h.repo.Create(r.Context(), userID, req.AccountID, expiresAt)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_handler").
+			Str("method", "CreateShare").
+			Str("user_id", userID).
+			Str("account_id", req.AccountID).
+			Msg("create share failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -77,8 +86,18 @@ func (h *SharedHandler) ListShares(w http.ResponseWriter, r *http.Request) {
 	}
 	shares, err := h.repo.List(r.Context(), userID)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_handler").
+			Str("method", "ListShares").
+			Str("user_id", userID).
+			Str("path", r.URL.Path).
+			Msg("list shares failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
+	}
+	if shares == nil {
+		shares = []domain.Share{}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(shares)
@@ -93,6 +112,14 @@ func (h *SharedHandler) RevokeShare(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	revoked, err := h.repo.Revoke(r.Context(), userID, id)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_handler").
+			Str("method", "RevokeShare").
+			Str("user_id", userID).
+			Str("share_id", id).
+			Str("path", r.URL.Path).
+			Msg("revoke share failed")
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -108,6 +135,14 @@ func (h *SharedHandler) GetSharedView(w http.ResponseWriter, r *http.Request) {
 	token := chi.URLParam(r, "token")
 	share, err := h.repo.GetByToken(r.Context(), token)
 	if err != nil || share == nil {
+		if err != nil {
+			log.Error().
+				Err(err).
+				Str("component", "shared_handler").
+				Str("method", "GetSharedView").
+				Str("token", token).
+				Msg("get shared view failed")
+		}
 		http.Error(w, "share not found", http.StatusNotFound)
 		return
 	}

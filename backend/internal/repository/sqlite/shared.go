@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"kiroku/backend/internal/domain"
 	"kiroku/backend/internal/db"
 )
@@ -15,8 +16,17 @@ func NewSharedRepo(database *db.DB) *SharedRepo { return &SharedRepo{db: databas
 
 func (r *SharedRepo) Create(ctx context.Context, userID, accountID string, expiresAt *time.Time) (*domain.Share, error) {
 	var count int
-	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM accounts WHERE id = ? AND user_id = ?`, accountID, userID).Scan(&count)
-	if err != nil || count == 0 {
+	err := r.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM accounts WHERE id = ?`, accountID).Scan(&count)
+	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "Create").
+			Str("account_id", accountID).
+			Msg("account lookup failed")
+		return nil, err
+	}
+	if count == 0 {
 		return nil, nil
 	}
 
@@ -30,6 +40,13 @@ func (r *SharedRepo) Create(ctx context.Context, userID, accountID string, expir
 
 	_, err = r.db.ExecContext(ctx, `INSERT INTO shares (id, account_id, token, expires_at) VALUES (?, ?, ?, ?)`, shareID, accountID, token, expiresAtNull)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "Create").
+			Str("share_id", shareID).
+			Str("account_id", accountID).
+			Msg("insert share failed")
 		return nil, err
 	}
 
@@ -49,18 +66,28 @@ func (r *SharedRepo) List(ctx context.Context, userID string) ([]domain.Share, e
 	rows, err := r.db.QueryContext(ctx, `
 		SELECT s.id, s.account_id, a.name, s.token, s.expires_at, s.created_at, s.last_accessed_at
 		FROM shares s JOIN accounts a ON s.account_id = a.id
-		WHERE a.user_id = ? ORDER BY s.created_at DESC`, userID)
+		ORDER BY s.created_at DESC`)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "List").
+			Msg("list shares query failed")
 		return nil, err
 	}
 	defer rows.Close()
 
-	var out []domain.Share
+	out := make([]domain.Share, 0)
 	for rows.Next() {
 		var s domain.Share
 		var token string
 		var expiresAt, lastAccessedAt sql.NullTime
 		if err := rows.Scan(&s.ID, &s.AccountID, &s.AccountName, &token, &expiresAt, &s.CreatedAt, &lastAccessedAt); err != nil {
+			log.Error().
+				Err(err).
+				Str("component", "shared_repo").
+				Str("method", "List").
+				Msg("share row scan failed")
 			continue
 		}
 		s.Token = token
@@ -76,9 +103,14 @@ func (r *SharedRepo) List(ctx context.Context, userID string) ([]domain.Share, e
 }
 
 func (r *SharedRepo) Revoke(ctx context.Context, userID, shareID string) (bool, error) {
-	result, err := r.db.ExecContext(ctx, `
-		DELETE FROM shares WHERE id = ? AND account_id IN (SELECT id FROM accounts WHERE user_id = ?)`, shareID, userID)
+	result, err := r.db.ExecContext(ctx, `DELETE FROM shares WHERE id = ?`, shareID)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "Revoke").
+			Str("share_id", shareID).
+			Msg("revoke share query failed")
 		return false, err
 	}
 	affected, _ := result.RowsAffected()
@@ -93,6 +125,12 @@ func (r *SharedRepo) GetByToken(ctx context.Context, token string) (*domain.Shar
 		return nil, nil
 	}
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "GetByToken").
+			Str("token", token).
+			Msg("get share by token failed")
 		return nil, err
 	}
 	if expiresAt.Valid {
@@ -111,55 +149,74 @@ func (r *SharedRepo) TouchAccessed(ctx context.Context, id string) error {
 }
 
 func (r *SharedRepo) GetAccountInfo(ctx context.Context, accountID string) (*domain.AccountWithBalance, error) {
-	var balance float64
-	err := r.db.QueryRowContext(ctx, `
-		SELECT id, name, currency,
-			COALESCE((SELECT SUM(CASE WHEN type = 'income' THEN amount ELSE -amount END) FROM transactions WHERE account_id = a.id), 0) as balance
-		FROM accounts a WHERE id = ?`, accountID).Scan(&balance)
+	query := `SELECT a.id, a.name, a.currency, a.type, a.icon, a.color, a.archived,
+		COALESCE(SUM(CASE WHEN t.to_account_id = a.id THEN t.amount ELSE 0 END), 0) -
+		COALESCE(SUM(CASE WHEN t.from_account_id = a.id THEN t.amount ELSE 0 END), 0) AS balance
+		FROM accounts a LEFT JOIN transactions t ON (t.from_account_id = a.id OR t.to_account_id = a.id) AND t.deleted_at IS NULL
+		WHERE a.id = ? AND a.archived = FALSE GROUP BY a.id`
+	var a domain.AccountWithBalance
+	err := r.db.QueryRowContext(ctx, query, accountID).Scan(&a.ID, &a.Name, &a.Currency, &a.Type, &a.Icon, &a.Color, &a.Archived, &a.Balance)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "GetAccountInfo").
+			Str("account_id", accountID).
+			Msg("get account info failed")
 		return nil, err
 	}
-	return &domain.AccountWithBalance{Account: domain.Account{ID: accountID}, Balance: balance}, nil
+	return &a, nil
 }
 
 func (r *SharedRepo) GetTransactions(ctx context.Context, accountID string) ([]map[string]interface{}, error) {
 	rows, err := r.db.QueryContext(ctx, `
-		SELECT t.id, t.date, t.amount, t.type, t.note, t.payee,
-			c.name, c.icon, c.color
+		SELECT t.id, t.date_time, t.amount, t.type, t.note, t.payee_payer,
+			COALESCE(c.name, ''), COALESCE(c.icon, ''), COALESCE(c.color, '')
 		FROM transactions t LEFT JOIN categories c ON t.category_id = c.id
-		WHERE t.account_id = ?
-		ORDER BY t.date DESC, t.created_at DESC LIMIT 100`, accountID)
+		WHERE (t.from_account_id = ? OR t.to_account_id = ?) AND t.deleted_at IS NULL
+		ORDER BY t.date_time DESC, t.created_at DESC LIMIT 100`, accountID, accountID)
 	if err != nil {
+		log.Error().
+			Err(err).
+			Str("component", "shared_repo").
+			Str("method", "GetTransactions").
+			Str("account_id", accountID).
+			Msg("get transactions failed")
 		return nil, err
 	}
 	defer rows.Close()
 
-	var out []map[string]interface{}
+	out := make([]map[string]interface{}, 0)
 	for rows.Next() {
 		var tx struct {
 			ID            string
-			Date          string
-			Amount        float64
+			DateTime      string
+			Amount        int64
 			Type          string
 			Note          string
-			Payee         string
+			PayeePayer    string
 			Category      string
-			CategoryIcon  sql.NullString
-			CategoryColor sql.NullString
+			CategoryIcon  string
+			CategoryColor string
 		}
-		if err := rows.Scan(&tx.ID, &tx.Date, &tx.Amount, &tx.Type, &tx.Note, &tx.Payee, &tx.Category, &tx.CategoryIcon, &tx.CategoryColor); err != nil {
+		if err := rows.Scan(&tx.ID, &tx.DateTime, &tx.Amount, &tx.Type, &tx.Note, &tx.PayeePayer, &tx.Category, &tx.CategoryIcon, &tx.CategoryColor); err != nil {
+			log.Error().
+				Err(err).
+				Str("component", "shared_repo").
+				Str("method", "GetTransactions").
+				Msg("scan transaction failed")
 			continue
 		}
 		entry := map[string]interface{}{
-			"id":            tx.ID,
-			"date":          tx.Date,
-			"amount":        tx.Amount,
-			"type":          tx.Type,
-			"note":          tx.Note,
-			"payee":         tx.Payee,
-			"category":      tx.Category,
-			"category_icon": tx.CategoryIcon.String,
-			"category_color": tx.CategoryColor.String,
+			"id":             tx.ID,
+			"date":           tx.DateTime,
+			"amount":         float64(tx.Amount) / 100.0,
+			"type":           tx.Type,
+			"note":           tx.Note,
+			"payee":          tx.PayeePayer,
+			"category":       tx.Category,
+			"category_icon":  tx.CategoryIcon,
+			"category_color": tx.CategoryColor,
 		}
 		out = append(out, entry)
 	}
