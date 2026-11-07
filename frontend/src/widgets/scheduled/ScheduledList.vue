@@ -1,6 +1,6 @@
 <template>
   <div class="scheduled-list">
-    <div v-if="scheduled.length === 0" class="empty-state">
+    <div v-if="!scheduled || scheduled.length === 0" class="empty-state">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
@@ -27,9 +27,14 @@ import { BaseButton } from '@/components/ui'
 import ScheduledCard from './ScheduledCard.vue'
 import type { ScheduledTransaction } from '@/types'
 
-defineProps<{
-  scheduled: ScheduledTransaction[]
-}>()
+withDefaults(
+  defineProps<{
+    scheduled?: ScheduledTransaction[] | null
+  }>(),
+  {
+    scheduled: () => []
+  }
+)
 
 defineEmits<{
   edit: [scheduled: ScheduledTransaction]

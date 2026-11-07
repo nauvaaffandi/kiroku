@@ -31,7 +31,7 @@ export const useScheduledStore = defineStore('scheduled', () => {
         )
       })
       const response = await api.get(`/api/v1/scheduled?${params}`)
-      scheduled.value = response.data
+      scheduled.value = Array.isArray(response.data) ? response.data : []
       pagination.value = {
         ...pagination.value,
         page,

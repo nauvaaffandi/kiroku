@@ -41,8 +41,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useScheduledStore } from '@/stores/scheduled'
 import { useI18n } from '@/locales'
-import type { ScheduledTransaction, ScheduledFilters } from '@/types'
-import { ScheduledList, ScheduledFormModal } from '@/widgets/scheduled'
+import type { ScheduledTransaction, ScheduledFilters as ScheduledFiltersType } from '@/types'
+import { ScheduledList, ScheduledFormModal, ScheduledFilters } from '@/widgets/scheduled'
 import { BaseButton } from '@/components/ui'
 
 const scheduledStore = useScheduledStore()
@@ -53,7 +53,7 @@ const scheduled = computed(() => scheduledStore.scheduled)
 const showFormModal = ref(false)
 const editingScheduled = ref<ScheduledTransaction | null>(null)
 
-const localFilters = ref<ScheduledFilters>({
+const localFilters = ref<ScheduledFiltersType>({
   q: '',
   type: '',
   frequency: '',
