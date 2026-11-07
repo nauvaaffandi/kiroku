@@ -23,6 +23,7 @@ interface LocaleMessages {
   balanceAnalytics: typeof en.balanceAnalytics
   calendar: typeof en.calendar
   outlook: typeof en.outlook
+  scheduled: typeof en.scheduled
 }
 
 const locales: Record<Locale, LocaleMessages> = { en, ja, id }

@@ -639,6 +639,11 @@ export default {
     '11': 'November',
     '12': 'December'
   },
+  scheduled: {
+    title: 'Scheduled Transactions',
+    subtitle: 'Manage your recurring payments and income',
+    addScheduled: 'Add Scheduled'
+  },
   shared: {
     access: {
       title: 'Shared Access',

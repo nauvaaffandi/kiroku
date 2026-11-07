@@ -649,6 +649,11 @@ export default {
     '11': 'November',
     '12': 'Desember'
   },
+  scheduled: {
+    title: 'Transaksi Terjadwal',
+    subtitle: 'Kelola pembayaran dan pendapatan berkala Anda',
+    addScheduled: 'Tambah Terjadwal'
+  },
   shared: {
     access: {
       title: 'Akses Berbagi',

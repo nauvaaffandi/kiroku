@@ -649,6 +649,11 @@ export default {
     '11': '11月',
     '12': '12月'
   },
+  scheduled: {
+    title: '定期取引',
+    subtitle: '定期支払いと収入を管理',
+    addScheduled: '定期取引を追加'
+  },
   shared: {
     access: {
       title: '共有アクセス',
