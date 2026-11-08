@@ -66,3 +66,5 @@ scripts/
 **/cookies.txt
 archieve/
 skill-observations/
+.repomixignore
+repomix.config.json
