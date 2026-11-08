@@ -91,7 +91,8 @@ export default {
     logout: 'ログアウト',
     login: 'ログイン',
     scanReceipt: 'レシートスキャン',
-    Login: 'ログイン'
+    Login: 'ログイン',
+    notifications: '通知'
   },
   dashboard: {
     title: 'ダッシュボード',
@@ -438,7 +439,21 @@ export default {
     push_not_supported: 'このブラウザではプッシュ通知はサポートされていません',
     push_permission_denied: '通知の許可が拒否されました',
     push_subscribe: 'プッシュ通知を有効化',
-    push_unsubscribe: 'プッシュ通知を無効化'
+    push_unsubscribe: 'プッシュ通知を無効化',
+    title: '通知',
+    all: 'すべて',
+    unread: '未読',
+    markAllRead: 'すべて既読にする',
+    clearRead: '既読を削除',
+    empty: '通知はありません',
+    filters: 'フィルター',
+    delete: '削除',
+    enablePush: 'プッシュ通知を有効にする',
+    disablePush: 'プッシュ通知を無効にする',
+    pushEnabled: 'プッシュ通知は有効です',
+    pushDisabled: 'プッシュ通知は無効です',
+    pushUnsupported: 'このブラウザーはプッシュ通知に対応していません',
+    timeAgo: '{{time}}前'
   },
   about: {
     title: 'アプリについて',
@@ -721,5 +736,5 @@ export default {
       linkInvalid: 'リンクが無効または期限切れの可能性があります。',
       copied: 'リンクをコピーしました'
     }
+  },
   }
-}

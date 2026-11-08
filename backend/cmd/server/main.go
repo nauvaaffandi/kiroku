@@ -20,10 +20,12 @@ import (
 	"kiroku/backend/internal/db"
 	httpdelivery "kiroku/backend/internal/delivery/http"
 	"kiroku/backend/internal/logger"
+	"kiroku/backend/internal/notification"
 	"kiroku/backend/internal/repository/sqlite"
 	"kiroku/backend/internal/seed"
 	"kiroku/backend/internal/telegram"
 	"kiroku/backend/internal/tunnel"
+	"kiroku/backend/internal/webpush"
 )
 
 func main() {
@@ -78,6 +80,10 @@ func main() {
 	labelsRepo := sqlite.NewLabelsRepo(database)
 	pushRepo := sqlite.NewPushSubscriptionRepo(database)
 	goalsRepo := sqlite.NewGoalsRepo(database)
+
+	// Notification infrastructure
+	notificationRepo := sqlite.NewNotificationRepo(database)
+	deliveryRepo := sqlite.NewDeliveryRepo(database)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -135,6 +141,42 @@ func main() {
 
 			fxHandler := httpdelivery.NewFXHandler(fxRepo)
 			r.Mount("/fx", fxHandler.Routes())
+
+			// Notification service setup
+			pushSender, err := webpush.NewSender()
+			if err != nil {
+				log.Warn().Err(err).Msg("webpush: failed to initialize sender; notifications disabled")
+				pushSender = nil
+			}
+			notifSvc := notification.NewService(
+				notificationRepo,
+				deliveryRepo,
+				pushRepo,
+				pushSender,
+				notification.ServiceConfig{
+					MaxAttempts:  config.NotificationWorkerMaxAttempts(),
+					RetryBase:    config.NotificationWorkerRetryBase(),
+					LockTimeout:  config.NotificationWorkerLockTimeout(),
+				},
+			)
+
+			// Start the delivery worker
+			notifCtx, notifCancel := context.WithCancel(context.Background())
+			worker := notification.NewWorker(notifSvc, notification.Config{
+				Interval:     config.NotificationWorkerInterval(),
+				BatchSize:    config.NotificationWorkerBatchSize(),
+				MaxAttempts:  config.NotificationWorkerMaxAttempts(),
+				RetryBase:    config.NotificationWorkerRetryBase(),
+				LockTimeout:  config.NotificationWorkerLockTimeout(),
+				Enabled:      config.NotificationWorkerEnabled(),
+			}, notifCtx)
+			_ = notifCtx
+			defer notifCancel()
+			defer worker.Stop()
+
+			// Mount notification handler
+			notificationsHandler := httpdelivery.NewNotificationsHandler(notifSvc)
+			r.Mount("/notifications", notificationsHandler.Routes())
 
 			analyticsHandler := analytics.NewHandler(database, config.FXBaseCurrency())
 			r.Mount("/analytics", analyticsHandler.Routes())

@@ -39,3 +39,25 @@ export interface VAPIDConfig {
 }
 
 export type PushSubscriptionAction = 'subscribe' | 'unsubscribe'
+
+// Notification types for in-app notifications
+export interface NotificationItem {
+  id: string
+  user_id: string
+  type: string
+  title: string
+  body: string
+  data?: Record<string, any>
+  action_url?: string
+  read_at?: string | null
+  deleted_at?: string | null
+  idempotency_key?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface NotificationFilter {
+  unread?: boolean
+  limit?: number
+  offset?: number
+}

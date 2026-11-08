@@ -91,7 +91,8 @@ export default {
     logout: 'Keluar',
     login: 'Masuk',
     scanReceipt: 'Pindai Struk',
-    Login: 'Masuk'
+    Login: 'Masuk',
+    notifications: 'Notifikasi'
   },
   dashboard: {
     title: 'Dasbor',
@@ -438,7 +439,21 @@ export default {
     push_not_supported: 'Notifikasi push tidak didukung di browser ini',
     push_permission_denied: 'Izin notifikasi ditolak',
     push_subscribe: 'Aktifkan notifikasi push',
-    push_unsubscribe: 'Nonaktifkan notifikasi push'
+    push_unsubscribe: 'Nonaktifkan notifikasi push',
+    title: 'Notifikasi',
+    all: 'Semua',
+    unread: 'Belum dibaca',
+    markAllRead: 'Tandai semua sebagai dibaca',
+    clearRead: 'Hapus yang sudah dibaca',
+    empty: 'Belum ada notifikasi',
+    filters: 'Filter',
+    delete: 'Hapus',
+    enablePush: 'Aktifkan notifikasi push',
+    disablePush: 'Nonaktifkan notifikasi push',
+    pushEnabled: 'Notifikasi push aktif',
+    pushDisabled: 'Notifikasi push nonaktif',
+    pushUnsupported: 'Browser tidak mendukung notifikasi push',
+    timeAgo: '{{time}} yang lalu'
   },
   about: {
     title: 'Tentang',

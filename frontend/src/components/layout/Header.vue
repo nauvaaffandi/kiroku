@@ -17,6 +17,12 @@
           <option v-for="c of currencies" :key="c" :value="c">{{ c }}</option>
         </select>
       </div>
+      <button class="icon-btn notification-btn" :aria-label="t('nav.notifications')" @click="router.push('/notifications')">
+        <Bell :size="20" aria-hidden="true" />
+        <span v-if="notificationStore.unreadCount > 0" class="notification-badge">
+          {{ notificationStore.unreadCount > 9 ? '9+' : notificationStore.unreadCount }}
+        </span>
+      </button>
       
 
       
@@ -57,6 +63,8 @@ import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/locales'
 import { useCurrencies } from '@/composables/useCurrencies'
+import { useNotificationStore } from '@/stores/notifications'
+import { Bell } from '@lucide/vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,6 +74,7 @@ const { t } = useI18n()
 const { currencies } = useCurrencies()
 
 const showMoreMenu = ref(false)
+const notificationStore = useNotificationStore()
 
 const pageTitle = computed(() => {
   const name = route.name as string
@@ -140,6 +149,9 @@ defineEmits(['toggle-sidebar'])
   background-color: var(--bg-card);
   color: var(--text-primary);
 }
+.notification-btn {
+  position: relative;
+}
 .icon-btn {
   @apply flex items-center justify-center w-10 h-10 rounded-full border-0 bg-transparent cursor-pointer transition-colors;
   color: var(--text-secondary);
@@ -147,6 +159,11 @@ defineEmits(['toggle-sidebar'])
 .icon-btn:hover {
   background-color: var(--bg-hover);
   color: var(--text-primary);
+}
+.notification-badge {
+  @apply absolute top-[2px] right-[2px] min-h-[14px] min-w-[14px] rounded-full border-0 px-[4px] text-[10px] font-medium leading-[14px];
+  background-color: var(--error);
+  color: var(--text-inverse);
 }
 .more-menu-container {
   position: relative;

@@ -91,7 +91,8 @@ export default {
     logout: 'Logout',
     login: 'Login',
     scanReceipt: 'Scan Receipt',
-    Login: 'Login'
+    Login: 'Login',
+    notifications: 'Notifications'
   },
   dashboard: {
     title: 'Dashboard',
@@ -411,7 +412,21 @@ export default {
     push_not_supported: 'Push notifications not supported in this browser',
     push_permission_denied: 'Notification permission denied',
     push_subscribe: 'Enable Push Notifications',
-    push_unsubscribe: 'Disable Push Notifications'
+    push_unsubscribe: 'Disable Push Notifications',
+    title: 'Notifications',
+    all: 'All',
+    unread: 'Unread',
+    markAllRead: 'Mark all as read',
+    clearRead: 'Clear read',
+    empty: 'No notifications yet',
+    filters: 'Filters',
+    delete: 'Delete',
+    enablePush: 'Enable push',
+    disablePush: 'Disable push',
+    pushEnabled: 'Push enabled',
+    pushDisabled: 'Push disabled',
+    pushUnsupported: 'Push notifications not supported',
+    timeAgo: '{{time}} ago'
   },
   auth: {
     signIn: 'Sign In',
@@ -711,5 +726,5 @@ export default {
       linkInvalid: 'Link may be invalid or expired.',
       copied: 'Link copied'
     }
+  },
   }
-}
