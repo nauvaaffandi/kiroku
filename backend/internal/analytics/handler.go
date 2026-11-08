@@ -35,12 +35,6 @@ func (h *Handler) Routes() chi.Router {
 	r.Get("/outlook/timeline", h.GetPlannedByTimeline)
 	r.Get("/outlook/forecast", h.GetBalanceForecast)
 
-	r.Get("/budget/summary", h.GetBudgetSummary)
-	r.Get("/budget/vs-actual", h.GetBudgetVsActual)
-
-	r.Get("/goals/progress", h.GetGoalsProgress)
-	r.Get("/goals/projection", h.GetGoalProjection)
-
 	r.Get("/stats/summary", h.GetStatsSummary)
 	r.Get("/stats/by-category", h.GetStatsByCategory)
 	r.Get("/stats/by-currency", h.GetStatsByCurrency)

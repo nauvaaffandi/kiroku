@@ -112,3 +112,10 @@ func (h *Handler) GetStatsByCategory(w http.ResponseWriter, r *http.Request) {
 		"date_to":    dateTo,
 	})
 }
+
+func safeDiv(a, b float64) float64 {
+	if b == 0 {
+		return 0
+	}
+	return a / b
+}

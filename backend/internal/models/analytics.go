@@ -83,61 +83,6 @@ type CurrencyBalanceSummary struct {
 	ConvertedTotal float64 `json:"converted_total"`
 }
 
-type BudgetItem struct {
-	CategoryID   string  `json:"category_id"`
-	CategoryName string  `json:"category_name"`
-	Icon         string  `json:"icon"`
-	Color        string  `json:"color"`
-	BudgetAmount float64 `json:"budget_amount"`
-	BudgetPeriod string  `json:"budget_period"`
-	Spent        float64 `json:"spent"`
-	Remaining    float64 `json:"remaining"`
-	ProgressPct  float64 `json:"progress_pct"`
-	Status       string  `json:"status"`
-}
-
-type BudgetVsActual struct {
-	CategoryID   string  `json:"category_id"`
-	CategoryName string  `json:"category_name"`
-	Icon         string  `json:"icon"`
-	Color        string  `json:"color"`
-	BudgetAmount float64 `json:"budget_amount"`
-	BudgetPeriod string  `json:"budget_period"`
-	ActualSpent  float64 `json:"actual_spent"`
-	Variance     float64 `json:"variance"`
-	VariancePct  float64 `json:"variance_pct"`
-}
-
-type GoalItem struct {
-	CategoryID   string
-	CategoryName string
-	Icon         string
-	Color        string
-	TargetAmount float64
-	TargetPeriod string
-}
-
-type GoalProgress struct {
-	CategoryID          string  `json:"category_id"`
-	CategoryName        string  `json:"category_name"`
-	Icon                string  `json:"icon"`
-	Color               string  `json:"color"`
-	TargetAmount        float64 `json:"target_amount"`
-	TargetPeriod        string  `json:"target_period"`
-	CurrentAmount       float64 `json:"current_amount"`
-	ProgressPct         float64 `json:"progress_pct"`
-	Remaining           float64 `json:"remaining"`
-	ProjectedCompletion string  `json:"projected_completion"`
-	Status              string  `json:"status"`
-}
-
-type GoalProjectionPoint struct {
-	Period           string  `json:"period"`
-	ActualCumulative float64 `json:"actual_cumulative"`
-	TargetCumulative float64 `json:"target_cumulative"`
-	TargetTotal      float64 `json:"target_total"`
-}
-
 type Config struct {
 	FXBaseCurrency string
 }

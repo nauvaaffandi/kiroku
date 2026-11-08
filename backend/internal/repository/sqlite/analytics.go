@@ -392,22 +392,6 @@ func (r *AnalyticsRepo) OutlookForecast(ctx context.Context, filter domain.Analy
 	return nil, fmt.Errorf("not implemented")
 }
 
-func (r *AnalyticsRepo) BudgetSummary(ctx context.Context, filter domain.AnalyticsFilter) ([]domain.BudgetItem, error) {
-	return nil, fmt.Errorf("not implemented")
-}
-
-func (r *AnalyticsRepo) BudgetVsActual(ctx context.Context, filter domain.AnalyticsFilter) ([]domain.CategoryPlanned, error) {
-	return nil, fmt.Errorf("not implemented")
-}
-
-func (r *AnalyticsRepo) GoalsProgress(ctx context.Context, filter domain.AnalyticsFilter) ([]domain.GoalItem, error) {
-	return nil, fmt.Errorf("not implemented")
-}
-
-func (r *AnalyticsRepo) GoalsProjection(ctx context.Context, filter domain.AnalyticsFilter) ([]domain.ProjectionPoint, error) {
-	return nil, fmt.Errorf("not implemented")
-}
-
 func (r *AnalyticsRepo) StatsSummary(ctx context.Context, filter domain.AnalyticsFilter) ([]domain.CurrencyStats, error) {
 	return nil, fmt.Errorf("not implemented")
 }

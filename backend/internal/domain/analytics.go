@@ -47,23 +47,6 @@ type BalanceTrendPoint struct {
 	Balance float64   `json:"balance"`
 }
 
-type BudgetItem struct {
-	CategoryID   string  `json:"category_id"`
-	CategoryName string  `json:"category_name"`
-	Currency     string  `json:"currency"`
-	Planned      float64 `json:"planned"`
-	Actual       float64 `json:"actual"`
-	Remaining    float64 `json:"remaining"`
-}
-
-type GoalItem struct {
-	ID           string  `json:"id"`
-	Name         string  `json:"name"`
-	TargetAmount float64 `json:"target_amount"`
-	CurrentAmount float64 `json:"current_amount"`
-	Currency     string  `json:"currency"`
-}
-
 type CategoryStats struct {
 	CategoryID   string  `json:"category_id"`
 	CategoryName string  `json:"category_name"`
