@@ -77,6 +77,7 @@ func main() {
 	fxRepo := sqlite.NewFXRepo(database)
 	labelsRepo := sqlite.NewLabelsRepo(database)
 	pushRepo := sqlite.NewPushSubscriptionRepo(database)
+	goalsRepo := sqlite.NewGoalsRepo(database)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -113,6 +114,9 @@ func main() {
 
 			catHandler := httpdelivery.NewCategoriesHandler(categoriesRepo)
 			r.Mount("/categories", catHandler.Routes())
+
+			goalsHandler := httpdelivery.NewGoalsHandler(goalsRepo)
+			r.Mount("/goals", goalsHandler.Routes())
 
 			txnHandler := httpdelivery.NewTransactionsHandler(transactionsRepo)
 			r.Mount("/transactions", txnHandler.Routes())

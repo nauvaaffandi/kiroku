@@ -11,7 +11,11 @@ import (
 )
 
 func genID() string {
-	return uuid.New().String()
+	u, err := uuid.NewV7()
+	if err != nil {
+		return uuid.New().String()
+	}
+	return u.String()
 }
 
 func joinStrings(slice []string, sep string) string {
