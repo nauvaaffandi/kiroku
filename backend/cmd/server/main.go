@@ -97,9 +97,9 @@ func main() {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	r.Get("/api/docs/*", httpSwagger.Handler(
+	r.Get("/api/docs/*", auth.AuthMiddleware(cfg)(httpSwagger.Handler(
 		httpSwagger.URL("/api/docs/swagger.json"),
-	))
+	)).ServeHTTP)
 
 	// Mount shared public routes (no auth required)
 	sharedHandler := httpdelivery.NewSharedHandler(sharedRepo)
@@ -113,6 +113,7 @@ func main() {
 		// Public /auth routes mounted above; all remaining routes require auth
 		r.Group(func(r chi.Router) {
 			r.Use(auth.AuthMiddleware(cfg))
+			r.Use(auth.CSRFMiddleware())
 
 			r.Mount("/shared", sharedHandler.Routes())
 

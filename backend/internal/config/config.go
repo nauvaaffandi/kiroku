@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -40,6 +41,9 @@ func Load() (*Config, error) {
 	addr := os.Getenv("PORT")
 	if addr == "" {
 		addr = "8080"
+	}
+	if os.Getenv("JWT_SECRET") == "" {
+		return nil, fmt.Errorf("JWT_SECRET is required; set a strong non-empty signing secret")
 	}
 	return &Config{
 		Addr: ":" + addr,

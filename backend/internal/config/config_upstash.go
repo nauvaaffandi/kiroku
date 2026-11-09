@@ -18,7 +18,7 @@ func LogRetention() string {
 	return GetEnv("LOG_RETENTION", "90d")
 }
 
-// TunnelEnabled returns true unless CLOUDFLARE_TUNNEL_ENABLED is "false".
+// TunnelEnabled returns true only when CLOUDFLARE_TUNNEL_ENABLED is "true".
 func TunnelEnabled() bool {
-	return os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") != "false"
+	return os.Getenv("CLOUDFLARE_TUNNEL_ENABLED") == "true"
 }

@@ -10,7 +10,9 @@ import (
 
 func TestConfig_Load(t *testing.T) {
 	os.Setenv("PORT", "9090")
+	os.Setenv("JWT_SECRET", "test-secret-do-not-use-in-production")
 	defer os.Unsetenv("PORT")
+	defer os.Unsetenv("JWT_SECRET")
 
 	cfg, err := Load()
 	require.NoError(t, err)
@@ -19,7 +21,9 @@ func TestConfig_Load(t *testing.T) {
 
 func TestConfig_LoadDefaultAddr(t *testing.T) {
 	os.Unsetenv("PORT")
+	os.Setenv("JWT_SECRET", "test-secret-do-not-use-in-production")
 	defer os.Unsetenv("PORT")
+	defer os.Unsetenv("JWT_SECRET")
 
 	cfg, err := Load()
 	require.NoError(t, err)

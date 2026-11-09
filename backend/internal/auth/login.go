@@ -67,6 +67,14 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	setAuthCookies(w, accessToken, refreshToken, accessTTL, refreshTTL)
 
+	csrfToken, err := generateCSRFToken()
+	if err != nil {
+		log.Error().Err(err).Msg("auth: generate csrf token")
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	setCSRFTokenCookie(w, csrfToken)
+
 	log.Info().
 		Str("component", "auth").
 		Str("user_id", userID).
@@ -74,7 +82,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		Msg("auth: login success")
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "csrf_token": csrfToken})
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
