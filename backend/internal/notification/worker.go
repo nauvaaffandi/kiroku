@@ -13,34 +13,34 @@ import (
 // Worker periodically runs to process due delivery jobs. It respects context cancellation
 // for clean shutdown.
 type Worker struct {
-	service     *Service
-	interval    time.Duration
-	stop        chan struct{}
-	stopped     chan struct{}
-	mu          sync.Mutex
-	running     bool
-	cancel      context.CancelFunc
+	service  *Service
+	interval time.Duration
+	stop     chan struct{}
+	stopped  chan struct{}
+	mu       sync.Mutex
+	running  bool
+	cancel   context.CancelFunc
 }
 
 // Config describes settings for the notification delivery worker.
 type Config struct {
-	Interval     time.Duration
-	BatchSize    int
-	MaxAttempts  int
-	RetryBase    time.Duration
-	LockTimeout  time.Duration
-	Enabled      bool
+	Interval    time.Duration
+	BatchSize   int
+	MaxAttempts int
+	RetryBase   time.Duration
+	LockTimeout time.Duration
+	Enabled     bool
 }
 
 // NewWorker builds a notification delivery worker. The given context is used for
 // cancellation; the worker listens to its Done() channel.
 func NewWorker(service *Service, cfg Config, ctx context.Context) *Worker {
 	w := &Worker{
-		service:   service,
-		interval:  cfg.Interval,
-		stop:      make(chan struct{}),
-		stopped:   make(chan struct{}),
-		mu:        sync.Mutex{},
+		service:  service,
+		interval: cfg.Interval,
+		stop:     make(chan struct{}),
+		stopped:  make(chan struct{}),
+		mu:       sync.Mutex{},
 	}
 
 	if !cfg.Enabled {
@@ -79,7 +79,14 @@ func (w *Worker) loop(ctx context.Context, cfg Config) {
 
 	// Initial immediate run so notifications are delivered promptly after creation.
 	if _, err := w.service.ProcessPending(ctx, cfg.BatchSize, cfg.MaxAttempts, cfg.RetryBase, cfg.LockTimeout); err != nil {
-		log.Error().Err(err).Msg("notification: failed to run initial delivery pass")
+		if ctx.Err() != nil {
+			w.mu.Lock()
+			w.running = false
+			w.mu.Unlock()
+			log.Debug().Msg("notification: worker stopped")
+			return
+		}
+		log.Warn().Err(err).Msg("notification: initial delivery pass failed; will retry on schedule")
 	}
 
 	for {

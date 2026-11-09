@@ -25,52 +25,13 @@
     </header>
 
     <div class="reports-body">
-      <aside class="reports-sidebar">
-        <section class="sidebar-section">
-          <h3 class="sidebar-label">{{ t('reports.spendingReport') }}</h3>
-          <div class="sidebar-group">
-            <div>
-              <label class="field-label">{{ t('reports.period') }}</label>
-              <select v-model="spendingParams.period" @change="fetchSpending" class="field-select">
-                <option value="this_week">This Week</option>
-                <option value="this_month">This Month</option>
-                <option value="this_year">This Year</option>
-                <option value="last_month">Last Month</option>
-                <option value="last_year">Last Year</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">{{ t('reports.groupBy') }}</label>
-              <select v-model="spendingParams.group_by" @change="fetchSpending" class="field-select">
-                <option value="category">{{ t('reports.category') }}</option>
-                <option value="parent_category">{{ t('reports.parentCategory') }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">{{ t('reports.accountOptional') }}</label>
-              <select v-model="spendingParams.account_id" @change="fetchSpending" class="field-select">
-                <option value="">{{ t('reports.allAccounts') }}</option>
-                <option v-for="acc in accountsStore.accounts" :key="acc.id" :value="acc.id">
-                  {{ acc.name }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </section>
-
-        <section class="sidebar-section">
-          <h3 class="sidebar-label">{{ t('reports.trendReport') }}</h3>
-          <div>
-            <label class="field-label">{{ t('reports.months') }}</label>
-            <select v-model="trendParams.months" @change="fetchTrend" class="field-select">
-              <option value="6">{{ 6 }} {{ t('reports.months') }}</option>
-              <option value="12" selected>{{ 12 }} {{ t('reports.months') }}</option>
-              <option value="24">{{ 24 }} {{ t('reports.months') }}</option>
-            </select>
-          </div>
-        </section>
-      </aside>
-
+      <ReportsSidebar
+        :spending-params="spendingParams"
+        :trend-params="trendParams"
+        :accounts="accountsStore.accounts"
+        @spending="fetchSpending"
+        @trend="fetchTrend"
+      />
       <main class="reports-main">
         <div class="tab-panel">
           <div class="tab-bar">
@@ -78,55 +39,17 @@
             <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'trend' }]" @click="activeTab = 'trend'">{{ t('reports.trendReport') }}</button>
             <button :class="['tab-btn', { 'tab-btn--active': activeTab === 'cashflow' }]" @click="activeTab = 'cashflow'">{{ t('reports.cashflowTable.title') }}</button>
           </div>
-
           <div v-if="activeTab === 'spending'" class="tab-content">
-            <section class="chart-section">
-              <div class="chart-header">
-                <h2 class="chart-title">{{ t('reports.spendingByCategory') }}</h2>
-                <span class="period-badge">{{ spendingParams.period }}</span>
-              </div>
-              <div class="spending-chart" ref="spendingChart"></div>
-              <div class="table-wrap" v-if="spendingReport.groups">
-                <table class="data-table">
-                  <thead>
-                    <tr class="table-header-row">
-                      <th class="table-head">Category</th>
-                      <th class="table-head table-cell--numeric">Amount</th>
-                      <th class="table-head table-cell--numeric">Count</th>
-                      <th class="table-head table-cell--numeric">%</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-body">
-                    <tr v-for="group in spendingReport.groups" :key="group.id" class="table-row">
-                      <td class="table-cell">
-                        <div class="category-row">
-                          <span class="color-dot" :style="{ backgroundColor: group.color }"></span>
-                          <span class="category-name">{{ group.name }}</span>
-                        </div>
-                        <div class="children-list" v-if="group.children && group.children.length > 0">
-                          <div v-for="child in group.children" :key="child.id" class="child-row">
-                            <span class="color-dot color-dot--sm" :style="{ backgroundColor: child.color }"></span>
-                            <span>{{ child.name }}: {{ formatDisplayNumber(child.amount, 'expense') }}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="table-cell table-cell--amount">{{ formatDisplayNumber(group.amount, 'expense') }}</td>
-                      <td class="table-cell table-cell--count">{{ group.count }}</td>
-                      <td class="table-cell table-cell--pct">{{ totalAmount > 0 ? ((group.amount / totalAmount) * 100).toFixed(1) : 0 }}%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
+            <ReportsSpendingPanel
+              :period="spendingParams.period"
+              :groups="spendingReport.groups"
+              :total-amount="totalAmount"
+              :format-display-number="formatDisplayNumber"
+            />
           </div>
-
           <div v-if="activeTab === 'trend'" class="tab-content">
-            <section class="trend-section">
-              <h2 class="trend-title">{{ t('reports.monthlyTrend') }}</h2>
-              <div class="trend-chart" ref="trendChart"></div>
-            </section>
+            <ReportsTrendPanel :series="trendReport.series" />
           </div>
-
           <div v-if="activeTab === 'cashflow'" class="tab-content">
             <CashflowTable :date-from="spendingParams.date_from" :date-to="spendingParams.date_to" />
           </div>
@@ -137,357 +60,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from '@/locales'
-import { useReportsStore } from '@/stores/reports'
-import { useAccountsStore } from '@/stores/accounts'
-import { useUIStore } from '@/stores/ui'
-import { useSettingsStore } from '@/stores/settings'
-import { useCurrencies } from '@/composables/useCurrencies'
-import { formatAmountForDisplay, formatNumber as formatBaseNumber } from '@/utils/amountDisplay'
-import { api } from '@/api/client'
-import { exportToExcel } from '@/utils/exportExcel'
-import * as echarts from 'echarts/core'
-import { BarChart, LineChart } from 'echarts/charts'
-import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
+import { useReportsPage } from '@/composables/useReportsPage'
+import ReportsSidebar from '@/components/reports/ReportsSidebar.vue'
+import ReportsSpendingPanel from '@/components/reports/ReportsSpendingPanel.vue'
+import ReportsTrendPanel from '@/components/reports/ReportsTrendPanel.vue'
 import CashflowTable from '@/components/charts/CashflowTable.vue'
 
-echarts.use([BarChart, LineChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent, CanvasRenderer])
-
-const reportsStore = useReportsStore()
-const accountsStore = useAccountsStore()
-const uiStore = useUIStore()
-const settingsStore = useSettingsStore()
 const { t } = useI18n()
-
-const spendingChart = ref<HTMLElement | null>(null)
-const trendChart = ref<HTMLElement | null>(null)
-let spendingChartInstance: echarts.ECharts | null = null
-let trendChartInstance: echarts.ECharts | null = null
-
 const activeTab = ref('spending')
-
-const spendingParams = ref({ 
-  period: 'this_month', 
-  group_by: 'category', 
-  account_id: '',
-  date_from: '',
-  date_to: '',
-})
-const trendParams = ref({ months: '12', account_id: '', category_id: '' })
-
-const { currencies } = useCurrencies()
-const selectedCurrency = ref(settingsStore.baseCurrency)
-
-const spendingReport = ref({ period: '', groups: [] as any[] })
-const trendReport = ref({ series: [] as any[] })
-
-const totalAmount = computed(() => (spendingReport.value.groups ?? []).reduce((sum, g) => sum + g.amount, 0))
-
-const formatDisplayNumber = (num: number, type?: 'income' | 'expense' | 'transfer') => {
-  if (settingsStore.isHideAmounts) {
-    if (type) {
-      return formatAmountForDisplay(num, type)
-    }
-    const symbol = formatBaseNumber(0).replace(/\d/g, '')
-    return `${symbol}*****`
-  }
-  return formatBaseNumber(num)
-}
-
-const fetchSpending = async () => {
-  const res = await reportsStore.getSpending(spendingParams.value)
-  spendingReport.value = res
-  updateSpendingChart()
-}
-
-const fetchTrend = async () => {
-  const res = await reportsStore.getTrend({ months: parseInt(trendParams.value.months) })
-  trendReport.value = res
-  updateTrendChart()
-}
-
-const updateSpendingChart = () => {
-  if (!spendingChart.value) return
-  if (spendingChartInstance) spendingChartInstance.dispose()
-  spendingChartInstance = echarts.init(spendingChart.value)
-  const data = (spendingReport.value.groups ?? []).slice(0, 10).reverse()
-  spendingChartInstance.setOption({
-    title: { text: 'Top Categories', left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
-    tooltip: { trigger: 'item', formatter: '{b}: ¥{c} ({d}%)' },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
-    yAxis: { type: 'category', data: data.map(d => d.name), inverse: true },
-    series: [{ type: 'bar', data: data.map(d => ({ value: d.amount, itemStyle: { color: d.color } })), label: { show: true, position: 'right', formatter: '¥{c}' } }]
-  })
-}
-
-const updateTrendChart = () => {
-  if (!trendChart.value) return
-  if (trendChartInstance) trendChartInstance.dispose()
-  trendChartInstance = echarts.init(trendChart.value)
-  const data = trendReport.value.series
-  trendChartInstance.setOption({
-    title: { text: 'Monthly Income vs Expense', left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
-    tooltip: { trigger: 'axis' },
-    legend: { data: ['Income', 'Expense', 'Net'], bottom: 0, textStyle: { fontSize: 11 } },
-    grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-    xAxis: { type: 'category', data: data.map(d => d.month) },
-    yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
-    series: [
-      { name: 'Income', type: 'line', data: data.map(d => d.income), smooth: true, itemStyle: { color: '#28a745' } },
-      { name: 'Expense', type: 'line', data: data.map(d => d.expense), smooth: true, itemStyle: { color: '#dc3545' } },
-      { name: 'Net', type: 'line', data: data.map(d => d.net), smooth: true, itemStyle: { color: '#4a90d9' } }
-    ]
-  })
-}
-
-const exportCSV = async () => {
-  try {
-    const params = { ...spendingParams.value, currency: selectedCurrency.value }
-    const response = await api.get('/api/v1/reports/spending/export', { 
-      params,
-      responseType: 'blob'
-    })
-    const url = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `spending-report-${spendingParams.value.period}-${new Date().toISOString().split('T')[0]}.csv`)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    uiStore.success('CSV exported successfully')
-  } catch (e) {
-    uiStore.error('Failed to export CSV')
-  }
-}
-
-const exportExcel = async () => {
-  try {
-    const params = { ...spendingParams.value, currency: selectedCurrency.value }
-    const response = await reportsStore.getSpending(params)
-    const groups = Array.isArray(response.groups) ? response.groups : []
-    const headers = ['Category', 'Amount', 'Count', '%']
-    const totalAmount = groups.reduce((sum, g) => sum + (g.amount || 0), 0)
-    const rows = groups.map((g: any) => [
-      g.name || '',
-      g.amount || 0,
-      g.count || 0,
-      totalAmount > 0 ? (((g.amount || 0) / totalAmount) * 100).toFixed(1) + '%' : '0%'
-    ])
-    exportToExcel(headers, rows, `spending-report-${spendingParams.value.period}-${new Date().toISOString().split('T')[0]}`)
-    uiStore.success('Excel exported successfully')
-  } catch (e) {
-    uiStore.error('Failed to export Excel')
-  }
-}
-
-onMounted(async () => {
-  await accountsStore.fetchAccounts()
-  
-  const now = new Date()
-  spendingParams.value.date_to = now.toISOString().split('T')[0]
-  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  spendingParams.value.date_from = lastMonth.toISOString().split('T')[0]
-  
-  await Promise.all([fetchSpending(), fetchTrend()])
-})
-
-onMounted(() => {
-  window.addEventListener('resize', () => {
-    spendingChartInstance?.resize()
-    trendChartInstance?.resize()
-  })
-})
+const {
+  spendingParams, trendParams, accountsStore, spendingReport, trendReport, totalAmount,
+  formatDisplayNumber, fetchSpending, fetchTrend, exportCSV, exportExcel, currencies,
+  selectedCurrency
+} = useReportsPage()
 </script>
 
 <style scoped>
 @reference "tailwindcss";
 
-.reports-page {
-  @apply min-h-screen flex flex-col pb-20;
-}
-
-.reports-header {
-  @apply p-4 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800;
-}
-
-.reports-title {
-  @apply text-xl font-bold text-zinc-900 dark:text-zinc-100;
-}
-
-.toolbar {
-  @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3;
-}
-
-.currency-select,
-.field-select {
+.reports-page { @apply min-h-screen flex flex-col pb-20; }
+.reports-header { @apply p-4 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800; }
+.reports-title { @apply text-xl font-bold text-zinc-900 dark:text-zinc-100; }
+.toolbar { @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3; }
+.currency-select {
   @apply w-full sm:w-auto px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500;
 }
-
 .export-btn {
   @apply flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none;
 }
-
-.reports-body {
-  @apply flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 p-4 flex-1;
-}
-
-.reports-sidebar {
-  @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm h-fit;
-}
-
-.sidebar-section {
-  @apply mb-6;
-}
-
-.sidebar-label {
-  @apply text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3;
-}
-
-.sidebar-group {
-  @apply space-y-3;
-}
-
-.field-label {
-  @apply block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1;
-}
-
-.reports-main {
-  @apply flex flex-col gap-4;
-}
-
-.tab-panel {
-  @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm;
-}
-
-.tab-bar {
-  @apply flex bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 overflow-x-auto;
-}
-
-.tab-btn {
-  @apply flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2;
-}
-
-.tab-btn--active {
-  @apply text-sky-500 border-sky-500 bg-white dark:bg-zinc-900;
-}
-
-.tab-btn--inactive {
-  @apply text-zinc-600 dark:text-zinc-400 border-transparent hover:text-zinc-900 dark:hover:text-zinc-100;
-}
-
-.tab-content {
-  @apply p-4;
-}
-
-.chart-section {
-  @apply bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700 mb-4;
-}
-
-.trend-section {
-  @apply bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700;
-}
-
-.chart-header {
-  @apply flex items-center justify-between mb-4 flex-wrap gap-2;
-}
-
-.chart-title {
-  @apply text-base font-semibold text-zinc-900 dark:text-zinc-100;
-}
-
-.trend-title {
-  @apply text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-4;
-}
-
-.period-badge {
-  @apply text-xs text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-700;
-}
-
-.table-wrap {
-  @apply overflow-x-auto;
-}
-
-.data-table {
-  @apply w-full text-left text-sm border-collapse;
-}
-
-.table-header-row {
-  @apply border-b border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-800;
-}
-
-.table-head {
-  @apply p-3 font-semibold;
-}
-
-.table-cell {
-  @apply p-3;
-}
-
-.table-cell--numeric {
-  @apply text-right;
-}
-
-.table-cell--amount {
-  @apply text-right font-medium text-zinc-900 dark:text-zinc-100;
-}
-
-.table-cell--count,
-.table-cell--pct {
-  @apply text-right text-zinc-600 dark:text-zinc-400;
-}
-
-.table-body {
-  @apply divide-y divide-zinc-200 dark:divide-zinc-700;
-}
-
-.table-row {
-  @apply hover:bg-zinc-100 dark:hover:bg-zinc-800/50;
-}
-
-.category-row {
-  @apply flex items-center gap-2;
-}
-
-.color-dot {
-  @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
-}
-
-.color-dot--sm {
-  @apply w-2 h-2 rounded-full flex-shrink-0;
-}
-
-.category-name {
-  @apply font-medium text-zinc-900 dark:text-zinc-100;
-}
-
-.children-list {
-  @apply ml-4 pl-2 border-l-2 border-zinc-200 dark:border-zinc-700 mt-1 space-y-1;
-}
-
-.child-row {
-  @apply flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 py-0.5;
-}
-
-.spending-chart {
-  @apply w-full mb-4;
-  height: 300px;
-}
-
-.trend-chart {
-  @apply w-full;
-  height: 300px;
-}
-
-@media (min-width: 640px) {
-  .spending-chart {
-    height: 350px;
-  }
-
-  .trend-chart {
-    height: 350px;
-  }
-}
+.reports-body { @apply flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 p-4 flex-1; }
+.reports-main { @apply flex flex-col gap-4; }
+.tab-panel { @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm; }
+.tab-bar { @apply flex bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 overflow-x-auto; }
+.tab-btn { @apply flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2; }
+.tab-btn--active { @apply text-sky-500 border-sky-500 bg-white dark:bg-zinc-900; }
+.tab-content { @apply p-4; }
 </style>

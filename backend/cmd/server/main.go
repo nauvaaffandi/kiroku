@@ -14,9 +14,9 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	_ "kiroku/backend/docs"
-	"kiroku/backend/internal/budgets"
 	"kiroku/backend/internal/analytics"
 	"kiroku/backend/internal/auth"
+	"kiroku/backend/internal/budgets"
 	"kiroku/backend/internal/config"
 	"kiroku/backend/internal/db"
 	httpdelivery "kiroku/backend/internal/delivery/http"
@@ -152,21 +152,21 @@ func main() {
 				pushRepo,
 				pushSender,
 				notification.ServiceConfig{
-					MaxAttempts:  config.NotificationWorkerMaxAttempts(),
-					RetryBase:    config.NotificationWorkerRetryBase(),
-					LockTimeout:  config.NotificationWorkerLockTimeout(),
+					MaxAttempts: config.NotificationWorkerMaxAttempts(),
+					RetryBase:   config.NotificationWorkerRetryBase(),
+					LockTimeout: config.NotificationWorkerLockTimeout(),
 				},
 			)
 
 			// Start the delivery worker
 			notifCtx, notifCancel := context.WithCancel(context.Background())
 			worker := notification.NewWorker(notifSvc, notification.Config{
-				Interval:     config.NotificationWorkerInterval(),
-				BatchSize:    config.NotificationWorkerBatchSize(),
-				MaxAttempts:  config.NotificationWorkerMaxAttempts(),
-				RetryBase:    config.NotificationWorkerRetryBase(),
-				LockTimeout:  config.NotificationWorkerLockTimeout(),
-				Enabled:      config.NotificationWorkerEnabled(),
+				Interval:    config.NotificationWorkerInterval(),
+				BatchSize:   config.NotificationWorkerBatchSize(),
+				MaxAttempts: config.NotificationWorkerMaxAttempts(),
+				RetryBase:   config.NotificationWorkerRetryBase(),
+				LockTimeout: config.NotificationWorkerLockTimeout(),
+				Enabled:     config.NotificationWorkerEnabled(),
 			}, notifCtx)
 			_ = notifCtx
 			defer notifCancel()
@@ -184,7 +184,9 @@ func main() {
 				ticker := time.NewTicker(5 * time.Minute)
 				defer ticker.Stop()
 				if err := budgetSvc.ReconcileAll(reconCtx); err != nil {
-					log.Warn().Err(err).Msg("budget: initial reconciliation failed")
+					if reconCtx.Err() == nil {
+						log.Warn().Err(err).Msg("budget: initial reconciliation failed; will retry on schedule")
+					}
 				}
 				for {
 					select {

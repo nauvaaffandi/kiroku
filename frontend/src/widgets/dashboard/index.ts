@@ -1,0 +1,5 @@
+export { default as DashboardSummaryWidget } from './DashboardSummaryWidget.vue'
+export { default as DashboardAccountsWidget } from './DashboardAccountsWidget.vue'
+export { default as DashboardChartsWidget } from './DashboardChartsWidget.vue'
+export { default as RecentTransactionsWidget } from './RecentTransactionsWidget.vue'
+export { useDashboardFormatting } from './useDashboardFormatting'

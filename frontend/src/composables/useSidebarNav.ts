@@ -1,0 +1,59 @@
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useUIStore } from '@/stores/ui'
+import { useI18n } from '@/locales'
+import DashboardIcon from '@/components/icons/DashboardIcon.vue'
+import TransactionsIcon from '@/components/icons/TransactionsIcon.vue'
+import CalendarIcon from '@/components/icons/CalendarIcon.vue'
+import AccountsIcon from '@/components/icons/AccountsIcon.vue'
+import CategoriesIcon from '@/components/icons/CategoriesIcon.vue'
+import LabelsIcon from '@/components/icons/LabelsIcon.vue'
+import ScheduledIcon from '@/components/icons/ScheduledIcon.vue'
+import ReportsIcon from '@/components/icons/ReportsIcon.vue'
+import SharedAccessIcon from '@/components/icons/SharedAccessIcon.vue'
+import BudgetIcon from '@/components/icons/BudgetIcon.vue'
+import GoalsIcon from '@/components/icons/GoalsIcon.vue'
+
+export function useSidebarNav() {
+  const route = useRoute()
+  const uiStore = useUIStore()
+  const { t } = useI18n()
+  const isMobile = computed(() => window.innerWidth < 768)
+
+  const mainNavItems = [
+    { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, color: '#3b82f6' },
+    { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon, color: '#10b981' },
+    { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' }
+  ]
+
+  const analyticsItems = [
+    { path: '/analytics/balance', label: t('nav.analyticsBalance'), color: '#6366f1' },
+    { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), color: '#8b5cf6' },
+    { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), color: '#ec4899' },
+    { path: '/analytics/spending', label: t('nav.analyticsSpending'), color: '#f43f5e' },
+    { path: '/analytics/budget', label: t('nav.analyticsBudget'), icon: BudgetIcon, color: '#14b8a6' },
+    { path: '/analytics/goals', label: t('nav.analyticsGoals'), icon: GoalsIcon, color: '#eab308' }
+  ]
+
+  const bottomMainNavItems = [
+    { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon, color: '#06b6d4' },
+    { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon, color: '#84cc16' },
+    { path: '/labels', label: t('nav.labels'), icon: LabelsIcon, color: '#6366f1' },
+    { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon, color: '#0ea5e9' },
+    { path: '/reports', label: t('nav.reports'), icon: ReportsIcon, color: '#a855f7' },
+    { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon, color: '#f97316' }
+  ]
+
+  const settingsItems = [{ path: '/settings', label: t('nav.settings') }]
+
+  const isActive = (path: string) => route.path.startsWith(path)
+
+  const closeMobileSidebar = () => {
+    if (isMobile.value) uiStore.sidebarOpen = false
+  }
+
+  return {
+    mainNavItems, analyticsItems, bottomMainNavItems, settingsItems,
+    isActive, closeMobileSidebar, isMobile, t
+  }
+}

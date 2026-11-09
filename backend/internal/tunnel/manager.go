@@ -148,42 +148,48 @@ func (m *Manager) setURL(url string) {
 	}
 
 	// Push to Upstash
-	go m.pushToUpstash(url)
+	go func() {
+		if err := m.pushToUpstash(url); err != nil {
+			log.Error().Err(err).Msg("tunnel: upstash push failed")
+		}
+	}()
 }
 
-func (m *Manager) pushToUpstash(url string) {
+func (m *Manager) pushToUpstash(url string) error {
 	if m.upstashURL == "" || m.upstashToken == "" {
-		return
+		return nil
 	}
 
 	body, err := json.Marshal([]any{"SET", "kiroku:backend:url", url, "EX", 86400})
 	if err != nil {
-		log.Error().Err(err).Msg("tunnel: marshal upstash payload")
-		return
+		return fmt.Errorf("marshal upstash payload: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", m.upstashURL, bytes.NewReader(body))
-	if err != nil {
-		log.Error().Err(err).Msg("tunnel: create upstash request")
-		return
-	}
-	req.Header.Set("Authorization", "Bearer "+m.upstashToken)
-	req.Header.Set("Content-Type", "application/json")
+	var lastErr error
+	for attempt := 1; attempt <= 3; attempt++ {
+		req, err := http.NewRequest("POST", m.upstashURL, bytes.NewReader(body))
+		if err != nil {
+			return fmt.Errorf("create upstash request: %w", err)
+		}
+		req.Header.Set("Authorization", "Bearer "+m.upstashToken)
+		req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Error().Err(err).Msg("tunnel: upstash request failed")
-		return
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("upstash request failed (attempt %d): %w", attempt, err)
+			time.Sleep(time.Duration(attempt) * time.Second)
+			continue
+		}
+		resp.Body.Close()
+		if resp.StatusCode == http.StatusOK {
+			log.Info().Msg("tunnel: URL pushed to Upstash")
+			return nil
+		}
+		lastErr = fmt.Errorf("upstash non-OK response (attempt %d): status %d", attempt, resp.StatusCode)
+		time.Sleep(time.Duration(attempt) * time.Second)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		log.Error().Int("status", resp.StatusCode).Msg("tunnel: upstash non-OK response")
-		return
-	}
-
-	log.Info().Msg("tunnel: URL pushed to Upstash")
+	return fmt.Errorf("upstash push failed after retries: %w", lastErr)
 }
 
 func (m *Manager) Stop() {
