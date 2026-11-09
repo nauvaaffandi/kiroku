@@ -14,6 +14,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	_ "kiroku/backend/docs"
+	"kiroku/backend/internal/budgets"
 	"kiroku/backend/internal/analytics"
 	"kiroku/backend/internal/auth"
 	"kiroku/backend/internal/config"
@@ -124,9 +125,6 @@ func main() {
 			goalsHandler := httpdelivery.NewGoalsHandler(goalsRepo)
 			r.Mount("/goals", goalsHandler.Routes())
 
-			txnHandler := httpdelivery.NewTransactionsHandler(transactionsRepo)
-			r.Mount("/transactions", txnHandler.Routes())
-
 			tmplHandler := httpdelivery.NewTemplatesHandler(templatesRepo)
 			r.Mount("/templates", tmplHandler.Routes())
 
@@ -177,6 +175,34 @@ func main() {
 			// Mount notification handler
 			notificationsHandler := httpdelivery.NewNotificationsHandler(notifSvc)
 			r.Mount("/notifications", notificationsHandler.Routes())
+
+			// Mount budgets and transaction handler with notification hook
+			budgetRepo := sqlite.NewBudgetsRepo(database)
+			budgetSvc := budgets.NewService(budgetRepo, notifSvc)
+			reconCtx, reconCancel := context.WithCancel(context.Background())
+			go func() {
+				ticker := time.NewTicker(5 * time.Minute)
+				defer ticker.Stop()
+				if err := budgetSvc.ReconcileAll(reconCtx); err != nil {
+					log.Warn().Err(err).Msg("budget: initial reconciliation failed")
+				}
+				for {
+					select {
+					case <-reconCtx.Done():
+						return
+					case <-ticker.C:
+						if err := budgetSvc.ReconcileAll(reconCtx); err != nil {
+							log.Warn().Err(err).Msg("budget: reconciliation failed")
+						}
+					}
+				}
+			}()
+			defer reconCancel()
+			budgetsHandler := httpdelivery.NewBudgetsHandler(budgetRepo)
+			r.Mount("/budgets", budgetsHandler.Routes())
+
+			txnHandler := httpdelivery.NewTransactionsHandler(transactionsRepo, budgetSvc)
+			r.Mount("/transactions", txnHandler.Routes())
 
 			analyticsHandler := analytics.NewHandler(database, config.FXBaseCurrency())
 			r.Mount("/analytics", analyticsHandler.Routes())

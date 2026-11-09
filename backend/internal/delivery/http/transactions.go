@@ -1,6 +1,7 @@
 package httpdelivery
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -8,15 +9,34 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog/log"
+	"kiroku/backend/internal/auth"
 	"kiroku/backend/internal/domain"
 )
 
 type TransactionsHandler struct {
-	repo domain.TransactionRepository
+	repo          domain.TransactionRepository
+	budgetChecker budgetChangeAlerter
 }
 
-func NewTransactionsHandler(repo domain.TransactionRepository) *TransactionsHandler {
-	return &TransactionsHandler{repo: repo}
+type budgetChangeAlerter interface {
+	Check(context.Context, string) error
+}
+
+func NewTransactionsHandler(repo domain.TransactionRepository, checkers ...budgetChangeAlerter) *TransactionsHandler {
+	h := &TransactionsHandler{repo: repo}
+	if len(checkers) > 0 {
+		h.budgetChecker = checkers[0]
+	}
+	return h
+}
+
+func (h *TransactionsHandler) notifyBudgetChange(r *http.Request) {
+	if h.budgetChecker == nil {
+		return
+	}
+	if err := h.budgetChecker.Check(r.Context(), auth.GetUserID(r)); err != nil {
+		log.Warn().Err(err).Msg("budget: post-commit recalculation failed")
+	}
 }
 
 func (h *TransactionsHandler) Routes() chi.Router {
@@ -105,6 +125,7 @@ func (h *TransactionsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"id": txn.ID})
+	h.notifyBudgetChange(r)
 }
 
 func (h *TransactionsHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -139,6 +160,7 @@ func (h *TransactionsHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	h.notifyBudgetChange(r)
 }
 
 func (h *TransactionsHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -156,6 +178,7 @@ func (h *TransactionsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	h.notifyBudgetChange(r)
 }
 
 func (h *TransactionsHandler) Search(w http.ResponseWriter, r *http.Request) {
@@ -240,4 +263,7 @@ func (h *TransactionsHandler) Batch(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{"affected": affected, "errors": []string{}})
+	if affected > 0 {
+		h.notifyBudgetChange(r)
+	}
 }

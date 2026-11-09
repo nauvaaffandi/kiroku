@@ -28,7 +28,7 @@ func TestMigration013_FreshDB(t *testing.T) {
 
 	var version int
 	require.NoError(t, db.QueryRow("SELECT MAX(version) FROM schema_version").Scan(&version))
-	assert.Equal(t, 25, version)
+	assert.Equal(t, 26, version)
 }
 
 func TestMigration013_PartiallyMigratedDB(t *testing.T) {
@@ -46,5 +46,5 @@ func TestMigration013_PartiallyMigratedDB(t *testing.T) {
 
 	var version int
 	require.NoError(t, db2.QueryRow("SELECT MAX(version) FROM schema_version").Scan(&version))
-	assert.Equal(t, 25, version)
+	assert.Equal(t, 26, version)
 }
