@@ -12,6 +12,7 @@ Read this file fully before changing anything. For any UI work, also read [DESIG
 4. **Keep diffs small.** Do the task asked. No drive-by refactors, renames or reformatting of files you were not asked to touch.
 5. **Every user-facing string goes through i18n** (`en`, `ja`, `id`). No hard-coded UI text.
 6. **Verify before claiming done** (see [section 7](#7-definition-of-done)).
+7. **Full modular & reusable.** Always keep code modular and reusable, at most 200 lines per file. If a file exceeds 200 lines, split it into small reusable functions or files used elsewhere. No abstractions for single use, no "for later" configuration.
 
 ## 2. Project snapshot
 
