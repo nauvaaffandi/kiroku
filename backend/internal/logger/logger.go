@@ -58,6 +58,9 @@ var (
 func initLevel() (zerolog.Level, bool) {
 	v := strings.ToLower(os.Getenv("LOG_LEVEL"))
 	if v == "" {
+		if isDev() {
+			return zerolog.DebugLevel, false
+		}
 		return zerolog.InfoLevel, false
 	}
 	lvl, ok := levels[v]
