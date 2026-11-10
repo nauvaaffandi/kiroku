@@ -22,9 +22,8 @@ export function useSidebarNav() {
 
   const mainNavItems = [
     { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, color: '#3b82f6' },
-    { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon, color: '#10b981' },
-    { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' },
-    { path: '/budgets', label: t('nav.budgets'), icon: BudgetIcon, color: '#14b8a6' }
+    { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon, color: '#06b6d4' },
+    { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon, color: '#10b981' }
   ]
 
   const analyticsItems = [
@@ -35,11 +34,12 @@ export function useSidebarNav() {
   ]
 
   const goalsItems = [
-    { path: '/goals', label: t('nav.goals'), icon: GoalsIcon, color: '#eab308' }
+    { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' },
+    { path: '/goals', label: t('nav.goals'), icon: GoalsIcon, color: '#eab308' },
+    { path: '/budgets', label: t('nav.budgets'), icon: BudgetIcon, color: '#14b8a6' }
   ]
 
   const bottomMainNavItems = [
-    { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon, color: '#06b6d4' },
     { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon, color: '#84cc16' },
     { path: '/labels', label: t('nav.labels'), icon: LabelsIcon, color: '#6366f1' },
     { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon, color: '#0ea5e9' },
