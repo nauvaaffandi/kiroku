@@ -35,16 +35,19 @@ export function useSidebarNav() {
 
   const goalsItems = [
     { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' },
-    { path: '/goals', label: t('nav.goals'), icon: GoalsIcon, color: '#eab308' },
-    { path: '/budgets', label: t('nav.budgets'), icon: BudgetIcon, color: '#14b8a6' }
+    { path: '/budgets', label: t('nav.budgets'), icon: BudgetIcon, color: '#14b8a6' },
+    { path: '/goals', label: t('nav.goals'), icon: GoalsIcon, color: '#eab308' }
   ]
 
-  const bottomMainNavItems = [
-    { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon, color: '#84cc16' },
-    { path: '/labels', label: t('nav.labels'), icon: LabelsIcon, color: '#6366f1' },
+  const section3NavItems = [
     { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon, color: '#0ea5e9' },
     { path: '/reports', label: t('nav.reports'), icon: ReportsIcon, color: '#a855f7' },
     { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon, color: '#f97316' }
+  ]
+
+  const section4NavItems = [
+    { path: '/categories', label: t('nav.categories'), icon: CategoriesIcon, color: '#84cc16' },
+    { path: '/labels', label: t('nav.labels'), icon: LabelsIcon, color: '#6366f1' }
   ]
 
   const isActive = (path: string) => route.path.startsWith(path)
@@ -54,7 +57,7 @@ export function useSidebarNav() {
   }
 
   return {
-    mainNavItems, analyticsItems, goalsItems, bottomMainNavItems,
+    mainNavItems, analyticsItems, goalsItems, section3NavItems, section4NavItems,
     isActive, closeMobileSidebar, isMobile, t
   }
 }

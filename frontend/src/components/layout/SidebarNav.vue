@@ -47,6 +47,7 @@
           </ul>
         </div>
       </li>
+      <li class="nav-divider" aria-hidden="true" />
 
       <li v-for="item in goalsItems" :key="item.path">
         <router-link
@@ -58,8 +59,9 @@
           <span>{{ item.label }}</span>
         </router-link>
       </li>
+      <li class="nav-divider" aria-hidden="true" />
 
-      <li v-for="item in bottomMainNavItems" :key="item.path">
+      <li v-for="item in section3NavItems" :key="item.path">
         <router-link
           :to="item.path"
           :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
@@ -68,6 +70,34 @@
           <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
           <span>{{ item.label }}</span>
         </router-link>
+      </li>
+      <li class="nav-divider" aria-hidden="true" />
+
+      <li v-for="item in section4NavItems" :key="item.path">
+        <router-link
+          :to="item.path"
+          :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
+          @click="closeMobileSidebar"
+        >
+          <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
+          <span>{{ item.label }}</span>
+        </router-link>
+      </li>
+      <li class="nav-divider" aria-hidden="true" />
+
+      <li class="nav-group">
+        <router-link
+          to="/settings"
+          :class="['nav-link', { active: isActive('/settings') }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
+          @click="closeMobileSidebar"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #64748b" class="nav-icon flex-shrink-0">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>{{ t('nav.settings') }}</span>
+        </router-link>
+        <ThemeToggle />
       </li>
     </ul>
 
@@ -82,6 +112,7 @@ import { useRoute } from 'vue-router'
 import AnalyticsIcon from '@/components/icons/AnalyticsIcon.vue'
 import { useAnalyticsNavigation } from '@/composables/useAnalyticsNavigation'
 import { useSidebarNav } from '@/composables/useSidebarNav'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 
 const subNavRef = ref<HTMLElement | null>(null)
 const route = useRoute()
@@ -89,7 +120,7 @@ const {
   isAnalyticsOpen, analyticsHeight, isAnalyticsActive, toggleAnalytics
 } = useAnalyticsNavigation(subNavRef)
 const {
-  mainNavItems, analyticsItems, goalsItems, bottomMainNavItems,
+  mainNavItems, analyticsItems, goalsItems, section3NavItems, section4NavItems,
   isActive, closeMobileSidebar, t
 } = useSidebarNav()
 </script>
