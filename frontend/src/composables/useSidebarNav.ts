@@ -23,16 +23,19 @@ export function useSidebarNav() {
   const mainNavItems = [
     { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, color: '#3b82f6' },
     { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon, color: '#10b981' },
-    { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' }
+    { path: '/calendar', label: t('nav.calendar'), icon: CalendarIcon, color: '#f59e0b' },
+    { path: '/budgets', label: t('nav.budgets'), icon: BudgetIcon, color: '#14b8a6' }
   ]
 
   const analyticsItems = [
     { path: '/analytics/balance', label: t('nav.analyticsBalance'), color: '#6366f1' },
     { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), color: '#8b5cf6' },
-    { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), color: '#ec4899' },
-    { path: '/analytics/spending', label: t('nav.analyticsSpending'), color: '#f43f5e' },
-    { path: '/analytics/budget', label: t('nav.analyticsBudget'), icon: BudgetIcon, color: '#14b8a6' },
-    { path: '/analytics/goals', label: t('nav.analyticsGoals'), icon: GoalsIcon, color: '#eab308' }
+    { path: '/analytics/cashflow', label: t('analyticsCashflow'), color: '#ec4899' },
+    { path: '/analytics/spending', label: t('nav.analyticsSpending'), color: '#f43f5e' }
+  ]
+
+  const goalsItems = [
+    { path: '/goals', label: t('nav.goals'), icon: GoalsIcon, color: '#eab308' }
   ]
 
   const bottomMainNavItems = [
@@ -53,7 +56,7 @@ export function useSidebarNav() {
   }
 
   return {
-    mainNavItems, analyticsItems, bottomMainNavItems, settingsItems,
+    mainNavItems, analyticsItems, goalsItems, bottomMainNavItems, settingsItems,
     isActive, closeMobileSidebar, isMobile, t
   }
 }

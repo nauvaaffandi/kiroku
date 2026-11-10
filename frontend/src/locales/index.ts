@@ -13,7 +13,7 @@ interface LocaleMessages {
   transactions: typeof en.transactions
   accounts: typeof en.accounts
   categories: typeof en.categories
-  budgetAnalysis: typeof en.budgetAnalysis
+  budgets: typeof en.budgets
   reports: typeof en.reports
   settings: typeof en.settings
   notifications: typeof en.notifications
