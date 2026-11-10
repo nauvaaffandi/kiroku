@@ -40,12 +40,23 @@
                 :class="['sub-nav-link', { active: route.path === sub.path }, 'text-zinc-600 dark:text-zinc-300 font-medium']"
                 @click="closeMobileSidebar"
               >
-                <component :is="sub.icon" class="sub-nav-icon" v-if="sub.icon" :style="{ color: sub.color }" />
+                <component :is="(sub as any).icon" class="sub-nav-icon" v-if="(sub as any).icon" :style="{ color: sub.color }" />
                 <span>{{ sub.label }}</span>
               </router-link>
             </li>
           </ul>
         </div>
+      </li>
+
+      <li v-for="item in goalsItems" :key="item.path">
+        <router-link
+          :to="item.path"
+          :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
+          @click="closeMobileSidebar"
+        >
+          <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
+          <span>{{ item.label }}</span>
+        </router-link>
       </li>
 
       <li v-for="item in bottomMainNavItems" :key="item.path">
@@ -89,7 +100,7 @@ const {
   isAnalyticsOpen, analyticsHeight, isAnalyticsActive, toggleAnalytics
 } = useAnalyticsNavigation(subNavRef)
 const {
-  mainNavItems, analyticsItems, bottomMainNavItems, settingsItems,
+  mainNavItems, analyticsItems, goalsItems, bottomMainNavItems, settingsItems,
   isActive, closeMobileSidebar, t
 } = useSidebarNav()
 </script>

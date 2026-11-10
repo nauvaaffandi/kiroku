@@ -671,26 +671,6 @@ export default {
       totalTarget: 'Target Total',
       yen: 'yen'
     },
-    budgetTable: {
-      title: 'Anggaran vs Aktual per Kategori',
-      category: 'Kategori',
-      budget: 'Anggaran',
-      actual: 'Aktual',
-      difference: 'Selisih',
-      percent: '%',
-      status: 'Status',
-      progressBar: 'Bar Progres',
-      under: 'Di Bawah',
-      over: 'Melebihi',
-      onTrack: 'On Track'
-    },
-    budgetSummary: {
-      totalBudget: 'Total Anggaran',
-      totalActual: 'Total Aktual',
-      difference: 'Selisih',
-      overCategories: 'Kategori Melebihi',
-      underCategories: 'Kategori Di Bawah'
-    }
   },
   balanceAnalytics: {
     title: 'Analisis Saldo',

@@ -4,19 +4,19 @@
       <span class="goal-icon" :style="{ backgroundColor: goal.color }">{{ goal.icon }}</span>
       <span class="goal-status" :class="goal.status">{{ statusLabel(goal.status) }}</span>
     </div>
-    <div class="goal-name">{{ goal.category_name }}</div>
+    <div class="goal-name">{{ goal.name }}</div>
     <div class="goal-progress-ring" :style="progressRingStyle(goal.progress_pct)">
       <svg class="progress-svg" viewBox="0 0 100 100">
-        <circle 
-          class="progress-bg" 
-          cx="50" cy="50" r="45" 
+        <circle
+          class="progress-bg"
+          cx="50" cy="50" r="45"
           fill="none" stroke="var(--bg-tertiary)" stroke-width="8"
         />
-        <circle 
-          class="progress-fill" 
-          cx="50" cy="50" r="45" 
-          fill="none" :stroke="goal.color" stroke-width="8" 
-          :stroke-dasharray="circumference" 
+        <circle
+          class="progress-fill"
+          cx="50" cy="50" r="45"
+          fill="none" :stroke="goal.color" stroke-width="8"
+          :stroke-dasharray="circumference"
           :stroke-dashoffset="strokeOffset(goal.progress_pct)"
           stroke-linecap="round"
           transform="rotate(-90 50 50)"
@@ -24,21 +24,21 @@
       </svg>
       <div class="progress-text">
         <span class="progress-pct">{{ goal.progress_pct.toFixed(0) }}%</span>
-        <span class="progress-amount">{{ formatCurrencyShort(goal.current_amount) }} / {{ formatCurrencyShort(goal.target_amount) }}</span>
+        <span class="progress-amount">{{ formatCurrencyShort(goal.saved_already) }} / {{ formatCurrencyShort(goal.target_amount) }}</span>
       </div>
     </div>
     <div class="goal-details">
       <div class="detail-row">
-        <span class="detail-label">{{ t('analytics.goals.remaining') }}</span>
+        <span class="detail-label">{{ t('goals.remaining') }}</span>
         <span class="detail-value">{{ formatCurrencyShort(goal.remaining) }}</span>
       </div>
-      <div class="detail-row" v-if="goal.projected_completion">
-        <span class="detail-label">{{ t('analytics.goals.projectedCompletion') }}</span>
-        <span class="detail-value">{{ goal.projected_completion }}</span>
+      <div class="detail-row" v-if="goal.desired_date">
+        <span class="detail-label">{{ t('goals.projectedCompletion') }}</span>
+        <span class="detail-value">{{ goal.desired_date }}</span>
       </div>
       <div class="detail-row" v-else>
-        <span class="detail-label">{{ t('analytics.goals.period') }}</span>
-        <span class="detail-value">{{ goal.target_period }}</span>
+        <span class="detail-label">{{ t('goals.period') }}</span>
+        <span class="detail-value">{{ goal.currency }}</span>
       </div>
     </div>
   </div>
@@ -50,19 +50,13 @@ import { computed } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useExchangeRate } from '@/composables/useExchangeRate'
 import { getCurrencySymbol } from '@/utils/amountDisplay'
+import type { Goal } from '@/types/goal'
 
-interface GoalItem {
-  category_id: string
-  category_name: string
-  icon: string
-  color: string
-  target_amount: number
-  target_period: string
-  current_amount: number
+interface GoalItem extends Goal {
+  status: 'on_track' | 'behind' | 'achieved'
   progress_pct: number
   remaining: number
-  projected_completion: string
-  status: 'on_track' | 'behind' | 'achieved'
+  color: string
 }
 
 const { t } = useI18n()
@@ -80,9 +74,9 @@ defineEmits<{
 
 function statusLabel(status: string): string {
   const labels: Record<string, string> = {
-    on_track: t('analytics.goals.onTrack'),
-    behind: t('analytics.goals.behind'),
-    achieved: t('analytics.goals.achieved')
+    on_track: t('goals.onTrack'),
+    behind: t('goals.behind'),
+    achieved: t('goals.achieved')
   }
   return labels[status] || status
 }

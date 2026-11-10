@@ -53,7 +53,7 @@ const children = computed(() => [
   { id: 'scan', label: 'Scan Receipt', icon: CalendarIcon, action: () => router.push('/transactions/scan') },
   { id: 'accounts', label: 'Accounts', icon: AccountsIcon, action: () => router.push('/accounts') },
   { id: 'reports', label: 'Reports', icon: ReportsIcon, action: () => router.push('/reports') },
-  { id: 'goals', label: 'Goals', icon: GoalsIcon, action: () => router.push('/analytics/goals') }
+  { id: 'goals', label: 'Goals', icon: GoalsIcon, action: () => router.push('/goals') }
 ])
 
 const toggleMenu = () => {

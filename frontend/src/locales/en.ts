@@ -620,64 +620,6 @@ budgets: {
       have: 'Have (Needed)',
       want: 'Want (Desired)'
     },
-    goals: {
-      title: 'Goals',
-      subtitle: 'Track your category spending targets',
-      addGoal: 'Add Goal',
-      filterAll: 'All',
-      filterOnTrack: 'On Track',
-      filterBehind: 'Behind',
-      filterAchieved: 'Achieved',
-      remaining: 'Remaining',
-      projectedCompletion: 'Projected Completion',
-      period: 'Period',
-      onTrack: 'On Track',
-      behind: 'Behind',
-      achieved: 'Achieved',
-      emptyTitle: 'No goals yet',
-      emptyDesc: 'Set spending targets for your categories to track progress.',
-      setCategory: 'Set Category',
-      fetchError: 'Failed to load goals'
-    },
-    goalsSummary: {
-      totalTarget: 'Total Target',
-      currentAmount: 'Current Amount',
-      overallProgress: 'Overall Progress',
-      achieved: 'Achieved',
-      onTrack: 'On Track',
-      behind: 'Behind'
-    },
-    goalDetail: {
-      targetAmount: 'Target Amount',
-      currentAmount: 'Current Amount',
-      remaining: 'Remaining',
-      progress: 'Progress',
-      predictionTitle: 'Progress Forecast',
-      achievedCumulative: 'Actual Cumulative',
-      targetCumulative: 'Target Cumulative',
-      totalTarget: 'Total Target',
-      yen: 'yen'
-    },
-    budgetTable: {
-      title: 'Budget vs Actual by Category',
-      category: 'Category',
-      budget: 'Budget',
-      actual: 'Actual',
-      difference: 'Difference',
-      percent: '%',
-      status: 'Status',
-      progressBar: 'Progress Bar',
-      under: 'Under',
-      over: 'Over',
-      onTrack: 'On Track'
-    },
-    budgetSummary: {
-      totalBudget: 'Total Budget',
-      totalActual: 'Total Actual',
-      difference: 'Difference',
-      overCategories: 'Over Categories',
-      underCategories: 'Under Categories'
-    }
   },
   balanceAnalytics: {
     title: 'Balance Analytics',

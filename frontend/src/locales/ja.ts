@@ -688,26 +688,6 @@ budgets: {
       totalTarget: '目標総額',
       yen: '円'
     },
-    budgetTable: {
-      title: 'カテゴリ別 予算 vs 実績',
-      category: 'カテゴリ',
-      budget: '予算',
-      actual: '実績',
-      difference: '差額',
-      percent: '%',
-      status: 'ステータス',
-      progressBar: '進捗バー',
-      under: '未達',
-      over: '超過',
-      onTrack: '順調'
-    },
-    budgetSummary: {
-      totalBudget: '総予算',
-      totalActual: '総実績',
-      difference: '差額',
-      overCategories: '超過カテゴリ',
-      underCategories: '未達カテゴリ'
-    }
   },
   balanceAnalytics: {
     title: '残高分析',

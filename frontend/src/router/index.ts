@@ -134,16 +134,11 @@ const router = createRouter({
       component: () => import('@/views/analytics/AnalyticsSpending.vue'),
       meta: { requiresAuth: true }
     },
+
     {
-      path: '/analytics/budget',
-      name: 'AnalyticsBudget',
-      component: () => import('@/views/analytics/AnalyticsBudget.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/analytics/goals',
-      name: 'AnalyticsGoals',
-      component: () => import('@/views/analytics/AnalyticsGoals.vue'),
+      path: '/goals',
+      name: 'Goals',
+      component: () => import('@/views/goals/GoalsView.vue'),
       meta: { requiresAuth: true }
     }
   ]
