@@ -73,17 +73,6 @@
 
     <div class="nav-divider" />
 
-    <ul class="nav-list">
-      <li v-for="item in settingsItems" :key="item.path">
-        <router-link
-          :to="item.path"
-          :class="['nav-link', { active: isActive(item.path) }, 'text-zinc-700 dark:text-white font-medium font-semibold']"
-          @click="closeMobileSidebar"
-        >
-          <span>{{ item.label }}</span>
-        </router-link>
-      </li>
-    </ul>
   </nav>
 </template>
 
@@ -100,7 +89,7 @@ const {
   isAnalyticsOpen, analyticsHeight, isAnalyticsActive, toggleAnalytics
 } = useAnalyticsNavigation(subNavRef)
 const {
-  mainNavItems, analyticsItems, goalsItems, bottomMainNavItems, settingsItems,
+  mainNavItems, analyticsItems, goalsItems, bottomMainNavItems,
   isActive, closeMobileSidebar, t
 } = useSidebarNav()
 </script>

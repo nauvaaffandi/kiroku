@@ -47,8 +47,6 @@ export function useSidebarNav() {
     { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon, color: '#f97316' }
   ]
 
-  const settingsItems = [{ path: '/settings', label: t('nav.settings') }]
-
   const isActive = (path: string) => route.path.startsWith(path)
 
   const closeMobileSidebar = () => {
@@ -56,7 +54,7 @@ export function useSidebarNav() {
   }
 
   return {
-    mainNavItems, analyticsItems, goalsItems, bottomMainNavItems, settingsItems,
+    mainNavItems, analyticsItems, goalsItems, bottomMainNavItems,
     isActive, closeMobileSidebar, isMobile, t
   }
 }
