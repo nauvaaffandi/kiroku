@@ -53,11 +53,11 @@ Tailwind is used **only** from the component's `<style scoped>` block, through `
 @reference "tailwindcss";
 
 .hero {
-  @apply m-auto flex max-w-md flex-col gap-4 px-4 py-6 bg(--bg-card);
+  @apply m-auto flex max-w-md flex-col gap-4 px-4 py-6 bg-[var(--bg-card)];
 }
 
 .hero-title {
-  @apply text-xl font-semibold tracking-tight text(--text-primary);
+  @apply text-xl font-semibold tracking-tight text-[var(--text-primary)];
 }
 </style>
 ```
@@ -66,100 +66,56 @@ Tailwind is used **only** from the component's `<style scoped>` block, through `
 
 - **Class names in the template are semantic** (`.hero`, `.stat`, `.row-amount`). Do not put utility classes (`flex`, `px-4`, `dark:bg-zinc-900`) in `class="..."`.
 - **Use `@apply` for anything Tailwind can express**: layout, flex/grid, spacing, sizing, typography, radius, borders, transitions, states (`hover:`, `focus-visible:`, `disabled:`), responsive prefixes (`md:`).
-- CSS variables from `main.css` go through Tailwind utilities: `bg(--bg-card)`, `text(--text-primary)`, `border(--border-primary)`, `rounded(--radius)`. Add a type hint when ambiguous (`text(color:--color)`, `border(length:--border-color)`).
 - **Plain CSS is allowed only for what `@apply` cannot do**: `@keyframes`, `env(safe-area-inset-*)`, `clip-path`, complex selectors. Keep it in the same style block, next to the rule that needs it.
 - **Always `<style scoped>`.** Global styles belong in `src/assets/main.css` and need a reason.
 - **Never** write `@import "tailwindcss"` inside a component. `main.css` already does it once.
 - **State via semantic classes:** `:class="{ active: isActive }"` in the template, `.item.active { @apply ... }` in the style block.
 - **Arbitrary values are fine** when no utility exists: `@apply w-[7.5rem]`. Prefer scale values first.
 
-### Tailwind v4 + CSS variables
-
-Tailwind v4 accepts CSS custom properties in **every utility that takes a value**. Use the `utility-(--variable)` shorthand instead of `property: var(--token)` in a plain declaration.
-
-| Utility | v4 syntax |
-|---------|-----------|
-| `bg` | `bg(--bg-card)`, `bg(--color)/50` for opacity |
-| `text` | `text(--text-primary)`, `text(color:--color)` (type hint when ambiguous) |
-| `text-length` | `text(length:--font-size)` |
-| `border` | `border(--border-primary)`, `border(color:--color)`, `border(length:--border-color)` |
-| `rounded` | `rounded(--radius)`, `rounded(--radius-lg)` |
-| `shadow` | `shadow(--shadow-md)`, `shadow(color:--color)` |
-| `ring` | `ring(--ring-color)` |
-| `fill`, `stroke` | `fill(--fill)`, `stroke(--color)`, `stroke(length:--stroke)` |
-| `opacity` | `opacity(--opacity)` |
-| `z`, `top`, `left`, `translate-x`, `rotate`, `scale`, `duration`, `ease` | `z-(--z-index)`, `top-(--top)`, etc. |
-
-For properties without a Tailwind utility, use arbitrary properties: `[width:var(--w)]`, `[color:var(--c)]`, `[--my-var:1rem]`.
-
 ### Scope caveat: what `@reference "tailwindcss"` can see
 
 `@reference "tailwindcss"` loads **stock Tailwind only**. It does not load `src/assets/main.css`, so inside `@apply`:
 
-- Project `@theme` tokens (`bg-primary`, `text-danger`, ...) are **not** available. Use Tailwind CSS variable syntax instead: `bg(--bg-card)`, `text(--text-primary)`, etc. See [Tailwind v4 + CSS variables](#tailwind-v4-css-variables).
-- The custom `dark` variant from `main.css` is **not** available. A `dark:` utility inside `@apply` would follow the OS setting, not the in-app theme switch. Do not use it.
-- Stock utilities are available, including the stock palette (`zinc-*`, `emerald-*`, ...). Prefer semantic CSS variables (`bg(--color)`, `text(--color)`) over palette classes for color.
+- Project `@theme` tokens (`bg-primary`, `text-danger`, etc.) are **not** available. Use explicit CSS variable arbitrary-value syntax: `bg-[var(--bg-card)]`, `text-[var(--text-primary)]`, `border-[var(--border-primary)]`, `rounded-[var(--radius)]`.
+- The custom `dark` variant from `main.css` is **not** available. Use Tailwind's built-in `dark:` variant directly in `@apply` for dark-mode styling.
+- Stock utilities are available, including the stock palette (`zinc-*`, `emerald-*`, etc.). Prefer explicit semantic CSS variable utilities such as `bg-[var(--bg-card)]` and `text-[var(--text-primary)]` over palette classes for color.
 
 ### Dark mode
 
-The theme is controlled by `data-theme="light" | "dark"` on `<html>` (no attribute means follow the OS). Semantic CSS variables in `main.css` flip automatically, so **most components need zero dark-specific code**. If a rule truly must differ, use the selector already used in the codebase:
+Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly through `@apply` inside the component's `<style scoped>` block.
 
 ```css
-:where([data-theme="dark"], [data-theme="dark"] *) .hero {
-  @apply border-zinc-800;
+.hero {
+  @apply bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100;
+}
+
+.hero-title {
+  @apply text-zinc-900 dark:text-zinc-100;
 }
 ```
 
-### CSS variables you may use
-
-These are the only tokens defined in `main.css`. Use them by name; do not invent others.
-
-| Role           | Variables                                                                  |
-| -------------- | -------------------------------------------------------------------------- |
-| Backgrounds    | `--bg-primary` `--bg-secondary` `--bg-tertiary` `--bg-card` `--bg-hover`   |
-| Text           | `--text-primary` `--text-secondary` `--text-muted` `--text-inverse`        |
-| Accent         | `--accent` `--accent-hover` `--accent-light`                               |
-| Borders        | `--border-primary` `--border-secondary` `--border-focus`                   |
-| Status         | `--success` `--warning` `--error` `--info` and their `-light` variants     |
-| Shadow, radius | `--shadow-sm` `--shadow` `--shadow-md` `--shadow-lg` `--shadow-xl`, `--radius-sm` `--radius` `--radius-lg` `--radius-full` |
-
-### Legacy styling in the repo
-
-The codebase is mid-migration. 107 of 113 `.vue` files use hand-written CSS in `<style scoped>`, and a few (`ThemeToggle`, `ToastContainer`, `DashboardStatsWidget`) use utility classes in the template. Only `CashFlowProjectionChart.vue` uses `@reference` today.
-
-- **New components** follow section 3 from line one.
-- **Existing components:** convert to `@reference` + `@apply` only when you are already editing that component's styling. Do not mass-migrate.
-- **Broken tokens:** many files use variables that are never defined (`--color-surface`, `--color-border`, `--color-text`, `--color-text-muted`, `--color-neutral-*`, `--color-surface-hover`, `--color-*-bg`, ...). They resolve to nothing. When you touch such a rule, replace them:
-
-| Undefined (legacy)               | Use instead                         |
-| -------------------------------- | ----------------------------------- |
-| `--color-surface`                | `--bg-card`                         |
-| `--color-background`             | `--bg-primary`                      |
-| `--color-surface-hover`          | `--bg-hover`                        |
-| `--color-border`                 | `--border-primary`                  |
-| `--color-text`                   | `--text-primary`                    |
-| `--color-text-secondary`         | `--text-secondary`                  |
-| `--color-text-muted`             | `--text-muted`                      |
-| `--color-danger-bg`, `--error-bg`| `--error-light`                     |
-| `--color-success-bg`             | `--success-light`                   |
-| `--color-warning-bg`             | `--warning-light`                   |
-| `--color-primary-bg`             | `--accent-light`                    |
-| `--color-neutral-*`              | pick by role from the table above   |
-
 ## 4. Frontend conventions
 
-- **Component shape:** `<template>`, then `<script setup lang="ts">`, then `<style scoped>`. Typed `defineProps` / `defineEmits`.
-- **Folders:** `views/` route pages, `widgets/<domain>/` feature blocks (each folder has an `index.ts`), `components/ui` base controls, `components/layout`, `components/common`, `components/charts`, `components/icons`. Match the neighbors before creating a new folder.
+- **Component shape:** `<template>`, then `<script setup lang="ts">`, then `<style scoped>`. Use typed `defineProps` / `defineEmits`.
+- **Folders:**
+  - `views/` — route-level pages.
+  - `components/widgets/` — self-contained, reusable UI compositions that can be dropped directly into other components. A widget must be ready to render its complete UI without requiring the parent component to manage its internal state, business logic, or implementation details. Encapsulate its own logic and dependencies internally; expose only the necessary props and events as its public interface. Widgets are **not** feature-based or domain-based containers.
+  - `components/ui/` — base UI controls and primitives.
+  - `components/layout/` — layout-related components.
+  - `components/common/` — shared components that do not belong to a more specific category.
+  - `components/charts/` — chart components.
+  - `components/icons/` — icon components.
+  - Each widget folder must have an `index.ts` entry point. Match the existing directory structure before creating new folders.
 - **Imports:** use the `@/` alias for `src/`.
-- **State:** Pinia setup stores in `src/stores/`. Components call stores, stores call the API.
-- **API:** always use the shared axios instance from `@/api/client`. The base URL is resolved at runtime (Upstash, env, cache, then `http://localhost:8080`), so never hard-code a host. Paths start with `/api/v1`.
-- **i18n:** `const { t } = useI18n()` from `@/locales`. Add every new key to **all three** files (`en.ts`, `ja.ts`, `id.ts`). `en` is the fallback.
-- **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not paste new inline `<svg>` blocks. Emoji are for user-chosen category and account icons only, never UI chrome.
-- **Money:** format with `Intl.NumberFormat` using the user's number format, and route displayed amounts through `utils/amountDisplay` so the **hide amounts** setting keeps working. Right-align amounts and use tabular numerals.
-- **Dates:** `dayjs`. Respect the `date_format` and `week_start` settings.
-- **Theme:** read and write through `useSettingsStore` / `useUIStore`. Do not toggle `data-theme` by hand elsewhere.
-- **Accessibility:** real `<button>` and `<a>`, labels on icon-only buttons, visible `:focus-visible`, touch targets at least 44px, never rely on color alone for income vs expense.
-- **PWA:** the service worker caches `/api/v1/*` with NetworkFirst. Do not add caching that can serve stale financial data as truth.
+- **State:** Pinia setup stores in `src/stores/`. Components call stores; stores call the API.
+- **API:** always use the shared Axios instance from `@/api/client`. The base URL is resolved at runtime (Upstash, environment variables, cache, then `http://localhost:8080`), so never hard-code a host. API paths must start with `/api/v1`.
+- **i18n:** use `const { t } = useI18n()` from `@/locales`. Add every new translation key to all three locale files: `en.ts`, `ja.ts`, and `id.ts`. English (`en`) is the fallback.
+- **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
+- **Money:** format values with `Intl.NumberFormat` using the user's number-format settings. Route displayed amounts through `utils/amountDisplay` so the **hide amounts** setting remains effective. Right-align monetary values and use tabular numerals.
+- **Dates:** use `dayjs`. Respect the `date_format` and `week_start` settings.
+- **Theme:** read and update theme state through `useSettingsStore` / `useUIStore`. Never manipulate `data-theme` directly elsewhere.
+- **Accessibility:** use semantic `<button>` and `<a>` elements, provide accessible labels for icon-only buttons, maintain visible `:focus-visible` states, ensure touch targets are at least 44px, and never rely on color alone to distinguish income from expenses.
+- **PWA:** the service worker uses NetworkFirst for `/api/v1/*`. Do not introduce caching behavior that could present stale financial data as current or authoritative.
 
 ## 5. Backend conventions
 

@@ -60,6 +60,7 @@ scripts/
 .agent/
 .agents/
 .claude/
+opencode.json
 
 # Other
 **/cookie.txt
@@ -68,3 +69,5 @@ archieve/
 skill-observations/
 .repomixignore
 repomix.config.json
+
+.docs/
