@@ -792,4 +792,9 @@ budgets: {
       copied: 'リンクをコピーしました'
     }
   },
+  colorPicker: {
+    open: '色の選択肢を開く',
+    options: '色の選択肢',
+    select: '色 {{color}} を選択'
   }
+}

@@ -47,11 +47,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Color</label>
-          <input
-            v-model="formData.color"
-            type="color"
-            class="form-input"
-          />
+          <ColorPalette v-model="formData.color" />
         </div>
       </div>
       <div class="form-group">
@@ -86,6 +82,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
+import ColorPalette from '@/components/ui/ColorPalette.vue'
 import type { Account, AccountType } from '@/types'
 
 interface Props {
@@ -207,8 +204,9 @@ const handleSubmit = () => {
   border-color: var(--accent);
 }
 
-input[type="color"].form-input {
-  @apply w-12 h-10 p-0 cursor-pointer rounded;
+.color-native {
+  @apply w-8 h-8 p-0 border-none cursor-pointer rounded-full;
+  background-color: transparent;
 }
 
 .modal-actions {

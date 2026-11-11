@@ -791,5 +791,10 @@ export default {
       linkInvalid: 'Tautan mungkin tidak valid atau telah kadaluarsa.',
       copied: 'Tautan telah disalin'
     }
+  },
+  colorPicker: {
+    open: 'Buka pilihan warna',
+    options: 'Pilihan warna',
+    select: 'Pilih warna {{color}}'
   }
 }

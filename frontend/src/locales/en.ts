@@ -744,4 +744,9 @@ budgets: {
       copied: 'Link copied'
     }
   },
+  colorPicker: {
+    open: 'Open color choices',
+    options: 'Color choices',
+    select: 'Select color {{color}}'
   }
+}

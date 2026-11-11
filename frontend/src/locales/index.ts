@@ -24,6 +24,7 @@ interface LocaleMessages {
   calendar: typeof en.calendar
   outlook: typeof en.outlook
   scheduled: typeof en.scheduled
+  colorPicker: typeof en.colorPicker
 }
 
 const locales: Record<Locale, LocaleMessages> = { en, ja, id }

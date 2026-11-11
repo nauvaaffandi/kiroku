@@ -19,11 +19,7 @@
         <div class="form-group">
           <label class="form-label">{{ t('labels.color') }}</label>
           <div class="color-picker-wrap">
-            <input
-              v-model="formData.color"
-              type="color"
-              class="color-input"
-            />
+            <ColorPalette v-model="formData.color" />
             <BaseInput
               v-model="formData.color"
               type="text"
@@ -64,6 +60,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseButton } from '@/components/ui'
+import ColorPalette from '@/components/ui/ColorPalette.vue'
 import { useI18n } from '@/locales'
 import type { Label, CreateLabelRequest } from '@/types'
 

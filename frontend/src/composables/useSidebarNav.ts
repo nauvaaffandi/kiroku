@@ -29,7 +29,7 @@ export function useSidebarNav() {
   const analyticsItems = [
     { path: '/analytics/balance', label: t('nav.analyticsBalance'), color: '#6366f1' },
     { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), color: '#8b5cf6' },
-    { path: '/analytics/cashflow', label: t('analyticsCashflow'), color: '#ec4899' },
+    { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), color: '#ec4899' },
     { path: '/analytics/spending', label: t('nav.analyticsSpending'), color: '#f43f5e' }
   ]
 

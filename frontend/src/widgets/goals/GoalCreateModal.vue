@@ -30,7 +30,7 @@
           </div>
           <div class="form-field">
             <label class="form-label">{{ t('goals.colorTheme') }}</label>
-            <input v-model="form.color_theme" type="color" class="form-color" />
+            <ColorPalette v-model="form.color_theme" />
           </div>
           <div class="form-actions">
             <button type="button" class="btn-secondary" @click="emit('close')">{{ t('goals.cancel') }}</button>
@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { api } from '@/api/client'
+import ColorPalette from '@/components/ui/ColorPalette.vue'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
 import type { CreateGoalInput } from '@/types/goal'
@@ -134,6 +135,11 @@ watch(() => props.visible, (val) => {
 }
 .form-color {
   @apply w-full h-8 rounded-sm border-0 cursor-pointer bg-transparent;
+}
+
+.color-native {
+  @apply w-8 h-8 p-0 border-none cursor-pointer rounded-full;
+  background-color: transparent;
 }
 .form-actions {
   @apply flex justify-end gap-2 mt-6;
