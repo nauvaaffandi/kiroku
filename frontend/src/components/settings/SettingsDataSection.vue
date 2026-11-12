@@ -18,3 +18,7 @@ defineProps<{}>()
 const emit = defineEmits<{ manageBackup: []; clearData: [] }>()
 const { t } = useI18n()
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+</style>

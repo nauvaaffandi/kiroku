@@ -13,7 +13,7 @@
     <SettingItem :label="t('settings.biometricAuth')" :description="status.enabled ? t('settings.biometricEnabledDesc') : t('settings.biometricDisabledDesc')">
       <template #default>
         <button @click="emit('toggleBiometric')" class="biometric-toggle" :class="{ active: status.enabled }" :disabled="!status.supported || props.biometricLoading">{{ status.enabled ? t('settings.disableBiometric') : t('settings.enableBiometric') }}</button>
-        <span v-if="!status.supported" class="text-xs text-[#dc3545] ml-2">{{ t('settings.biometricNotSupported') }}</span>
+        <span v-if="!status.supported" class="biometric-unsupported">{{ t('settings.biometricNotSupported') }}</span>
       </template>
     </SettingItem>
   </SettingSection>
@@ -35,3 +35,11 @@ const emit = defineEmits<{ changePin: []; toggleTotp: []; toggleBiometric: [] }>
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+
+.biometric-unsupported {
+  @apply text-xs ml-2 text-red-600 dark:text-red-400;
+}
+</style>

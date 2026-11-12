@@ -24,10 +24,10 @@
           />
         </template>
         <tr v-else-if="loading">
-          <td colspan="8" class="text-center py-8 text-muted">Loading transactions...</td>
+          <td colspan="8" class="td-empty">Loading transactions...</td>
         </tr>
         <tr v-else>
-          <td colspan="8" class="text-center py-8 text-muted">No transactions found</td>
+          <td colspan="8" class="td-empty">No transactions found</td>
         </tr>
       </tbody>
     </table>
@@ -86,12 +86,9 @@ defineEmits<{
   @apply text-right;
 }
 
-.text-center {
-  @apply text-center;
-}
-
-.py-8 {
-  @apply py-8;
+.td-empty {
+  @apply text-center py-8;
+  color: var(--text-muted);
 }
 
 .text-muted {

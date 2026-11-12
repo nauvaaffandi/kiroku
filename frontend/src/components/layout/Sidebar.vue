@@ -5,7 +5,7 @@
         <AppIcon class="app-icon-logo" />
         <span>Kiroku</span>
       </router-link>
-      <button v-show="isMobile" @click="$emit('close')" class="sidebar-close text-zinc-600 dark:text-white hover:text-zinc-900 dark:hover:text-white" aria-label="Close sidebar">
+      <button v-show="isMobile" @click="$emit('close')" class="sidebar-close" aria-label="Close sidebar">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -58,5 +58,9 @@ const { isMobile, closeMobileSidebar } = useSidebarNav()
 .sidebar-close:hover {
   background-color: var(--bg-hover);
   color: var(--text-primary);
+}
+
+.sidebar-close:focus-visible {
+  @apply outline-none ring-2 ring-[var(--accent)];
 }
 </style>

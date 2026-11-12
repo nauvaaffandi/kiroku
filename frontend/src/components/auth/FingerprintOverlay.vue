@@ -1,16 +1,16 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-end" @click="handleBackdropClick">
-    <div class="w-full bg-white rounded-t-[24px] p-[1.5rem_2rem_2.5rem_2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.15)] flex flex-col items-center" @click.stop>
-      <div class="w-[40px] h-[4px] bg-[#ccc] rounded-[2px] mb-[1.5rem]"></div>
+  <div v-if="isOpen" class="bio-overlay" @click="handleBackdropClick">
+    <div class="bio-panel" @click.stop>
+      <div class="bio-divider"></div>
       
-      <div class="text-center mb-[2rem]">
-        <h2 class="text-lg font-semibold text-[#212529] mb-[0.375rem]">{{ t('auth.biometricAuth') }}</h2>
-        <p class="text-sm text-[#6c757d]">{{ t('auth.touchSensor') }}</p>
+      <div class="bio-header">
+        <h2 class="bio-title">{{ t('auth.biometricAuth') }}</h2>
+        <p class="bio-subtitle">{{ t('auth.touchSensor') }}</p>
       </div>
 
-      <div class="relative w-[96px] h-[96px] rounded-full bg-[#e7f1fc] flex items-center justify-center cursor-pointer mb-[1.5rem] hover:scale-105 transition-transform duration-200" @click="triggerScan">
-        <div class="absolute inset-[-4px] rounded-full border-2 border-dashed border-[#4a90d9] opacity-40" :class="{ 'animate-spin': isScanning }"></div>
-        <div class="text-[#4a90d9] z-2" :class="{ 'animate-pulse': isScanning }">
+      <div class="bio-scan-circle" @click="triggerScan">
+        <div class="bio-scan-ring" :class="{ 'bio-spin': isScanning }"></div>
+        <div class="bio-scan-icon" :class="{ 'bio-pulse': isScanning }">
           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.81 3.5"></path>
             <path d="M15.5 13.5c0-1.8-1.5-3.5-3.5-3.5s-3.5 1.7-3.5 3.5"></path>
@@ -22,13 +22,13 @@
         </div>
       </div>
 
-      <div v-if="errorMessage" class="px-[0.5rem] py-[1rem] bg-[#f8d7da] text-[#dc3545] rounded-[8px] text-sm text-center mb-[1rem]">
+      <div v-if="errorMessage" class="bio-error">
         {{ errorMessage }}
       </div>
 
-      <div class="w-full flex justify-center">
-        <button class="px-[0.75rem] py-[1.5rem] bg-[#e7f1fc] text-[#4a90d9] font-medium rounded-[10px] border border-[#4a90d9] cursor-pointer w-full max-w-[200px] mb-[0.75rem] hover:bg-[#4a90d9] hover:text-white transition-colors duration-200" @click="triggerScan">{{ t('auth.tryAgain') }}</button>
-        <button class="px-[0.75rem] py-[1.5rem] bg-[#f1f3f5] text-[#495057] font-medium rounded-[10px] border-0 cursor-pointer w-full max-w-[200px] hover:bg-[#e9ecef] transition-colors duration-200" @click="close">{{ t('auth.usePin') }}</button>
+      <div class="bio-actions">
+        <button class="bio-btn-try" @click="triggerScan">{{ t('auth.tryAgain') }}</button>
+        <button class="bio-btn-pin" @click="close">{{ t('auth.usePin') }}</button>
       </div>
     </div>
   </div>
@@ -90,3 +90,67 @@ watch(() => props.isOpen, (isOpen) => {
   }
 })
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+
+.bio-overlay {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-end;
+}
+
+.bio-panel {
+  @apply w-full bg-white rounded-t-[24px] p-[1.5rem_2rem_2.5rem_2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.15)] flex flex-col items-center;
+}
+
+.bio-divider {
+  @apply w-[40px] h-[4px] bg-[#ccc] rounded-[2px] mb-[1.5rem];
+}
+
+.bio-header {
+  @apply text-center mb-[2rem];
+}
+
+.bio-title {
+  @apply text-lg font-semibold text-[#212529] mb-[0.375rem];
+}
+
+.bio-subtitle {
+  @apply text-sm text-[#6c757d];
+}
+
+.bio-scan-circle {
+  @apply relative w-[96px] h-[96px] rounded-full bg-[#e7f1fc] flex items-center justify-center cursor-pointer mb-[1.5rem] hover:scale-105 transition-transform duration-200;
+}
+
+.bio-scan-ring {
+  @apply absolute inset-[-4px] rounded-full border-2 border-dashed border-[#4a90d9] opacity-40;
+}
+
+.bio-spin {
+  @apply animate-spin;
+}
+
+.bio-pulse {
+  @apply animate-pulse;
+}
+
+.bio-scan-icon {
+  @apply text-[#4a90d9] z-2;
+}
+
+.bio-error {
+  @apply px-[0.5rem] py-[1rem] bg-[#f8d7da] text-[#dc3545] rounded-[8px] text-sm text-center mb-[1rem];
+}
+
+.bio-actions {
+  @apply w-full flex justify-center;
+}
+
+.bio-btn-try {
+  @apply px-[0.75rem] py-[1.5rem] bg-[#e7f1fc] text-[#4a90d9] font-medium rounded-[10px] border border-[#4a90d9] cursor-pointer w-full max-w-[200px] mb-[0.75rem] hover:bg-[#4a90d9] hover:text-white transition-colors duration-200;
+}
+
+.bio-btn-pin {
+  @apply px-[0.75rem] py-[1.5rem] bg-[#f1f3f5] text-[#495057] font-medium rounded-[10px] border-0 cursor-pointer w-full max-w-[200px] hover:bg-[#e9ecef] transition-colors duration-200;
+}
+</style>

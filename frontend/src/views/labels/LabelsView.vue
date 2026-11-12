@@ -6,7 +6,7 @@
         <p class="page-subtitle">{{ t('labels.empty') }}</p>
       </div>
       <BaseButton @click="openCreateModal">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
@@ -100,6 +100,10 @@ const handleFormSubmit = async (data: CreateLabelRequest) => {
 
 .page-header {
   @apply flex justify-between items-start mb-6 gap-4;
+}
+
+.page-header svg {
+  @apply mr-2;
 }
 
 .page-header h1 {

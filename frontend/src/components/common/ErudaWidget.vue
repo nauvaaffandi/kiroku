@@ -20,3 +20,7 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+</style>

@@ -1,10 +1,10 @@
 <template>
   <SettingSection :title="t('settings.currency') + ' & ' + t('settings.language')">
     <SettingItem :label="t('settings.currency')" :description="t('settings.currencyDesc')">
-      <div class="flex flex-col gap-2 w-full">
+      <div class="settings-form">
         <BaseSelect :model-value="baseCurrency" :options="currencyOptions" @update:model-value="(v: any) => emit('baseCurrencyChange', v)" />
-        <div class="flex gap-2 mt-2">
-          <input :model-value="newCurrencyCode" @update:model-value="emit('update:newCurrencyCode', $event)" placeholder="Add Currency (e.g. IDR)" class="p-2 border border-[var(--border-primary)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm flex-1" maxlength="5" />
+        <div class="settings-form-add-row">
+          <input :model-value="newCurrencyCode" @update:model-value="emit('update:newCurrencyCode', $event)" placeholder="Add Currency (e.g. IDR)" class="settings-form-input" maxlength="5" />
           <BaseButton variant="secondary" @click="handleAddCurrency">Add</BaseButton>
         </div>
       </div>
@@ -51,3 +51,19 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const handleAddCurrency = () => emit('addCurrency')
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+
+.settings-form {
+  @apply flex flex-col gap-2 w-full;
+}
+
+.settings-form-add-row {
+  @apply flex gap-2 mt-2;
+}
+
+.settings-form-input {
+  @apply flex-1 p-2 border border-[var(--border-primary)] rounded-lg bg-[var(--bg-primary)] text-[var(--text-primary)] text-sm;
+}
+</style>

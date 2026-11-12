@@ -18,3 +18,7 @@ const props = defineProps<{
 const emit = defineEmits<{ themeChange: [string] }>()
 const { t } = useI18n()
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+</style>

@@ -15,8 +15,8 @@
   </div>
   <div class="summary-cards" v-else>
     <div class="summary-card" v-for="i in 3" :key="i">
-      <div class="skeleton skeleton-text" style="width: 50%;" />
-      <div class="skeleton skeleton-text" style="width: 80%; height: 1.5rem;" />
+      <div class="skeleton skeleton-text skeleton-total" />
+      <div class="skeleton skeleton-text skeleton-label" />
     </div>
   </div>
 </template>
@@ -63,5 +63,12 @@ defineProps<{
 }
 .summary-value.negative {
   color: var(--error);
+}
+
+.skeleton-total {
+  @apply w-[50%];
+}
+.skeleton-label {
+  @apply w-[80%] h-[1.5rem];
 }
 </style>

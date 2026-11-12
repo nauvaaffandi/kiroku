@@ -273,3 +273,14 @@
 .skeleton-table-cell {
   height: 1rem;
 }
+
+/* Page transitions */
+.page-enter-active,
+.page-leave-active {
+  @apply transition-opacity duration-200 ease-out;
+}
+
+.page-enter-from,
+.page-leave-to {
+  @apply opacity-0;
+}

@@ -17,3 +17,7 @@ const props = defineProps<{ isTelegramLinked: boolean; telegramLoading: boolean 
 const emit = defineEmits<{ openRegister: [] }>()
 const { t } = useI18n()
 </script>
+
+<style scoped>
+@reference "tailwindcss";
+</style>

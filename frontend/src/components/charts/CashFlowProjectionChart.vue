@@ -51,7 +51,7 @@
     <div class="chart-wrapper" ref="chartRef" />
     
     <div v-if="loading" class="chart-loading">
-      <div class="skeleton skeleton-chart" style="height: 300px;" />
+      <div class="skeleton skeleton-chart projection-loading" />
     </div>
   </div>
 </template>
@@ -327,5 +327,9 @@ watch([dateFrom, dateTo, selectedAccount, selectedCurrency], () => {
 .chart-loading {
   @apply w-full;
   height: 350px;
+}
+
+.projection-loading {
+  @apply h-[300px];
 }
 </style>

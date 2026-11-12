@@ -3,10 +3,10 @@
     <slot v-if="!loading" />
     <template v-else>
       <div class="skeleton-table-header">
-        <div class="skeleton skeleton-text" style="width: 100px;" />
-        <div class="skeleton skeleton-text" style="width: 80px;" />
-        <div class="skeleton skeleton-text" style="width: 80px;" />
-        <div class="skeleton skeleton-text" style="width: 60px;" />
+        <div class="skeleton skeleton-text skeleton-text-100px" />
+        <div class="skeleton skeleton-text skeleton-text-80px" />
+        <div class="skeleton skeleton-text skeleton-text-80px" />
+        <div class="skeleton skeleton-text skeleton-text-60px" />
       </div>
       <div class="skeleton-table-body">
         <div v-for="i in rows" :key="i" class="skeleton-table-row">
@@ -52,4 +52,8 @@ const rows = computed(() => props.rows || 5)
   @apply grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 p-4 border-b;
   border-color: var(--border-primary);
 }
+
+.skeleton-text-100px { @apply w-[100px]; }
+.skeleton-text-80px { @apply w-[80px]; }
+.skeleton-text-60px { @apply w-[60px]; }
 </style>

@@ -152,7 +152,7 @@
         <input type="checkbox" v-model="saveAsTemplate" />
         {{ $t('common.saveAsTemplate') }}
       </label>
-      <input v-if="saveAsTemplate" v-model="templateName" type="text" class="form-input mt-2" :placeholder="$t('common.templateName')" required />
+        <input v-if="saveAsTemplate" v-model="templateName" type="text" class="form-input form-input-mt-2" :placeholder="$t('common.templateName')" required />
     </div>
 
     <div class="modal-actions">
@@ -314,5 +314,6 @@ watch(() => props.initialData, (newData) => {
 .map-btn { @apply whitespace-nowrap; }
 .checkbox-label { color: var(--text-secondary); @apply flex items-center gap-2 text-sm font-medium cursor-pointer; }
 .mt-2 { @apply mt-2; }
+.form-input-mt-2 { @apply mt-2; }
 .modal-actions { border-top: 1px solid var(--border-primary); @apply flex justify-end gap-3 pt-4; }
 </style>

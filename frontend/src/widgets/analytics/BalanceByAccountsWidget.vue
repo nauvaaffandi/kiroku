@@ -21,7 +21,7 @@
                 <td>
                   <div class="account-cell">
                     <span class="account-color" :style="{ backgroundColor: acc.color }" />
-                    <span class="truncate">{{ acc.name }}</span>
+                    <span class="account-name">{{ acc.name }}</span>
                   </div>
                 </td>
                 <td class="text-right">{{ formatCurrency(acc.opening_balance, acc.currency) }}</td>
@@ -150,6 +150,9 @@ onMounted(() => {
 .widget-header h2 {
   @apply text-lg font-semibold truncate;
   color: var(--text-primary);
+}
+.account-name {
+  @apply truncate;
 }
 .widget-content {
   @apply p-4 overflow-hidden w-full max-w-full box-border;

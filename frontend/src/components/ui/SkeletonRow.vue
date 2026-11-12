@@ -4,10 +4,10 @@
     <template v-else>
       <div class="skeleton skeleton-avatar" />
       <div class="skeleton-row-content">
-        <div class="skeleton skeleton-text" style="width: 60%;" />
-        <div class="skeleton skeleton-text" style="width: 40%;" />
+        <div class="skeleton skeleton-text skeleton-text-60" />
+        <div class="skeleton skeleton-text skeleton-text-40" />
       </div>
-      <div class="skeleton skeleton-text" style="width: 80px;" />
+      <div class="skeleton skeleton-text skeleton-text-80px" />
     </template>
   </div>
 </template>
@@ -31,4 +31,8 @@ defineProps<Props>()
 .skeleton-row-content {
   @apply flex-1 flex flex-col gap-2;
 }
+
+.skeleton-text-60 { @apply w-[60%]; }
+.skeleton-text-40 { @apply w-[40%]; }
+.skeleton-text-80px { @apply w-[80px]; }
 </style>

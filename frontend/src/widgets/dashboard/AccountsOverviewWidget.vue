@@ -1,5 +1,5 @@
 <template>
-  <section class="accounts-card mb-6" aria-labelledby="accounts-heading">
+  <section class="accounts-card" aria-labelledby="accounts-heading">
     <div class="accounts-header">
       <h2 id="accounts-heading" class="accounts-heading">{{ t('dashboard.accounts') }}</h2>
       <router-link to="/accounts" class="view-all-link">{{ t('dashboard.viewAll') }}</router-link>
@@ -82,7 +82,7 @@ const formatAccountBalance = (balance: number, currency: string): string => {
 @reference "tailwindcss";
 
 .accounts-card {
-  @apply rounded-[14px] border p-4;
+  @apply rounded-[14px] border p-4 mb-6;
   background-color: var(--bg-card);
   border-color: var(--border-primary);
   color: var(--text-primary);

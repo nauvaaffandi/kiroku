@@ -49,7 +49,7 @@
               <span class="summary-value">{{ projection.estimated_reach_date }}</span>
             </div>
           </div>
-          <div class="projection-chart" ref="projectionChartRef" style="height: 300px;" />
+          <div class="projection-chart" ref="projectionChartRef" />
         </div>
       </div>
     </div>
@@ -207,6 +207,6 @@ onBeforeUnmount(() => {
   color: var(--error);
 }
 .projection-chart {
-  @apply w-full;
+  @apply w-full h-[300px];
 }
 </style>

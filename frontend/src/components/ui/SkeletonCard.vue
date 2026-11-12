@@ -3,9 +3,10 @@
     <slot v-if="!loading" />
     <template v-else>
       <div class="skeleton skeleton-title" />
-      <div class="skeleton skeleton-text" style="width: 80%;" />
-      <div class="skeleton skeleton-text" style="width: 60%;" />
-      <div class="skeleton skeleton-text" style="width: 40%;" />
+    <template v-else>
+      <div class="skeleton skeleton-text skeleton-text-md" />
+      <div class="skeleton skeleton-text skeleton-text-lg" />
+      <div class="skeleton skeleton-text skeleton-text-sm" />
     </template>
   </div>
 </template>
@@ -25,4 +26,8 @@ defineProps<Props>()
   background-color: var(--bg-card);
   border-color: var(--border-primary);
 }
+
+.skeleton-text-md { @apply w-[80%]; }
+.skeleton-text-lg { @apply w-[60%]; }
+.skeleton-text-sm { @apply w-[40%]; }
 </style>
