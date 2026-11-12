@@ -1,37 +1,37 @@
 <template>
   <div class="review-card" v-if="draft">
-    <h3>Review Transaction Draft</h3>
-    <p class="text-muted">Verify and edit extracted details before confirming final persistence.</p>
+    <h3>{{ t('receipt.reviewTitle') }}</h3>
+    <p class="text-muted">{{ t('receipt.reviewDesc') }}</p>
 
     <form @submit.prevent="$emit('confirm', draft)" class="transaction-form">
       <div class="form-grid">
         <div class="form-group">
-          <label>Type</label>
+          <label>{{ t('transactions.typeExpense') }}</label>
           <select v-model="draft.type" class="form-input" required>
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
+            <option value="expense">{{ t('transactions.typeExpense') }}</option>
+            <option value="income">{{ t('transactions.typeIncome') }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Date & Time</label>
+          <label>{{ t('receipt.dateTime') }}</label>
           <input v-model="draft.date_time" type="datetime-local" class="form-input" required />
         </div>
 
         <div class="form-group">
-          <label>Amount</label>
+          <label>{{ t('common.amount') }}</label>
           <input v-model.number="draft.amount" type="number" step="1" class="form-input" required />
         </div>
 
         <div class="form-group">
-          <label>Currency</label>
+          <label>{{ t('common.currency') }}</label>
           <input v-model="draft.currency" type="text" class="form-input" required maxlength="3" />
         </div>
 
         <div class="form-group">
-          <label>Account</label>
+          <label>{{ t('common.account') }}</label>
           <select v-model="draft.from_account_id" class="form-input" required>
-            <option value="">Select Account</option>
+            <option value="">{{ t('common.selectAccount') }}</option>
             <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
               {{ acc.name }} ({{ acc.currency }})
             </option>
@@ -39,9 +39,9 @@
         </div>
 
         <div class="form-group">
-          <label>Category</label>
+          <label>{{ t('common.category') }}</label>
           <select v-model="draft.category_id" class="form-input">
-            <option value="">Select Category</option>
+            <option value="">{{ t('common.selectCategory') }}</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">
               {{ cat.name }}
             </option>
@@ -49,36 +49,37 @@
         </div>
 
         <div class="form-group">
-          <label>Payee / Merchant</label>
-          <input v-model="draft.payee_payer" type="text" class="form-input" placeholder="Merchant name" />
+          <label>{{ t('receipt.payeeMerchant') }}</label>
+          <input v-model="draft.payee_payer" type="text" class="form-input" :placeholder="t('receipt.merchantPlaceholder')" />
         </div>
 
         <div class="form-group">
-          <label>Payment Type</label>
+          <label>{{ t('common.paymentType') }}</label>
           <select v-model="draft.payment_type" class="form-input">
-            <option value="cash">Cash</option>
-            <option value="card">Card</option>
-            <option value="qr">QR Code</option>
-            <option value="bank">Bank Transfer</option>
-            <option value="other">Other</option>
+            <option value="cash">{{ t('common.cash') }}</option>
+            <option value="card">{{ t('common.card') }}</option>
+            <option value="qr">{{ t('common.qrCode') }}</option>
+            <option value="bank">{{ t('common.bankTransfer') }}</option>
+            <option value="other">{{ t('common.other') }}</option>
           </select>
         </div>
 
         <div class="form-group full-width">
-          <label>Note</label>
-          <input v-model="draft.note" type="text" class="form-input" placeholder="Optional note" />
+          <label>{{ t('common.note') }}</label>
+          <input v-model="draft.note" type="text" class="form-input" :placeholder="t('common.optionalNote')" />
         </div>
       </div>
 
       <div class="modal-actions">
-        <BaseButton type="button" variant="secondary" @click="$emit('reset')">Discard & Scan Another</BaseButton>
-        <BaseButton type="submit" :disabled="submitting">Confirm & Save Transaction</BaseButton>
+        <BaseButton type="button" variant="secondary" @click="$emit('reset')">{{ t('receipt.discardScan') }}</BaseButton>
+        <BaseButton type="submit" :disabled="submitting">{{ t('receipt.confirmSave') }}</BaseButton>
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
 import { BaseButton } from '@/components/ui'
 import type { AINormalizationResult, Category, Account } from '@/types'
 
@@ -90,6 +91,8 @@ defineProps<{
 }>()
 
 defineEmits(['confirm', 'reset'])
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

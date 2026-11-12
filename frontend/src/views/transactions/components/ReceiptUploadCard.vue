@@ -6,8 +6,8 @@
         <polyline points="17 8 12 3 7 8"></polyline>
         <line x1="12" y1="3" x2="12" y2="15"></line>
       </svg>
-      <h3>Click or drop receipt image here</h3>
-      <p>Supports PNG, JPEG. Images > 2MB will be compressed locally preserving original dimensions.</p>
+      <h3>{{ t('receipt.dropzoneTitle') }}</h3>
+      <p>{{ t('receipt.dropzoneDesc') }}</p>
       <input ref="fileInput" type="file" accept="image/*" class="hidden-input" @change="handleFileSelect" />
     </div>
   </div>
@@ -15,10 +15,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from '@/locales'
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const emit = defineEmits(['file-selected'])
+
+const { t } = useI18n()
 
 const triggerFileInput = () => {
   fileInput.value?.click()

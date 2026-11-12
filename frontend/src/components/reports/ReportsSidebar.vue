@@ -6,11 +6,11 @@
         <div>
           <label class="field-label">{{ t('reports.period') }}</label>
           <select v-model="spendingParams.period" @change="$emit('spending')" class="field-select">
-            <option value="this_week">This Week</option>
-            <option value="this_month">This Month</option>
-            <option value="this_year">This Year</option>
-            <option value="last_month">Last Month</option>
-            <option value="last_year">Last Year</option>
+            <option value="this_week">{{ t('reports.thisWeek') }}</option>
+            <option value="this_month">{{ t('reports.thisMonth') }}</option>
+            <option value="this_year">{{ t('reports.thisYear') }}</option>
+            <option value="last_month">{{ t('reports.lastMonth') }}</option>
+            <option value="last_year">{{ t('reports.lastYear') }}</option>
           </select>
         </div>
         <div>

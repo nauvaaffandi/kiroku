@@ -3,8 +3,8 @@
     <div class="login-card">
       <div class="login-header">
         <AppIcon class="app-icon--lg" />
-        <h1>Kiroku</h1>
-        <p>Personal Finance Tracker</p>
+        <h1>{{ t('common.appName') }}</h1>
+        <p>{{ t('auth.tagline') }}</p>
       </div>
 
       <form @submit.prevent="handleVerify" class="login-form">
@@ -13,7 +13,7 @@
         </div>
 
         <div class="form-group">
-          <label for="pin">PIN</label>
+          <label for="pin">{{ t('common.pin') }}</label>
           <input
             id="pin"
             v-model="pin"

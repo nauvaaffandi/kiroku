@@ -2,11 +2,11 @@
   <div class="processing-card">
     <div class="metrics-grid">
       <div class="metric-item">
-        <span class="label">Original Size</span>
+        <span class="label">{{ t('receipt.originalSize') }}</span>
         <span class="value">{{ formatSize(originalSize) }}</span>
       </div>
       <div class="metric-item">
-        <span class="label">Compressed Size</span>
+        <span class="label">{{ t('receipt.compressedSize') }}</span>
         <span class="value">{{ formatSize(compressedSize) }}</span>
       </div>
     </div>
@@ -24,6 +24,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/locales'
+
 interface EventItem {
   id: string
   status?: string
@@ -37,6 +39,8 @@ defineProps<{
   compressedSize: number
   events: EventItem[]
 }>()
+
+const { t } = useI18n()
 
 const formatSize = (bytes: number) => {
   if (bytes < 1024) return bytes + ' B'

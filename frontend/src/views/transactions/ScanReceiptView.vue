@@ -2,11 +2,11 @@
   <div class="scan-receipt-page">
     <header class="page-header">
       <div>
-        <h1>Scan Receipt</h1>
-        <p class="page-subtitle">Convert receipt images into transaction drafts automatically</p>
+        <h1>{{ t('nav.scanReceipt') }}</h1>
+        <p class="page-subtitle">{{ t('receipt.scanDesc') }}</p>
       </div>
       <BaseButton variant="secondary" @click="router.push('/transactions')">
-        Back to Transactions
+        {{ t('receipt.backToTransactions') }}
       </BaseButton>
     </header>
 
@@ -14,8 +14,8 @@
       <ReceiptUploadCard v-if="step === 'upload'" @file-selected="processFile" />
 
       <div v-if="step === 'processing'" class="card processing-card">
-        <h3>Processing Receipt...</h3>
-        <p class="text-muted">Please wait while we extract text with OCR and normalize with AI.</p>
+        <h3>{{ t('receipt.processingTitle') }}</h3>
+        <p class="text-muted">{{ t('receipt.processingDesc') }}</p>
         <ReceiptProcessingCard :originalSize="originalSize" :compressedSize="compressedSize" :events="events" />
       </div>
 
@@ -40,12 +40,14 @@ import { receiptsApi } from '@/api/receipts'
 import { api } from '@/api/client'
 import { BaseButton } from '@/components/ui'
 import type { ReceiptJobEvent, AINormalizationResult, Category, Account } from '@/types'
+import { useI18n } from '@/locales'
 import ReceiptUploadCard from './components/ReceiptUploadCard.vue'
 import ReceiptProcessingCard from './components/ReceiptProcessingCard.vue'
 import ReceiptReviewCard from './components/ReceiptReviewCard.vue'
 
 const router = useRouter()
 const uiStore = useUIStore()
+const { t } = useI18n()
 
 const step = ref<'upload' | 'processing' | 'review'>('upload')
 const originalSize = ref(0)
@@ -109,13 +111,13 @@ const compressImageIfNeeded = async (file: File): Promise<{ base64: string; orig
 
 const processFile = async (file: File) => {
   try {
-    uiStore.info('Compressing image...')
+    uiStore.info(t('receipt.compressing'))
     const { base64, originalSize: orig, compressedSize: comp } = await compressImageIfNeeded(file)
     originalSize.value = orig
     compressedSize.value = comp
 
     step.value = 'processing'
-    uiStore.success('Image prepared successfully')
+    uiStore.success(t('receipt.prepared'))
 
     const res = await receiptsApi.scanReceipt({
       image_base64: base64,
@@ -126,7 +128,7 @@ const processFile = async (file: File) => {
     jobId.value = res.job_id
     startPolling(res.job_id)
   } catch (e: any) {
-    uiStore.error(e.message || 'Failed to process image')
+    uiStore.error(e.message || t('receipt.processFailed'))
     step.value = 'upload'
   }
 }
@@ -146,10 +148,10 @@ const startPolling = (id: string) => {
           }
         }
         step.value = 'review'
-        uiStore.success('Transaction draft ready for review!')
+        uiStore.success(t('receipt.draftReady'))
       } else if (res.job.status === 'failed') {
         if (pollTimer) clearInterval(pollTimer)
-        uiStore.error(res.job.error_message || 'Receipt processing failed')
+        uiStore.error(res.job.error_message || t('receipt.processFailed'))
         step.value = 'upload'
       }
     } catch (e) {
@@ -163,10 +165,10 @@ const confirmTransaction = async (draftData: AINormalizationResult) => {
   submitting.value = true
   try {
     await receiptsApi.confirmTransaction(jobId.value, draftData)
-    uiStore.success('Transaction created successfully from receipt!')
+    uiStore.success(t('receipt.transactionCreated'))
     router.push('/transactions')
   } catch (e: any) {
-    uiStore.error(e.response?.data?.error || 'Failed to save transaction')
+    uiStore.error(e.response?.data?.error || t('receipt.saveFailed'))
   } finally {
     submitting.value = false
   }

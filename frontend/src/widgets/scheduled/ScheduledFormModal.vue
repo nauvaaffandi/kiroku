@@ -1,23 +1,23 @@
 <template>
   <BaseModal
     v-model="isOpen"
-    :title="isEditing ? 'Edit Scheduled Transaction' : 'New Scheduled Transaction'"
+    :title="isEditing ? t('scheduled.formTitleEdit') : t('scheduled.formTitleCreate')"
     size="lg"
     @update:modelValue="$emit('update:modelValue', $event)"
   >
     <form @submit.prevent="handleSubmit" class="scheduled-form">
       <div class="form-group">
-        <label class="form-label">Name *</label>
+        <label class="form-label">{{ t('scheduled.labelName') }} *</label>
         <BaseInput
           v-model="formData.name"
           type="text"
           required
-          placeholder="e.g., Monthly Rent"
+          :placeholder="t('scheduled.placeholderName')"
         />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Type *</label>
+          <label class="form-label">{{ t('scheduled.labelType') }} *</label>
           <BaseSelect
             v-model="formData.type"
             :options="typeOptions"
@@ -25,7 +25,7 @@
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Frequency *</label>
+          <label class="form-label">{{ t('scheduled.labelFrequency') }} *</label>
           <BaseSelect
             v-model="formData.frequency"
             :options="frequencyOptions"
@@ -35,7 +35,7 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Start Date *</label>
+          <label class="form-label">{{ t('scheduled.labelStartDate') }} *</label>
           <BaseInput
             v-model="formData.start_date"
             type="date"
@@ -43,17 +43,17 @@
           />
         </div>
         <div class="form-group" v-if="formData.frequency === 'custom'">
-          <label class="form-label">Cron Expression</label>
+          <label class="form-label">{{ t('scheduled.labelCron') }}</label>
           <BaseInput
             v-model="formData.cron_expression"
             type="text"
-            placeholder="e.g., 0 9 1 * *"
+            :placeholder="t('scheduled.placeholderCron')"
           />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">End Date</label>
+          <label class="form-label">{{ t('scheduled.labelEndDate') }}</label>
           <BaseInput
             v-model="formData.end_date"
             type="date"
@@ -62,7 +62,7 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Amount *</label>
+          <label class="form-label">{{ t('common.amount') }} *</label>
           <BaseInput
             v-model.number="formData.amount"
             type="number"
@@ -73,19 +73,19 @@
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Currency *</label>
+          <label class="form-label">{{ t('common.currency') }} *</label>
           <BaseInput
             v-model="formData.currency"
             type="text"
             required
             maxlength="3"
-            placeholder="JPY"
+            :placeholder="t('scheduled.placeholderCurrency')"
           />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">From Account *</label>
+          <label class="form-label">{{ t('common.fromAccount') }} *</label>
           <BaseSelect
             v-model="formData.from_account_id"
             :options="accountOptions"
@@ -93,7 +93,7 @@
           />
         </div>
         <div class="form-group" v-if="formData.type === 'transfer'">
-          <label class="form-label">To Account *</label>
+          <label class="form-label">{{ t('common.toAccount') }} *</label>
           <BaseSelect
             v-model="formData.to_account_id"
             :options="accountOptions"
@@ -101,24 +101,24 @@
           />
         </div>
         <div class="form-group" v-else>
-          <label class="form-label">Category</label>
+          <label class="form-label">{{ t('common.category') }}</label>
           <BaseSelect
             v-model="formData.category_id"
             :options="categoryOptions"
-            placeholder="Select category (optional)"
+            :placeholder="t('scheduled.placeholderCategory')"
           />
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Description</label>
+        <label class="form-label">{{ t('common.description') }}</label>
         <BaseInput
           v-model="formData.description"
           type="text"
-          placeholder="Optional description"
+          :placeholder="t('scheduled.placeholderDescription')"
         />
       </div>
       <div class="form-group form-checkbox">
-        <label class="form-label">Active</label>
+        <label class="form-label">{{ t('scheduled.active') }}</label>
         <input
           v-model="formData.active"
           type="checkbox"
@@ -127,10 +127,10 @@
       </div>
       <div class="modal-actions">
         <BaseButton type="button" variant="secondary" @click="isOpen = false">
-          Cancel
+          {{ t('common.cancel') }}
         </BaseButton>
         <BaseButton type="submit">
-          {{ isEditing ? 'Save Changes' : 'Create Scheduled Transaction' }}
+          {{ isEditing ? t('common.save') : t('scheduled.btnCreate') }}
         </BaseButton>
       </div>
     </form>
@@ -140,6 +140,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { ScheduledTransaction, ScheduledType, ScheduledFrequency } from '@/types'
 
 interface Props {
@@ -152,6 +153,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   submit: [data: Partial<ScheduledTransaction>]
 }>()
+
+const { t } = useI18n()
 
 const isOpen = ref(props.modelValue)
 const isEditing = computed(() => !!props.scheduled)

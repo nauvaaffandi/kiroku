@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from '@/locales'
 
 defineProps<{
   modelValue: boolean
@@ -13,6 +14,8 @@ const emit = defineEmits<{
   (e: 'submit', token: string, newPin: string): void
 }>()
 
+const { t } = useI18n()
+
 const token = ref('')
 const newPin = ref('')
 const confirmPin = ref('')
@@ -21,11 +24,11 @@ const error = ref('')
 const handleSubmit = (e: Event) => {
   e.preventDefault()
   if (newPin.value !== confirmPin.value) {
-    error.value = 'New PINs do not match'
+    error.value = t('auth.changePin.pinsMismatch')
     return
   }
   if (!token.value.trim()) {
-    error.value = 'Token is required'
+    error.value = t('auth.changePin.tokenRequired')
     return
   }
   error.value = ''
@@ -61,24 +64,24 @@ const close = () => {
 
             <div>
               <label class="tp-label">
-                {{ mode === 'change' ? 'Telegram Token' : 'Reset Token from Telegram' }}
+                {{ mode === 'change' ? t('auth.changePin.telegramToken') : t('auth.changePin.resetToken') }}
               </label>
               <input
                 v-model="token"
                 type="text"
                 required
-                placeholder="Paste token from @nauva_kiroku_bot"
+                :placeholder="t('auth.changePin.tokenPlaceholder')"
                 class="tp-input"
               />
               <p class="tp-hint">
                 {{ mode === 'change' 
-                  ? 'Request token via /changepin command in Telegram' 
-                  : 'Request token via /forgotpin command in Telegram' }}
+                  ? t('auth.changePin.changeHint') 
+                  : t('auth.changePin.forgotHint') }}
               </p>
             </div>
 
             <div>
-              <label class="tp-label">New PIN</label>
+              <label class="tp-label">{{ t('auth.changePin.newPin') }}</label>
               <input
                 v-model="newPin"
                 type="number"
@@ -92,7 +95,7 @@ const close = () => {
             </div>
 
             <div>
-              <label class="tp-label">Confirm New PIN</label>
+              <label class="tp-label">{{ t('auth.changePin.confirmNewPin') }}</label>
               <input
                 v-model="confirmPin"
                 type="number"
@@ -111,14 +114,14 @@ const close = () => {
                 @click="close"
                 class="tp-btn-cancel"
               >
-                Cancel
+                {{ t('common.cancel') }}
               </button>
               <button
                 type="submit"
                 :disabled="loading"
                 class="tp-btn-submit"
               >
-                {{ loading ? 'Verifying...' : 'Verify & Change' }}
+                {{ loading ? t('auth.changePin.verifying') : t('auth.changePin.verifyChange') }}
               </button>
             </div>
           </form>

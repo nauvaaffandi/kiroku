@@ -7,33 +7,33 @@
       </div>
       <div class="scheduled-badges">
         <span class="scheduled-type-badge" :class="scheduled.type">{{ scheduled.type }}</span>
-        <span v-if="scheduled.active" class="scheduled-status-badge active">Active</span>
-        <span v-else class="scheduled-status-badge inactive">Inactive</span>
+        <span v-if="scheduled.active" class="scheduled-status-badge active">{{ t('scheduled.active') }}</span>
+        <span v-else class="scheduled-status-badge inactive">{{ t('scheduled.inactive') }}</span>
       </div>
     </div>
     <div class="scheduled-details">
       <div class="detail-item">
-        <span class="detail-label">Frequency</span>
+        <span class="detail-label">{{ t('scheduled.labelFrequency') }}</span>
         <span class="detail-value">{{ formatFrequency(scheduled.frequency) }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Amount</span>
+        <span class="detail-label">{{ t('common.amount') }}</span>
         <span class="detail-value amount">{{ formatCurrency(scheduled.amount) }} {{ scheduled.currency }}</span>
       </div>
       <div class="detail-item" v-if="scheduled.next_run">
-        <span class="detail-label">Next Run</span>
+        <span class="detail-label">{{ t('scheduled.labelNextRun') }}</span>
         <span class="detail-value">{{ formatDate(scheduled.next_run) }}</span>
       </div>
     </div>
     <div class="scheduled-actions">
       <BaseButton variant="secondary" size="sm" @click="$emit('edit', scheduled)">
-        Edit
+        {{ t('common.edit') }}
       </BaseButton>
       <BaseButton variant="secondary" size="sm" @click="$emit('toggle', scheduled)">
-        {{ scheduled.active ? 'Pause' : 'Resume' }}
+        {{ scheduled.active ? t('scheduled.pause') : t('scheduled.resume') }}
       </BaseButton>
       <BaseButton variant="danger" size="sm" @click="$emit('delete', scheduled.id)">
-        Delete
+        {{ t('common.delete') }}
       </BaseButton>
     </div>
   </div>
@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { ScheduledTransaction } from '@/types'
 
 defineProps<{
@@ -53,6 +54,8 @@ defineEmits<{
   delete: [id: string]
 }>()
 
+const { t } = useI18n()
+
 const formatCurrency = (num: number) => {
   return new Intl.NumberFormat('ja-JP').format(num)
 }
@@ -63,11 +66,11 @@ const formatDate = (dateStr: string) => {
 
 const formatFrequency = (freq: string) => {
   const map: Record<string, string> = {
-    daily: 'Daily',
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-    yearly: 'Yearly',
-    custom: 'Custom'
+    daily: t('scheduled.frequencyDaily'),
+    weekly: t('scheduled.frequencyWeekly'),
+    monthly: t('scheduled.frequencyMonthly'),
+    yearly: t('scheduled.frequencyYearly'),
+    custom: t('scheduled.frequencyCustom')
   }
   return map[freq] || freq
 }

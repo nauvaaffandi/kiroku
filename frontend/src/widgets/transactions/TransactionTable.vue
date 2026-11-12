@@ -3,14 +3,14 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Type</th>
-          <th>Amount</th>
-          <th>Category</th>
-          <th>Account</th>
-          <th>Note</th>
-          <th>Status</th>
-          <th class="text-right">Actions</th>
+          <th>{{ t('transactions.columnDate') }}</th>
+          <th>{{ t('transactions.columnType') }}</th>
+          <th>{{ t('transactions.columnAmount') }}</th>
+          <th>{{ t('transactions.columnCategory') }}</th>
+          <th>{{ t('transactions.columnAccount') }}</th>
+          <th>{{ t('transactions.columnNote') }}</th>
+          <th>{{ t('transactions.columnStatus') }}</th>
+          <th class="text-right">{{ t('transactions.columnActions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -24,10 +24,10 @@
           />
         </template>
         <tr v-else-if="loading">
-          <td colspan="8" class="td-empty">Loading transactions...</td>
+          <td colspan="8" class="td-empty">{{ t('common.loading') }}</td>
         </tr>
         <tr v-else>
-          <td colspan="8" class="td-empty">No transactions found</td>
+          <td colspan="8" class="td-empty">{{ t('transactions.noTransactions') }}</td>
         </tr>
       </tbody>
     </table>
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import TransactionRow from './TransactionRow.vue'
+import { useI18n } from '@/locales'
 import type { Transaction } from '@/types'
 
 interface Props {
@@ -51,6 +52,8 @@ defineEmits<{
   edit: [transaction: Transaction]
   delete: [id: string]
 }>()
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

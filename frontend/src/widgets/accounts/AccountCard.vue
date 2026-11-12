@@ -9,7 +9,7 @@
         </svg>
       </div>
       <div class="account-badges">
-        <span v-if="account.archived" class="account-type-badge archived">Archived</span>
+        <span v-if="account.archived" class="account-type-badge archived">{{ t('accounts.archived') }}</span>
         <div class="account-type-badge" :class="account.type">{{ account.type }}</div>
       </div>
     </div>
@@ -18,10 +18,10 @@
     <p class="account-currency">{{ account.currency }}</p>
     <div class="account-actions">
       <BaseButton variant="secondary" size="sm" @click="$emit('edit', account)">
-        Edit
+        {{ t('common.edit') }}
       </BaseButton>
       <BaseButton variant="danger" size="sm" @click="$emit('delete', account.id)">
-        Delete
+        {{ t('common.delete') }}
       </BaseButton>
     </div>
   </div>
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { Account } from '@/types'
 
 defineProps<{
@@ -39,6 +40,8 @@ defineEmits<{
   edit: [account: Account]
   delete: [id: string]
 }>()
+
+const { t } = useI18n()
 
 const formatNumber = (num: number) => {
   return new Intl.NumberFormat('ja-JP').format(num)

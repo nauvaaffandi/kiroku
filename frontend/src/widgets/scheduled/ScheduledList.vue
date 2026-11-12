@@ -5,8 +5,8 @@
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
-      <p>No scheduled transactions yet</p>
-      <BaseButton @click="$emit('create')">Add Scheduled Transaction</BaseButton>
+      <p>{{ t('scheduled.noScheduledTransactions') }}</p>
+      <BaseButton @click="$emit('create')">{{ t('scheduled.addScheduledTransaction') }}</BaseButton>
     </div>
 
     <div v-else class="scheduled-grid">
@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import ScheduledCard from './ScheduledCard.vue'
 import type { ScheduledTransaction } from '@/types'
 
@@ -35,6 +36,8 @@ withDefaults(
     scheduled: () => []
   }
 )
+
+const { t } = useI18n()
 
 defineEmits<{
   edit: [scheduled: ScheduledTransaction]

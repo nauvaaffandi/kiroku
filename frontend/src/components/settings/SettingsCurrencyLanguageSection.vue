@@ -4,8 +4,8 @@
       <div class="settings-form">
         <BaseSelect :model-value="baseCurrency" :options="currencyOptions" @update:model-value="(v: any) => emit('baseCurrencyChange', v)" />
         <div class="settings-form-add-row">
-          <input :model-value="newCurrencyCode" @update:model-value="emit('update:newCurrencyCode', $event)" placeholder="Add Currency (e.g. IDR)" class="settings-form-input" maxlength="5" />
-          <BaseButton variant="secondary" @click="handleAddCurrency">Add</BaseButton>
+          <input :model-value="newCurrencyCode" @update:model-value="emit('update:newCurrencyCode', $event)" :placeholder="t('settings.addCurrencyPlaceholder')" class="settings-form-input" maxlength="5" />
+          <BaseButton variant="secondary" @click="handleAddCurrency">{{ t('common.add') }}</BaseButton>
         </div>
       </div>
     </SettingItem>

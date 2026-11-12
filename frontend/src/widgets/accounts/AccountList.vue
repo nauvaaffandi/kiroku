@@ -5,8 +5,8 @@
         <rect x="2" y="4" width="20" height="16" rx="2"></rect>
         <line x1="2" y1="10" x2="22" y2="10"></line>
       </svg>
-      <p>No accounts yet</p>
-      <BaseButton @click="$emit('create')">Add Account</BaseButton>
+      <p>{{ t('dashboard.noAccounts') }}</p>
+      <BaseButton @click="$emit('create')">{{ t('accounts.addAccount') }}</BaseButton>
     </div>
 
     <div v-else class="accounts-grid">
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import AccountCard from './AccountCard.vue'
 import type { Account } from '@/types'
 
@@ -35,6 +36,8 @@ defineEmits<{
   delete: [id: string]
   create: []
 }>()
+
+const { t } = useI18n()
 </script>
 
 <style scoped>

@@ -9,10 +9,10 @@
       <table class="data-table">
         <thead>
           <tr class="table-header-row">
-            <th class="table-head">Category</th>
-            <th class="table-head table-cell--numeric">Amount</th>
-            <th class="table-head table-cell--numeric">Count</th>
-            <th class="table-head table-cell--numeric">%</th>
+            <th class="table-head">{{ t('common.category') }}</th>
+            <th class="table-head table-cell--numeric">{{ t('common.amount') }}</th>
+            <th class="table-head table-cell--numeric">{{ t('reports.cashflowTable.count') }}</th>
+            <th class="table-head table-cell--numeric">{{ t('reports.percent') }}</th>
           </tr>
         </thead>
         <tbody class="table-body">
@@ -66,7 +66,7 @@ const draw = () => {
   instance = echarts.init(el.value)
   const data = props.groups.slice(0, 10).reverse()
   instance.setOption({
-    title: { text: 'Top Categories', left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
+    title: { text: t('reports.topCategories'), left: 'center', textStyle: { fontSize: 13, color: 'inherit' } },
     tooltip: { trigger: 'item', formatter: '{b}: ¥{c} ({d}%)' },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from '@/locales'
 
 defineProps<{
   modelValue: boolean
@@ -11,6 +12,8 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
   (e: 'register', token: string, telegramUrl: string): void
 }>()
+
+const { t } = useI18n()
 
 const telegramUrl = ref<string>('')
 const token = ref<string>('')
@@ -72,7 +75,7 @@ onUnmounted(() => {
 
           <div v-if="loading" class="trm-loading">
             <div class="trm-spinner"></div>
-            <p class="trm-loading-text">Generating registration token...</p>
+            <p class="trm-loading-text">{{ t('auth.telegramRegister.generatingToken') }}</p>
           </div>
 
           <div v-else class="trm-form">
@@ -86,9 +89,9 @@ onUnmounted(() => {
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
                 </svg>
               </div>
-              <h3 class="trm-heading">Link Your Telegram</h3>
+              <h3 class="trm-heading">{{ t('auth.telegramRegister.heading') }}</h3>
               <p class="trm-subtext">
-                Click the button below to open Telegram and link your account using the registration token.
+                {{ t('auth.telegramRegister.desc') }}
               </p>
             </div>
 
@@ -100,24 +103,24 @@ onUnmounted(() => {
                 <svg class="trm-btn-icon" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
                 </svg>
-                Open Telegram (@nauva_kiroku_bot)
+                {{ t('auth.telegramRegister.openTelegram') }}
               </button>
 
               <div class="trm-token-box">
-                <p class="trm-token-label">Registration Token:</p>
+                <p class="trm-token-label">{{ t('auth.telegramRegister.tokenLabel') }}</p>
                 <div class="trm-token-row">
                   <code class="trm-token-code">{{ token }}</code>
                   <button
                     @click="copyToken"
                     class="trm-copy-btn"
                   >
-                    Copy
+                    {{ t('shared.access.copy') }}
                   </button>
                 </div>
               </div>
 
               <p class="trm-hint">
-                After opening Telegram, send the token with: <code class="trm-hint-code">/register &lt;token&gt;</code>
+                {{ t('auth.telegramRegister.hint', { token: '/register <token>' }) }}
               </p>
             </div>
 
@@ -127,7 +130,7 @@ onUnmounted(() => {
                 @click="$emit('update:modelValue', false)"
                 class="trm-btn-cancel"
               >
-                Close
+                {{ t('common.close') }}
               </button>
             </div>
           </div>

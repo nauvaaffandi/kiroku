@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from '@/locales'
 
 defineProps<{
   modelValue: boolean
@@ -12,6 +13,8 @@ const emit = defineEmits<{
   (e: 'submit', oldPin: string, newPin: string): void
 }>()
 
+const { t } = useI18n()
+
 const oldPin = ref('')
 const newPin = ref('')
 const confirmPin = ref('')
@@ -20,7 +23,7 @@ const error = ref('')
 const handleSubmit = (e: Event) => {
   e.preventDefault()
   if (newPin.value !== confirmPin.value) {
-    error.value = 'New PINs do not match'
+    error.value = t('auth.changePin.pinsMismatch')
     return
   }
   error.value = ''
@@ -51,8 +54,8 @@ const close = () => {
 
           <div v-if="loading" class="cp-loading">
             <div class="cp-spinner"></div>
-            <p class="cp-loading-text">Waiting for Telegram approval...</p>
-            <p class="cp-loading-hint">Please reply YES on Telegram to approve PIN change.</p>
+            <p class="cp-loading-text">{{ t('auth.changePin.waitingApproval') }}</p>
+            <p class="cp-loading-hint">{{ t('auth.changePin.approvalHint') }}</p>
           </div>
 
           <form v-else @submit="handleSubmit" class="cp-form">
@@ -61,7 +64,7 @@ const close = () => {
             </div>
 
             <div>
-              <label class="cp-label">Current PIN</label>
+              <label class="cp-label">{{ t('auth.changePin.currentPin') }}</label>
               <input
                 v-model="oldPin"
                 type="number"
@@ -75,7 +78,7 @@ const close = () => {
             </div>
 
             <div>
-              <label class="cp-label">New PIN</label>
+              <label class="cp-label">{{ t('auth.changePin.newPin') }}</label>
               <input
                 v-model="newPin"
                 type="number"
@@ -89,7 +92,7 @@ const close = () => {
             </div>
 
             <div>
-              <label class="cp-label">Confirm New PIN</label>
+              <label class="cp-label">{{ t('auth.changePin.confirmNewPin') }}</label>
               <input
                 v-model="confirmPin"
                 type="number"
@@ -108,13 +111,13 @@ const close = () => {
                 @click="close"
                 class="cp-btn-cancel"
               >
-                Cancel
+                {{ t('common.cancel') }}
               </button>
               <button
                 type="submit"
                 class="cp-btn-submit"
               >
-                Submit & Request Telegram Approval
+                {{ t('auth.changePin.submitRequest') }}
               </button>
             </div>
           </form>

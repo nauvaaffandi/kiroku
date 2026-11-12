@@ -1,23 +1,23 @@
 <template>
   <BaseModal
     v-model="isOpen"
-    :title="isEditing ? 'Edit Account' : 'New Account'"
+    :title="isEditing ? t('accounts.formTitleEdit') : t('accounts.formTitleCreate')"
     size="lg"
     @update:modelValue="$emit('update:modelValue', $event)"
   >
     <form @submit.prevent="handleSubmit" class="account-form">
       <div class="form-group">
-        <label class="form-label">Name *</label>
+        <label class="form-label">{{ t('accounts.labelName') }} *</label>
         <BaseInput
           v-model="formData.name"
           type="text"
           required
-          placeholder="Account name"
+          :placeholder="t('accounts.placeholderName')"
         />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Type *</label>
+          <label class="form-label">{{ t('accounts.labelType') }} *</label>
           <BaseSelect
             v-model="formData.type"
             :options="typeOptions"
@@ -25,42 +25,42 @@
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Currency *</label>
+          <label class="form-label">{{ t('accounts.labelCurrency') }} *</label>
           <BaseInput
             v-model="formData.currency"
             type="text"
             required
             maxlength="3"
-            placeholder="JPY"
+            :placeholder="t('accounts.placeholderCurrency')"
           />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Icon</label>
+          <label class="form-label">{{ t('accounts.labelIcon') }}</label>
           <BaseInput
             v-model="formData.icon"
             type="text"
-            placeholder="Emoji or leave blank"
+            :placeholder="t('accounts.placeholderIcon')"
             maxlength="4"
           />
         </div>
         <div class="form-group">
-          <label class="form-label">Color</label>
+          <label class="form-label">{{ t('accounts.labelColor') }}</label>
           <ColorPalette v-model="formData.color" />
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Initial Balance</label>
+        <label class="form-label">{{ t('accounts.labelInitialBalance') }}</label>
         <BaseInput
           v-model="formData.balance"
           type="number"
           :step="0.01"
-          placeholder="0.00"
+          :placeholder="t('accounts.placeholderBalance')"
         />
       </div>
       <div class="form-group form-checkbox">
-        <label class="form-label">Archived</label>
+        <label class="form-label">{{ t('accounts.archived') }}</label>
         <input
           v-model="formData.archived"
           type="checkbox"
@@ -69,10 +69,10 @@
       </div>
       <div class="modal-actions">
         <BaseButton type="button" variant="secondary" @click="isOpen = false">
-          Cancel
+          {{ t('common.cancel') }}
         </BaseButton>
         <BaseButton type="submit">
-          {{ isEditing ? 'Save Changes' : 'Create Account' }}
+          {{ isEditing ? t('common.save') : t('accounts.btnCreateAccount') }}
         </BaseButton>
       </div>
     </form>
@@ -83,6 +83,7 @@
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
 import ColorPalette from '@/components/ui/ColorPalette.vue'
+import { useI18n } from '@/locales'
 import type { Account, AccountType } from '@/types'
 
 interface Props {
@@ -95,6 +96,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   submit: [data: Partial<Account>]
 }>()
+
+const { t } = useI18n()
 
 const isOpen = ref(props.modelValue)
 const isEditing = computed(() => !!props.account)

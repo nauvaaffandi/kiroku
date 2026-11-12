@@ -1,14 +1,14 @@
 <template>
   <BaseModal
     v-model="isOpen"
-    :title="isEditing ? 'Edit Transaction' : 'New Transaction'"
+    :title="isEditing ? t('transactions.editTransaction') : t('transactions.createTransaction')"
     size="lg"
     @update:modelValue="$emit('update:modelValue', $event)"
   >
     <form @submit.prevent="handleSubmit" class="transaction-form">
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Type *</label>
+          <label class="form-label">{{ t('transactions.labelType') }} *</label>
           <BaseSelect
             v-model="form.type"
             :options="typeOptions"
@@ -17,7 +17,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Date & Time *</label>
+          <label class="form-label">{{ t('transactions.labelDateTime') }} *</label>
           <BaseInput
             v-model="form.date_time"
             type="datetime-local"
@@ -26,19 +26,19 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Amount *</label>
+          <label class="form-label">{{ t('common.amount') }} *</label>
           <BaseInput
             v-model.number="form.amount"
             type="number"
             :min="0"
             :step="0.01"
             required
-            placeholder="0.00"
+            :placeholder="t('transactions.placeholderAmount')"
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Currency *</label>
+          <label class="form-label">{{ t('common.currency') }} *</label>
           <BaseSelect
             v-model="form.currency"
             :options="currencyOptions"
@@ -47,7 +47,7 @@
         </div>
 
         <div class="form-group" v-if="form.type !== 'transfer'">
-          <label class="form-label">Account *</label>
+          <label class="form-label">{{ t('common.account') }} *</label>
           <BaseSelect
             v-model="form.from_account_id"
             :options="accountOptions"
@@ -56,7 +56,7 @@
         </div>
 
         <div class="form-group" v-if="form.type === 'transfer'">
-          <label class="form-label">From Account *</label>
+          <label class="form-label">{{ t('common.fromAccount') }} *</label>
           <BaseSelect
             v-model="form.from_account_id"
             :options="accountOptions"
@@ -65,7 +65,7 @@
         </div>
 
         <div class="form-group" v-if="form.type === 'transfer'">
-          <label class="form-label">To Account *</label>
+          <label class="form-label">{{ t('common.toAccount') }} *</label>
           <BaseSelect
             v-model="form.to_account_id"
             :options="toAccountOptions"
@@ -74,7 +74,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Category</label>
+          <label class="form-label">{{ t('common.category') }}</label>
           <BaseSelect
             v-model="form.category_id"
             :options="categoryOptions"
@@ -83,49 +83,49 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Payment Type</label>
+          <label class="form-label">{{ t('common.paymentType') }}</label>
           <BaseInput
             v-model="form.payment_type"
-            placeholder="Cash, Card, etc."
+            :placeholder="t('transactions.placeholderPaymentType')"
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Payee / Payer</label>
+          <label class="form-label">{{ t('transactions.labelPayeePayer') }}</label>
           <BaseInput
             v-model="form.payee_payer"
-            placeholder="Store name, person, etc."
+            :placeholder="t('transactions.placeholderPayeePayer')"
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Labels</label>
+          <label class="form-label">{{ t('transactions.labelLabels') }}</label>
           <BaseInput
             v-model="form.labels"
-            placeholder="Comma separated"
+            :placeholder="t('transactions.placeholderLabels')"
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Note</label>
+          <label class="form-label">{{ t('common.note') }}</label>
           <textarea
             v-model="form.note"
             class="form-textarea"
             rows="3"
-            placeholder="Optional note..."
+            :placeholder="t('common.optionalNote')"
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Place</label>
+          <label class="form-label">{{ t('transactions.labelPlace') }}</label>
           <BaseInput
             v-model="form.place_name"
-            placeholder="Location name"
+            :placeholder="t('common.locationName')"
           />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Status *</label>
+          <label class="form-label">{{ t('common.status') }} *</label>
           <BaseSelect
             v-model="form.status"
             :options="statusOptions"
@@ -134,7 +134,7 @@
         </div>
 
         <div class="form-group" v-if="form.type === 'expense' || form.type === 'income'">
-          <label class="form-label">Warranty Until</label>
+          <label class="form-label">{{ t('common.warrantyUntil') }}</label>
           <BaseInput
             v-model="form.warranty_until"
             type="date"
@@ -144,10 +144,10 @@
 
       <div class="modal-actions">
         <BaseButton type="button" variant="secondary" @click="isOpen = false">
-          Cancel
+          {{ t('common.cancel') }}
         </BaseButton>
         <BaseButton type="submit">
-          {{ isEditing ? 'Save Changes' : 'Create Transaction' }}
+          {{ isEditing ? t('common.save') : t('transactions.createTransaction') }}
         </BaseButton>
       </div>
     </form>
@@ -157,6 +157,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { Transaction, Category, Account, TransactionType, TransactionStatus } from '@/types'
 import { useCurrencies } from '@/composables/useCurrencies'
 import { useSettingsStore } from '@/stores/settings'
@@ -174,6 +175,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   submit: [data: Partial<Transaction>]
 }>()
+
+const { t } = useI18n()
 
 const settingsStore = useSettingsStore()
 const { currencies } = useCurrencies()

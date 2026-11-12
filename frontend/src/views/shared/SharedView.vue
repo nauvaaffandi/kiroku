@@ -3,7 +3,7 @@
     <header class="shared-header">
 <div class="shared-header-content">
       <div class="brand">
-        <h1>Kiroku</h1>
+        <h1>{{ t('common.appName') }}</h1>
         <span class="shared-badge">{{ t('shared.view.title') }}</span>
       </div>
       <div class="attribution" v-if="data?.attribution">

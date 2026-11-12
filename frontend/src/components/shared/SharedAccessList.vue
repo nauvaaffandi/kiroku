@@ -9,10 +9,10 @@
           </div>
           <div class="share-details">
             <div class="detail-item">
-              <span class="detail-label">Link</span>
+              <span class="detail-label">{{ t('shared.access.link') }}</span>
               <div class="token-display">
                 <span class="token">{{ share.token }}</span>
-                <button @click="copyShareUrl(share.token)" class="btn-icon" title="Copy full link">
+                <button @click="copyShareUrl(share.token)" class="btn-icon" :title="t('shared.access.copyFullLink')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -21,26 +21,25 @@
               </div>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Created</span>
+              <span class="detail-label">{{ t('shared.access.created') }}</span>
               <span class="detail-value">{{ formatDate(share.created_at) }}</span>
             </div>
             <div class="detail-item" v-if="share.expires_at">
-              <span class="detail-label">Expires</span>
+              <span class="detail-label">{{ t('shared.access.expires') }}</span>
               <span class="detail-value">{{ formatDate(share.expires_at) }}</span>
             </div>
             <div class="detail-item" v-if="share.last_accessed_at">
-              <span class="detail-label">Last Accessed</span>
-              <span class="detail-value">{{ formatDate(share.last_accessed_at) }}</span>
+              <span class="detail-label">{{ t('shared.access.lastAccessed') }}</span>
             </div>
             <div class="detail-item" v-else>
-              <span class="detail-label">Last Accessed</span>
-              <span class="detail-value text-muted">Never</span>
+              <span class="detail-label">{{ t('shared.access.lastAccessed') }}</span>
+              <span class="detail-value text-muted">{{ t('shared.access.never') }}</span>
             </div>
           </div>
         </div>
         <div class="share-actions">
-          <button @click="copyShareUrl(share.token)" class="btn-secondary btn-sm">Copy Link</button>
-          <button @click="revokeShare(share.id)" class="btn-danger btn-sm">Revoke</button>
+          <button @click="copyShareUrl(share.token)" class="btn-secondary btn-sm">{{ t('shared.access.copyLink') }}</button>
+          <button @click="revokeShare(share.id)" class="btn-danger btn-sm">{{ t('shared.access.revoke') }}</button>
         </div>
       </div>
     </div>

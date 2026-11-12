@@ -1,7 +1,7 @@
 <template>
   <div class="date-range-picker">
     <div class="picker-group">
-      <label class="picker-label">From</label>
+      <label class="picker-label">{{ t('common.from') }}</label>
       <BaseInput
         v-model="localRange.from"
         type="date"
@@ -9,7 +9,7 @@
       />
     </div>
     <div class="picker-group">
-      <label class="picker-label">To</label>
+      <label class="picker-label">{{ t('common.to') }}</label>
       <BaseInput
         v-model="localRange.to"
         type="date"
@@ -24,7 +24,7 @@
         size="sm"
         @click="selectPreset(preset.value)"
       >
-        {{ preset.label }}
+        {{ t('common.' + preset.label) }}
       </BaseButton>
     </div>
   </div>
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { BaseInput, BaseButton } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { DateRange } from '@/types'
 
 interface Props {
@@ -45,6 +46,8 @@ const emit = defineEmits<{
   change: []
 }>()
 
+const { t } = useI18n()
+
 const localRange = ref<DateRange>({ ...props.modelValue })
 
 watch(() => props.modelValue, (newVal) => {
@@ -52,12 +55,12 @@ watch(() => props.modelValue, (newVal) => {
 }, { deep: true })
 
 const presets = [
-  { value: 'today', label: 'Today' },
-  { value: 'week', label: 'This Week' },
-  { value: 'month', label: 'This Month' },
-  { value: 'quarter', label: 'This Quarter' },
-  { value: 'year', label: 'This Year' },
-  { value: 'custom', label: 'Custom' }
+  { value: 'today', label: 'today' },
+  { value: 'week', label: 'thisWeek' },
+  { value: 'month', label: 'thisMonth' },
+  { value: 'quarter', label: 'thisQuarter' },
+  { value: 'year', label: 'thisYear' },
+  { value: 'custom', label: 'custom' }
 ] as const
 
 const emitChange = () => {
