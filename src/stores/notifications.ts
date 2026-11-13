@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { localDb } from '@/storage/repository'
+import { useI18n } from '@/locales'
 import type { NotificationItem } from '@/types'
 
 const NOTIFICATION_KIND = 'notification'
@@ -10,6 +11,7 @@ export const useNotificationStore = defineStore('notifications', () => {
   const unreadCount = ref<number>(0)
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
+  const { t } = useI18n()
 
   const loadNotifications = async (unreadOnly = false) => {
     loading.value = true
@@ -21,7 +23,7 @@ export const useNotificationStore = defineStore('notifications', () => {
       notifications.value = list
       unreadCount.value = list.filter((n) => !n.read_at).length
     } catch (e: any) {
-      error.value = e?.message || 'Failed to load notifications'
+      error.value = e?.message || t('notifications.fetchError')
     } finally {
       loading.value = false
     }

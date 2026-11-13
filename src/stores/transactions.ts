@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { localDb } from '@/storage/repository'
 import { useUIStore } from './ui'
+import { useI18n } from '@/locales'
 import type { Transaction, TransactionFilters, TransactionSummary } from '@/types'
 
 export const useTransactionsStore = defineStore('transactions', () => {
@@ -25,6 +26,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   })
   const summary = ref<TransactionSummary>({})
   const uiStore = useUIStore()
+  const { t } = useI18n()
 
   const totalPages = computed(() => Math.ceil(pagination.value.total / pagination.value.limit))
 
@@ -68,7 +70,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
       const start = (page - 1) * pagination.value.limit
       transactions.value = filtered.slice(start, start + pagination.value.limit)
     } catch (e) {
-      uiStore.error('Failed to load transactions')
+      uiStore.error(t('transactions.fetchError'))
     } finally {
       loading.value = false
     }

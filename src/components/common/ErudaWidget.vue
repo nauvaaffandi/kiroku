@@ -6,7 +6,7 @@
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  if (import.meta.env.VITE_USE_ERUDA === 'true') {
+  if (String(import.meta.env.VITE_USE_ERUDA).toLowerCase() === 'true') {
     const script = document.createElement('script')
     script.src = 'https://cdn.jsdelivr.net/npm/eruda'
     script.onload = () => {

@@ -21,6 +21,15 @@ export class LocalDatabase {
     this.db = await connection.createConnection(this.name, false, 'no-encryption', SCHEMA_VERSION, false);
     await this.db.open();
     await this.migrate();
+    // Always ensure the entities table exists, even if a previous migration left it missing.
+    await this.db!.execute(`CREATE TABLE IF NOT EXISTS entities (
+      id TEXT PRIMARY KEY,
+      kind TEXT NOT NULL,
+      payload TEXT NOT NULL,
+      updated_at INTEGER NOT NULL,
+      deleted INTEGER NOT NULL DEFAULT 0
+    );`);
+    await this.db!.execute(`CREATE INDEX IF NOT EXISTS idx_entities_kind_deleted ON entities(kind, deleted);`);
   }
 
   private async migrate(): Promise<void> {

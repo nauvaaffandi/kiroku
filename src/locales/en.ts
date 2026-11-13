@@ -60,6 +60,7 @@ export default {
     toggleTheme: 'Toggle theme',
     toggleSidebar: 'Toggle sidebar',
     moreOptions: 'More options',
+    appName: 'Kiroku',
     thisMonth: 'This Month',
     lastMonth: 'Last Month',
     last3Months: 'Last 3 Months',
@@ -148,7 +149,8 @@ export default {
     deleteTransaction: 'Delete Transaction',
     duplicateTransaction: 'Duplicate',
     statusCleared: 'Cleared',
-    statusPending: 'Pending'
+    statusPending: 'Pending',
+    fetchError: 'Failed to load transactions'
   },
   accounts: {
     title: 'Accounts',
@@ -163,7 +165,8 @@ export default {
     typeCredit: 'Credit',
     typeCash: 'Cash',
     typeInvestment: 'Investment',
-    typeOther: 'Other'
+    typeOther: 'Other',
+    fetchError: 'Failed to load accounts'
   },
   categories: {
     title: 'Categories',
@@ -369,7 +372,12 @@ budgets: {
     allAccounts: 'All Accounts',
     months: 'Months',
     spendingByCategory: 'Spending by Category',
-    monthlyTrend: 'Monthly Trend'
+    monthlyTrend: 'Monthly Trend',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+    thisYear: 'This Year',
+    lastMonth: 'Last Month',
+    lastYear: 'Last Year'
   },
   settings: {
     title: 'Settings',
@@ -396,8 +404,9 @@ budgets: {
     data: 'Data & Backup',
     currencyDesc: 'Set your default currency for transactions',
     languageDesc: 'Choose your preferred app language',
-    dateFormatDesc: 'Select how dates are displayed',
-    numberFormatDesc: 'Select how numbers are formatted',
+    addCurrencyPlaceholder: 'e.g. EUR',
+    fetchCurrenciesError: 'Failed to load currencies',
+    dateFormatDesc: 'Select how dates are displayed',    numberFormatDesc: 'Select how numbers are formatted',
     weekStartDesc: 'Choose which day starts your week',
     backupDesc: 'Manage backups and export your data',
     manageBackup: 'Manage Backups',
@@ -467,7 +476,8 @@ budgets: {
     pushEnabled: 'Push enabled',
     pushDisabled: 'Push disabled',
     pushUnsupported: 'Push notifications not supported',
-    timeAgo: '{{time}} ago'
+    timeAgo: '{{time}} ago',
+    fetchError: 'Failed to load notifications'
   },
   auth: {
     signIn: 'Sign In',
@@ -620,6 +630,10 @@ budgets: {
       have: 'Have (Needed)',
       want: 'Want (Desired)'
     },
+    spending: {
+      title: 'Spending Analysis',
+      subtitle: 'Breakdown of spending by category, label, and nature'
+    },
   },
   balanceAnalytics: {
     title: 'Balance Analytics',
@@ -658,7 +672,8 @@ budgets: {
     legacyNote: 'Legacy label strings are kept for compatibility and shown separately.',
     inlineCreate: 'Create label',
     requiredName: 'Label name is required',
-    invalidColor: 'Invalid color format'
+    invalidColor: 'Invalid color format',
+    fetchError: 'Failed to load labels'
   },
   calendar: {
     prevMonth: 'Previous month',
@@ -699,7 +714,9 @@ budgets: {
   scheduled: {
     title: 'Scheduled Transactions',
     subtitle: 'Manage your recurring payments and income',
-    addScheduled: 'Add Scheduled'
+    addScheduled: 'Add Scheduled',
+    noScheduledTransactions: 'No scheduled transactions yet',
+    addScheduledTransaction: 'Add Scheduled Transaction'
   },
   shared: {
     access: {

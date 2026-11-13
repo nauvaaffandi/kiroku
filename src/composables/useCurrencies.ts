@@ -1,9 +1,11 @@
 import { ref, onMounted } from 'vue'
+import { useI18n } from '@/locales'
 
 export function useCurrencies() {
   const currencies = ref<string[]>(['USD'])
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const { t } = useI18n()
 
   const fetchCurrencies = async () => {
     loading.value = true
@@ -11,7 +13,7 @@ export function useCurrencies() {
     try {
       currencies.value = ['USD']
     } catch (e: any) {
-      error.value = e.message || 'Failed to load currencies'
+      error.value = e.message || t('settings.fetchCurrenciesError')
       currencies.value = ['USD']
     } finally {
       loading.value = false

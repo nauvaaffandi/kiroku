@@ -2,12 +2,14 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { localDb } from '@/storage/repository'
 import { useUIStore } from './ui'
+import { useI18n } from '@/locales'
 import type { Account, AccountFilters } from '@/types'
 
 export const useAccountsStore = defineStore('accounts', () => {
   const accounts = ref<Account[]>([])
   const loading = ref(false)
   const uiStore = useUIStore()
+  const { t } = useI18n()
   const pagination = ref({ page: 1, pageSize: 20, total: 0 })
   const filters = ref<AccountFilters>({
     q: '',
@@ -37,7 +39,7 @@ export const useAccountsStore = defineStore('accounts', () => {
       accounts.value = list
       pagination.value = { ...pagination.value, page, total: list.length }
     } catch (e) {
-      uiStore.error('Failed to load accounts')
+      uiStore.error(t('accounts.fetchError'))
     } finally {
       loading.value = false
     }

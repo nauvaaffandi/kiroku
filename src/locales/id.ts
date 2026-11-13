@@ -60,6 +60,7 @@ export default {
     toggleTheme: 'Beralih tema',
     toggleSidebar: 'Beralih bilah sisi',
     moreOptions: 'Opsi lainnya',
+    appName: 'Kiroku',
     thisMonth: 'Bulan Ini',
     lastMonth: 'Bulan Lalu',
     last3Months: '3 Bulan Terakhir',
@@ -148,7 +149,8 @@ export default {
     deleteTransaction: 'Hapus Transaksi',
     duplicateTransaction: 'Duplikat',
     statusCleared: 'Terklarifikasi',
-    statusPending: 'Menunggu'
+    statusPending: 'Menunggu',
+    fetchError: 'Gagal memuat transaksi'
   },
   accounts: {
     title: 'Akun',
@@ -163,7 +165,8 @@ export default {
     typeCredit: 'Kredit',
     typeCash: 'Tunai',
     typeInvestment: 'Investasi',
-    typeOther: 'Lainnya'
+    typeOther: 'Lainnya',
+    fetchError: 'Gagal memuat akun'
   },
   categories: {
     title: 'Kategori',
@@ -369,7 +372,12 @@ export default {
     allAccounts: 'Semua Akun',
     months: 'Bulan',
     spendingByCategory: 'Pengeluaran per Kategori',
-    monthlyTrend: 'Tren Bulanan'
+    monthlyTrend: 'Tren Bulanan',
+    thisWeek: 'Minggu Ini',
+    thisMonth: 'Bulan Ini',
+    thisYear: 'Tahun Ini',
+    lastMonth: 'Bulan Lalu',
+    lastYear: 'Tahun Lalu'
   },
   settings: {
     title: 'Pengaturan',
@@ -396,6 +404,8 @@ export default {
     data: 'Data & Cadangan',
     currencyDesc: 'Atur mata uang default untuk transaksi',
     languageDesc: 'Pilih bahasa aplikasi yang Anda sukai',
+    addCurrencyPlaceholder: 'contoh: EUR',
+    fetchCurrenciesError: 'Gagal memuat mata uang',
     dateFormatDesc: 'Pilih format penulisan tanggal',
     numberFormatDesc: 'Pilih format penulisan angka',
     weekStartDesc: 'Pilih hari pertama dalam satu minggu',
@@ -494,7 +504,8 @@ export default {
     pushEnabled: 'Notifikasi push aktif',
     pushDisabled: 'Notifikasi push nonaktif',
     pushUnsupported: 'Browser tidak mendukung notifikasi push',
-    timeAgo: '{{time}} yang lalu'
+    timeAgo: '{{time}} yang lalu',
+    fetchError: 'Gagal memuat notifikasi'
   },
   about: {
     title: 'Tentang',
@@ -536,7 +547,8 @@ export default {
     legacyNote: 'Teks label lama disimpan untuk kompatibilitas dan ditampilkan terpisah.',
     inlineCreate: 'Buat label',
     requiredName: 'Nama label wajib diisi',
-    invalidColor: 'Format warna tidak valid'
+    invalidColor: 'Format warna tidak valid',
+    fetchError: 'Gagal memuat label'
   },
   goals: {
     title: 'Tujuan',
@@ -558,8 +570,8 @@ export default {
     targetAmount: 'Target',
     progress: 'Progres',
     predictionTitle: 'Prakara Progres',
-    achievedCumulative: 'Kumulatif Aktual',
-    targetCumulative: 'Kumulatif Target',
+    achievedCumulative: 'Realisasi Kumulatif',
+    targetCumulative: 'Target Kumulatif',
     totalTargetLabel: 'Target Total',
     yen: 'yen',
     name: 'Nama',
@@ -575,7 +587,7 @@ export default {
   analytics: {
     cashflow: {
       title: 'Analisis Arus Kas',
-      subtitle: 'Arus kas air terjun, tren, dan perbandingan periode',
+      subtitle: 'Arus kas waterfall, tren, dan perbandingan periode',
       comparison: {
         title: 'Perbandingan Periode',
         incomeChange: 'Perubahan Pemasukan',
@@ -605,7 +617,7 @@ export default {
         cumulative: 'Kumulatif'
       },
       waterfall: {
-        title: 'Air Terjun Arus Kas',
+        title: 'Waterfall Arus Kas',
         openingBalance: 'Saldo Awal',
         incomePrefix: 'Pemasukan: ',
         expensePrefix: 'Pengeluaran: ',
@@ -633,43 +645,9 @@ export default {
       have: 'Have (Diperlukan)',
       want: 'Want (Inginkan)'
     },
-    goals: {
-      title: 'Tujuan',
-      subtitle: 'Lacak target pengeluaran per kategori',
-      addGoal: 'Tambah Tujuan',
-      filterAll: 'Semua',
-      filterOnTrack: 'On Track',
-      filterBehind: 'Tertunda',
-      filterAchieved: 'Ter Capai',
-      remaining: 'Sisa',
-      projectedCompletion: 'Perkiraan Selesai',
-      period: 'Periode',
-      onTrack: 'On Track',
-      behind: 'Tertunda',
-      achieved: 'Ter Capai',
-      emptyTitle: 'Belum ada tujuan',
-      emptyDesc: 'Setel target pengeluaran untuk kategori Anda untuk melacak progres.',
-      setCategory: 'Tetapkan Kategori',
-      fetchError: 'Gagal memuat tujuan'
-    },
-    goalsSummary: {
-      totalTarget: 'Target Total',
-      currentAmount: 'Jumlah Saat Ini',
-      overallProgress: 'Progres Keseluruhan',
-      achieved: 'Ter Capai',
-      onTrack: 'On Track',
-      behind: 'Tertunda'
-    },
-    goalDetail: {
-      targetAmount: 'Target',
-      currentAmount: 'Saat Ini',
-      remaining: 'Sisa',
-      progress: 'Progres',
-      predictionTitle: 'Prakara Progres',
-      achievedCumulative: 'Kumulatif Aktual',
-      targetCumulative: 'Kumulatif Target',
-      totalTarget: 'Target Total',
-      yen: 'yen'
+    spending: {
+      title: 'Analisis Pengeluaran',
+      subtitle: 'Rincian pengeluaran per kategori, label, dan jenis'
     },
   },
   balanceAnalytics: {
@@ -747,7 +725,9 @@ export default {
   scheduled: {
     title: 'Transaksi Terjadwal',
     subtitle: 'Kelola pembayaran dan pendapatan berkala Anda',
-    addScheduled: 'Tambah Terjadwal'
+    addScheduled: 'Tambah Terjadwal',
+    noScheduledTransactions: 'Belum ada transaksi terjadwal',
+    addScheduledTransaction: 'Tambah Transaksi Terjadwal'
   },
   shared: {
     access: {

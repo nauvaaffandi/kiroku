@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { localDb } from '@/storage/repository'
 import { useUIStore } from './ui'
+import { useI18n } from '@/locales'
 import type { Category, CategoryFilters } from '@/types'
 
 export const useCategoriesStore = defineStore('categories', () => {
@@ -9,6 +10,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   const tree = ref<Category[]>([])
   const loading = ref(false)
   const uiStore = useUIStore()
+  const { t } = useI18n()
   const pagination = ref({ page: 1, pageSize: 50, total: 0 })
   const filters = ref<CategoryFilters>({
     q: '',
@@ -47,7 +49,7 @@ export const useCategoriesStore = defineStore('categories', () => {
       tree.value = buildTree(rows)
       pagination.value = { ...pagination.value, page, total: list.length }
     } catch (e) {
-      uiStore.error('Failed to load categories')
+      uiStore.error(t('categories.fetchError'))
     } finally {
       loading.value = false
     }

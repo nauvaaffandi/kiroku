@@ -60,6 +60,7 @@ export default {
     toggleTheme: 'テーマを切り替える',
     toggleSidebar: 'サイドバーを切り替える',
     moreOptions: 'その他のオプション',
+    appName: 'Kiroku',
     thisMonth: '今月',
     lastMonth: '先月',
     last3Months: '直近3ヶ月',
@@ -148,7 +149,8 @@ export default {
     deleteTransaction: '取引を削除',
     duplicateTransaction: '複製',
     statusCleared: '決済済み',
-    statusPending: '未決済'
+    statusPending: '未決済',
+    fetchError: '取引の読み込みに失敗しました'
   },
   accounts: {
     title: '口座管理',
@@ -163,7 +165,8 @@ export default {
     typeCredit: 'クレジット',
     typeCash: '現金',
     typeInvestment: '投資',
-    typeOther: 'その他'
+    typeOther: 'その他',
+    fetchError: 'アカウントの読み込みに失敗しました'
   },
   categories: {
     title: 'カテゴリ管理',
@@ -369,7 +372,12 @@ budgets: {
     allAccounts: 'すべての口座',
     months: 'ヶ月',
     spendingByCategory: 'カテゴリ別支出',
-    monthlyTrend: '月次トレンド'
+    monthlyTrend: '月次トレンド',
+    thisWeek: '今週',
+    thisMonth: '今月',
+    thisYear: '今年',
+    lastMonth: '先月',
+    lastYear: '昨年'
   },
   settings: {
     title: '設定',
@@ -396,6 +404,8 @@ budgets: {
     data: 'データとバックアップ',
     currencyDesc: '取引のデフォルト通貨を設定',
     languageDesc: 'アプリの言語を選択',
+    addCurrencyPlaceholder: '例: EUR',
+    fetchCurrenciesError: '通貨の読み込みに失敗しました',
     dateFormatDesc: '日付の表示形式を選択',
     numberFormatDesc: '数値の表示形式を選択',
     weekStartDesc: '週の始まる曜日を選択',
@@ -494,7 +504,8 @@ budgets: {
     pushEnabled: 'プッシュ通知は有効です',
     pushDisabled: 'プッシュ通知は無効です',
     pushUnsupported: 'このブラウザーはプッシュ通知に対応していません',
-    timeAgo: '{{time}}前'
+    timeAgo: '{{time}}前',
+    fetchError: '通知の読み込みに失敗しました'
   },
   about: {
     title: 'アプリについて',
@@ -536,7 +547,8 @@ budgets: {
     legacyNote: '互換性のために保持されているレガシーラベル文字列です。',
     inlineCreate: 'ラベルを作成',
     requiredName: 'ラベル名は必須です',
-    invalidColor: '無効なカラー形式です'
+    invalidColor: '無効なカラー形式です',
+    fetchError: 'ラベルの読み込みに失敗しました'
   },
   outlook: {
     title: 'Outlook',
@@ -650,43 +662,9 @@ budgets: {
       have: 'Have (必要)',
       want: 'Want (欲求)'
     },
-    goals: {
-      title: '目標',
-      subtitle: 'カテゴリ別の支出目標を追跡',
-      addGoal: '目標を追加',
-      filterAll: 'すべて',
-      filterOnTrack: '順調',
-      filterBehind: '遅延',
-      filterAchieved: '達成済み',
-      remaining: '残り',
-      projectedCompletion: '予測完了',
-      period: '期間',
-      onTrack: '順調',
-      behind: '遅れ',
-      achieved: '達成',
-      emptyTitle: '目標はまだありません',
-      emptyDesc: 'カテゴリの支出目標を設定して進捗を追跡しましょう。',
-      setCategory: 'カテゴリを設定',
-      fetchError: '目標の読み込みに失敗しました'
-    },
-    goalsSummary: {
-      totalTarget: '総目標額',
-      currentAmount: '現在額',
-      overallProgress: '全体進捗',
-      achieved: '達成',
-      onTrack: '順調',
-      behind: '遅れ'
-    },
-    goalDetail: {
-      targetAmount: '目標額',
-      currentAmount: '現在額',
-      remaining: '残り',
-      progress: '進捗',
-      predictionTitle: '進捗予測',
-      achievedCumulative: '実績累計',
-      targetCumulative: '目標累計',
-      totalTarget: '目標総額',
-      yen: '円'
+    spending: {
+      title: '支出分析',
+      subtitle: 'カテゴリ、ラベル、性質別の支出内訳'
     },
   },
   balanceAnalytics: {
@@ -747,7 +725,9 @@ budgets: {
   scheduled: {
     title: '定期取引',
     subtitle: '定期支払いと収入を管理',
-    addScheduled: '定期取引を追加'
+    addScheduled: '定期取引を追加',
+    noScheduledTransactions: '定期取引はまだありません',
+    addScheduledTransaction: '定期取引を追加'
   },
   shared: {
     access: {

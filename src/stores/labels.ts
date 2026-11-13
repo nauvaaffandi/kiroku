@@ -2,11 +2,13 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { localDb } from '@/storage/repository'
 import { useUIStore } from './ui'
+import { useI18n } from '@/locales'
 import type { Label, CreateLabelRequest, UpdateLabelRequest } from '@/types'
 
 export const useLabelsStore = defineStore('labels', () => {
   const labels = ref<Label[]>([])
   const loading = ref(false)
+  const { t } = useI18n()
 
   const fetchLabels = async () => {
     loading.value = true
@@ -15,7 +17,7 @@ export const useLabelsStore = defineStore('labels', () => {
       labels.value = rows
     } catch (e: any) {
       const uiStore = useUIStore()
-      uiStore.error(e?.message || 'Failed to load labels')
+      uiStore.error(e?.message || t('labels.fetchError'))
       throw e
     } finally {
       loading.value = false
