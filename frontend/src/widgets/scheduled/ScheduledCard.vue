@@ -42,6 +42,8 @@
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
 import { useI18n } from '@/locales'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
+import { useSettingsStore } from '@/stores/settings'
 import type { ScheduledTransaction } from '@/types'
 
 defineProps<{
@@ -56,7 +58,10 @@ defineEmits<{
 
 const { t } = useI18n()
 
+const settingsStore = useSettingsStore()
+
 const formatCurrency = (num: number) => {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(num, 'transfer')
   return new Intl.NumberFormat('ja-JP').format(num)
 }
 

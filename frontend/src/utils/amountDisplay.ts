@@ -38,8 +38,10 @@ export function getCurrencySymbol(currency: string): string {
   return CURRENCY_SYMBOLS[currency] || currency
 }
 
-export function formatNumber(value: number, locale = 'ja-JP'): string {
-  return new Intl.NumberFormat(locale).format(Math.abs(value))
+export function formatNumber(value: number, locale?: string): string {
+  const settingsStore = useSettingsStore()
+  if (settingsStore.isHideAmounts) return '*****'
+  return new Intl.NumberFormat(locale || settingsStore.numberFormat).format(Math.abs(value))
 }
 
 export function formatAmountForDisplay(
@@ -50,10 +52,9 @@ export function formatAmountForDisplay(
   const settingsStore = useSettingsStore()
 
   if (settingsStore.isHideAmounts) {
-    const masked = '*****'
     const sign = signOverride || (type === 'income' ? '+' : type === 'expense' ? '-' : '')
     const symbol = getCurrencySymbol(settingsStore.baseCurrency)
-    return `${sign}${symbol}${masked}`
+    return `${sign}${symbol}*****`
   }
 
   const sign = signOverride || (type === 'income' ? '+' : type === 'expense' ? '-' : '')

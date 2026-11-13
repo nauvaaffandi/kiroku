@@ -38,6 +38,8 @@
 <script setup lang="ts">
 import type { DisplayDay } from '@/types'
 import { useI18n } from '@/locales'
+import { useSettingsStore } from '@/stores/settings'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
 
 const { t } = useI18n()
 
@@ -47,7 +49,10 @@ defineProps<{
 
 defineEmits(['close', 'add-transaction'])
 
+const settingsStore = useSettingsStore()
+
 function formatCurrency(val: number): string {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(val, 'transfer')
   return new Intl.NumberFormat('ja-JP', {
     style: 'currency',
     currency: 'JPY',

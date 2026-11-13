@@ -18,6 +18,7 @@ import { useCategoriesStore } from '@/stores/categories'
 import { useTransactionsStore } from '@/stores/transactions'
 import { useSettingsStore } from '@/stores/settings'
 import { useCategoryName } from '@/utils/categoryName'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components'
@@ -37,7 +38,10 @@ let spendingChartInstance: echarts.ECharts | null = null
 let trendChartInstance: echarts.ECharts | null = null
 
 const numberFormat = computed(() => settingsStore.numberFormat)
-const formatCurrency = (num: number) => new Intl.NumberFormat(numberFormat.value).format(Math.abs(num))
+const formatCurrency = (num: number) => {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(num, 'transfer')
+  return new Intl.NumberFormat(numberFormat.value).format(Math.abs(num))
+}
 
 const initCharts = () => {
   if (spendingChart.value && categoriesStore.categories.length > 0) {

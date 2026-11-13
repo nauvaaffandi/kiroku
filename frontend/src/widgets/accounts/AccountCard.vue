@@ -14,7 +14,7 @@
       </div>
     </div>
     <h3 class="account-name">{{ account.name }}</h3>
-    <p class="account-balance">¥{{ formatNumber(account.balance) }}</p>
+    <p class="account-balance">{{ formatNumber(account.balance) }}</p>
     <p class="account-currency">{{ account.currency }}</p>
     <div class="account-actions">
       <BaseButton variant="secondary" size="sm" @click="$emit('edit', account)">
@@ -30,9 +30,11 @@
 <script setup lang="ts">
 import { BaseButton } from '@/components/ui'
 import { useI18n } from '@/locales'
+import { getCurrencySymbol } from '@/utils/amountDisplay'
+import { useSettingsStore } from '@/stores/settings'
 import type { Account } from '@/types'
 
-defineProps<{
+const props = defineProps<{
   account: Account
 }>()
 
@@ -43,8 +45,12 @@ defineEmits<{
 
 const { t } = useI18n()
 
-const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('ja-JP').format(num)
+const settingsStore = useSettingsStore()
+
+const formatNumber = (num: number): string => {
+  if (settingsStore.isHideAmounts) return '*****'
+  const symbol = getCurrencySymbol(props.account.currency)
+  return `${symbol}${new Intl.NumberFormat(settingsStore.numberFormat).format(Math.abs(num))}`
 }
 </script>
 

@@ -61,7 +61,7 @@ import { ref, watch, computed, onBeforeUnmount } from 'vue'
 import { api } from '@/api/client'
 import { useSettingsStore } from '@/stores/settings'
 import { useExchangeRate } from '@/composables/useExchangeRate'
-import { getCurrencySymbol } from '@/utils/amountDisplay'
+import { formatAmountForDisplay, getCurrencySymbol } from '@/utils/amountDisplay'
 import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, GridComponent } from 'echarts/components'
@@ -80,6 +80,7 @@ const projectionChartRef = ref<HTMLElement | null>(null)
 let projectionChartInstance: echarts.ECharts | null = null
 
 function formatCurrency(val: number): string {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(val, 'transfer')
   const usd = toUsd(val)
   const symbol = getCurrencySymbol(baseCurrency.value)
   const locale = settingsStore.numberFormat || 'en-US'
@@ -87,6 +88,7 @@ function formatCurrency(val: number): string {
 }
 
 function formatCurrencyShort(val: number): string {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(val, 'transfer')
   if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
   if (Math.abs(val) >= 1e4) return (val / 1e4).toFixed(1) + '万'
   return val.toLocaleString('ja-JP')

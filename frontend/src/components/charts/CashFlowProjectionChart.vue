@@ -61,6 +61,8 @@ import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 import * as echarts from 'echarts'
 import { useAccountsStore } from '@/stores/accounts'
 import { api } from '@/api/client'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
+import { useSettingsStore } from '@/stores/settings'
 import type { ProjectionPoint, CashFlowResponse } from '@/types/report'
 
 const props = defineProps<{
@@ -72,6 +74,7 @@ const chartRef = ref<HTMLElement | null>(null)
 let chart: echarts.ECharts | null = null
 
 const accountsStore = useAccountsStore()
+const settingsStore = useSettingsStore()
 
 const loading = ref(true)
 const projectionData = ref<ProjectionPoint[]>([])
@@ -242,6 +245,7 @@ function updateChart() {
 }
 
 function formatCurrency(val: number): string {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(val, 'transfer')
   return new Intl.NumberFormat('ja-JP', {
     style: 'currency',
     currency: selectedCurrency.value,

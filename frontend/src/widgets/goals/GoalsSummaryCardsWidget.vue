@@ -32,7 +32,7 @@ import { useI18n } from '@/locales'
 import { computed } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useExchangeRate } from '@/composables/useExchangeRate'
-import { getCurrencySymbol } from '@/utils/amountDisplay'
+import { formatAmountForDisplay, getCurrencySymbol } from '@/utils/amountDisplay'
 import type { Goal } from '@/types/goal'
 
 interface GoalItem extends Goal {
@@ -71,6 +71,7 @@ const behind = computed(() =>
 )
 
 function formatCurrencyShort(val: number): string {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(val, 'transfer')
   const usd = toUsd(val)
   const symbol = getCurrencySymbol(baseCurrency.value)
   if (Math.abs(usd) >= 1e8) return `${symbol}${(usd / 1e8).toFixed(1)}億`

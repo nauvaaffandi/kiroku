@@ -21,6 +21,8 @@
 import { ref, onMounted, watch, nextTick, withDefaults } from 'vue'
 import * as echarts from 'echarts'
 import { useI18n } from '@/locales'
+import { useSettingsStore } from '@/stores/settings'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
 
 interface TrendPoint {
   period: string
@@ -39,6 +41,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
+const settingsStore = useSettingsStore()
 
 defineEmits<{
   'update:interval': [val: string]
@@ -109,6 +112,7 @@ function renderTrendChart() {
 }
 
 function formatCurrencyShort(val: number): string {
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(val, 'transfer')
   if (Math.abs(val) >= 1e8) return (val / 1e8).toFixed(1) + '億'
   if (Math.abs(val) >= 1e4) return (val / 1e4).toFixed(1) + '万'
   return val.toLocaleString('ja-JP')

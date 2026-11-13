@@ -33,10 +33,13 @@
 <script setup lang="ts">
 import { useI18n } from '@/locales'
 import { useCategoryName } from '@/utils/categoryName'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
+import { useSettingsStore } from '@/stores/settings'
 import type { Transaction, Category, Account } from '@/types'
 
 const { t } = useI18n()
 const { translate, translateName } = useCategoryName()
+const settingsStore = useSettingsStore()
 
 const props = defineProps<{
   recentTransactions: Transaction[]
@@ -69,7 +72,8 @@ const getAccountName = (id: string | null) => {
 }
 
 const formatCurrency = (num: number) => {
-  return new Intl.NumberFormat('ja-JP').format(Math.abs(num))
+  if (settingsStore.isHideAmounts) return formatAmountForDisplay(num, 'transfer')
+  return new Intl.NumberFormat(settingsStore.numberFormat).format(Math.abs(num))
 }
 
 const formatDate = (dateStr: string) => {
