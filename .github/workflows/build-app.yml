@@ -30,8 +30,8 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
-
+        run: npm ci --ignore-scripts
+        
       - name: Build Vue
         working-directory: frontend
         run: npm run build
