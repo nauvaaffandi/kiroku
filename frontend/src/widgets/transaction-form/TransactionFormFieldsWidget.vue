@@ -166,7 +166,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import { useI18n } from '@/locales'
 import type { Category, Account } from '@/types'
 
@@ -217,23 +217,16 @@ const showCalculator = ref(false)
 const showMapModal = ref(false)
 
 const fetchAutocomplete = async () => {
-  try {
-    const res = await api.get('/api/v1/transactions/autocomplete', { params: { q: '' } })
-    if (res.data) {
-      if (res.data.notes) noteSuggestions.value = res.data.notes
-      if (res.data.payees) payeeSuggestions.value = res.data.payees
-    }
-  } catch (e) {
-    // ignore
-  }
+  // Offline mode: no autocomplete API; keep suggestions empty
+  noteSuggestions.value = []
+  payeeSuggestions.value = []
 }
 
 const fetchTemplates = async () => {
   try {
-    const res = await api.get('/api/v1/templates')
-    templates.value = res.data || []
+    templates.value = await localDb.list<any>('template')
   } catch (e) {
-    // ignore
+    templates.value = []
   }
 }
 
@@ -258,13 +251,34 @@ const applyTemplate = (e: Event) => {
 const handleSubmit = async () => {
   loading.value = true
   try {
-    let tid = form.value.template_id
+    let tid: string | null = form.value.template_id
     if (saveAsTemplate.value && templateName.value) {
-      const tres = await api.post('/api/v1/templates', {
+      const id = crypto.randomUUID()
+      const now = new Date().toISOString()
+      await localDb.put('template', id, {
+        id,
         name: templateName.value,
-        transaction_template_json: form.value
+        type: form.value.type,
+        amount: form.value.amount,
+        currency: form.value.currency,
+        from_account_id: form.value.from_account_id,
+        to_account_id: form.value.to_account_id,
+        category_id: form.value.category_id,
+        labels: form.value.labels,
+        note: form.value.note,
+        payee_payer: form.value.payee_payer,
+        payment_type: form.value.payment_type,
+        warranty_until: null,
+        status: form.value.status,
+        place_name: '',
+        place_lat: null,
+        place_lng: null,
+        attachments: '',
+        created_at: now,
+        updated_at: now
       })
-      tid = tres.data.id
+      tid = id
+      await fetchTemplates()
     }
 
     const payload = { ...form.value, template_id: tid }

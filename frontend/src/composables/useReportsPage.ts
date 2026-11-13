@@ -5,7 +5,6 @@ import { useUIStore } from '@/stores/ui'
 import { useSettingsStore } from '@/stores/settings'
 import { useCurrencies } from '@/composables/useCurrencies'
 import { formatAmountForDisplay, formatNumber as formatBaseNumber } from '@/utils/amountDisplay'
-import { api } from '@/api/client'
 import { exportToExcel } from '@/utils/exportExcel'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
@@ -91,9 +90,15 @@ export function useReportsPage() {
 
   const exportCSV = async () => {
     try {
-      const params = { ...spendingParams.value, currency: selectedCurrency.value }
-      const response = await api.get('/api/v1/reports/spending/export', { params, responseType: 'blob' })
-      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const groups = Array.isArray(spendingReport.value.groups) ? spendingReport.value.groups : []
+      const headers = ['Category', 'Amount', 'Count', '%']
+      const sum = groups.reduce((s: number, g: any) => s + (g.amount || 0), 0)
+      const rows = groups.map((g: any) => [
+        g.name || '', g.amount || 0, g.count || 0,
+        sum > 0 ? (((g.amount || 0) / sum) * 100).toFixed(1) + '%' : '0%'
+      ])
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+      const url = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
       const link = document.createElement('a')
       link.href = url
       link.setAttribute('download', `spending-report-${spendingParams.value.period}-${new Date().toISOString().split('T')[0]}.csv`)

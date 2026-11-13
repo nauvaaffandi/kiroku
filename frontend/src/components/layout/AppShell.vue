@@ -14,7 +14,7 @@
       </main>
     </div>
     
-    <FAB v-if="authStore.isAuthenticated" />
+    <FAB />
     
     <div v-if="uiStore.sidebarOpen" class="sidebar-overlay" @click="uiStore.toggleSidebar">
       <aside class="sidebar open" @click.stop>
@@ -28,7 +28,6 @@
 
 <script setup lang="ts">
 import { useUIStore } from '@/stores/ui'
-import { useAuthStore } from '@/stores/auth'
 
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
@@ -36,7 +35,6 @@ import FAB from '@/components/forms/FAB.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 
 const uiStore = useUIStore()
-const authStore = useAuthStore()
 </script>
 
 <style scoped>

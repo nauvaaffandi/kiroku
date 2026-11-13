@@ -88,9 +88,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { api } from '@/api/client'
 import { useI18n } from '@/locales'
 import { useSettingsStore } from '@/stores/settings'
+import { useTransactionsStore } from '@/stores/transactions'
 import { formatAmountForDisplay, formatNumber as formatBaseNumber } from '@/utils/amountDisplay'
 
 interface PeriodData {
@@ -130,11 +130,41 @@ const { t } = useI18n()
 async function fetchData() {
   loading.value = true
   try {
-    const res = await api.get<{ periods: PeriodData[]; totals: Totals }>(
-      `/analytics/reports/cashflow-table?date_from=${props.dateFrom}&date_to=${props.dateTo}&interval=${interval.value}&group_by=${groupBy.value}`
-    )
-    tableData.value = res.data.periods
-    totals.value = res.data.totals
+    const transactionsStore = useTransactionsStore()
+    await transactionsStore.fetchTransactions(1)
+    const list = transactionsStore.transactions
+    const from = props.dateFrom
+    const to = props.dateTo
+    const filtered = list.filter((tx: any) => {
+      const d = String(tx.date_time ?? '').slice(0, 10)
+      if (!d) return false
+      if (from && d < from) return false
+      if (to && d > to) return false
+      return true
+    })
+    const byPeriod: Record<string, { income: { total: number; count: number }; expense: { total: number; count: number } }> = {}
+    let income = 0, expense = 0, count = 0
+    for (const tx of filtered) {
+      const d = String(tx.date_time ?? '').slice(0, 7)
+      if (!byPeriod[d]) byPeriod[d] = { income: { total: 0, count: 0 }, expense: { total: 0, count: 0 } }
+      if (tx.type === 'income') { byPeriod[d].income.total += tx.amount; byPeriod[d].income.count += 1; income += tx.amount }
+      else if (tx.type === 'expense') { byPeriod[d].expense.total += tx.amount; byPeriod[d].expense.count += 1; expense += tx.amount }
+      count += 1
+    }
+    const periods = Object.keys(byPeriod).sort().map((p) => {
+      const inc = byPeriod[p].income
+      const exp = byPeriod[p].expense
+      return {
+        period: p,
+        income: { count: inc.count, avg_per_day: 0, avg_per_txn: inc.count ? inc.total / inc.count : 0, total: inc.total },
+        expense: { count: exp.count, avg_per_day: 0, avg_per_txn: exp.count ? exp.total / exp.count : 0, total: exp.total },
+        net: inc.total - exp.total,
+        transaction_count: inc.count + exp.count,
+        children: []
+      }
+    })
+    tableData.value = periods
+    totals.value = { income, expense, net: income - expense, total_txns: count }
   } catch (e) {
     console.error('Failed to fetch cashflow table:', e)
   } finally {

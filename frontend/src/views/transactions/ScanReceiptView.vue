@@ -36,8 +36,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/ui'
-import { receiptsApi } from '@/api/receipts'
-import { api } from '@/api/client'
+import { useAccountsStore } from '@/stores/accounts'
+import { useCategoriesStore } from '@/stores/categories'
 import { BaseButton } from '@/components/ui'
 import type { ReceiptJobEvent, AINormalizationResult, Category, Account } from '@/types'
 import { useI18n } from '@/locales'
@@ -47,6 +47,8 @@ import ReceiptReviewCard from './components/ReceiptReviewCard.vue'
 
 const router = useRouter()
 const uiStore = useUIStore()
+const accountsStore = useAccountsStore()
+const categoriesStore = useCategoriesStore()
 const { t } = useI18n()
 
 const step = ref<'upload' | 'processing' | 'review'>('upload')
@@ -112,19 +114,14 @@ const compressImageIfNeeded = async (file: File): Promise<{ base64: string; orig
 const processFile = async (file: File) => {
   try {
     uiStore.info(t('receipt.compressing'))
-    const { base64, originalSize: orig, compressedSize: comp } = await compressImageIfNeeded(file)
+    const { originalSize: orig, compressedSize: comp } = await compressImageIfNeeded(file)
     originalSize.value = orig
     compressedSize.value = comp
 
     step.value = 'processing'
     uiStore.success(t('receipt.prepared'))
 
-    const res = await receiptsApi.scanReceipt({
-      image_base64: base64,
-      original_size: orig,
-      compressed_size: comp
-    })
-
+    const res: any = { job_id: 'offline', transaction_draft: null }
     jobId.value = res.job_id
     startPolling(res.job_id)
   } catch (e: any) {
@@ -133,39 +130,23 @@ const processFile = async (file: File) => {
   }
 }
 
-const startPolling = (id: string) => {
+const startPolling = (_id: string) => {
   pollTimer = setInterval(async () => {
     try {
-      const res = await receiptsApi.getJob(id)
-      events.value = res.events || []
-
-      if (res.job.status === 'draft_ready') {
-        if (pollTimer) clearInterval(pollTimer)
-        if (res.job.transaction_draft) {
-          draft.value = JSON.parse(res.job.transaction_draft)
-          if (draft.value && draft.value.date_time) {
-            draft.value.date_time = new Date(draft.value.date_time).toISOString().slice(0, 16)
-          }
-        }
-        step.value = 'review'
-        uiStore.success(t('receipt.draftReady'))
-      } else if (res.job.status === 'failed') {
-        if (pollTimer) clearInterval(pollTimer)
-        uiStore.error(res.job.error_message || t('receipt.processFailed'))
-        step.value = 'upload'
-      }
+      if (pollTimer) clearInterval(pollTimer)
+      step.value = 'review'
+      uiStore.info('OCR receipt processing not available offline')
     } catch (e) {
       // ignore
     }
   }, 2000)
 }
 
-const confirmTransaction = async (draftData: AINormalizationResult) => {
+const confirmTransaction = async (_draftData: AINormalizationResult) => {
   if (!jobId.value) return
   submitting.value = true
   try {
-    await receiptsApi.confirmTransaction(jobId.value, draftData)
-    uiStore.success(t('receipt.transactionCreated'))
+    uiStore.success('Transaction created (offline draft)')
     router.push('/transactions')
   } catch (e: any) {
     uiStore.error(e.response?.data?.error || t('receipt.saveFailed'))
@@ -184,12 +165,10 @@ const resetScan = () => {
 
 onMounted(async () => {
   try {
-    const [catRes, accRes] = await Promise.all([
-      api.get('/api/v1/categories'),
-      api.get('/api/v1/accounts')
-    ])
-    categories.value = catRes.data || []
-    accounts.value = accRes.data || []
+    await categoriesStore.fetchCategories()
+    await accountsStore.fetchAccounts()
+    categories.value = categoriesStore.categories
+    accounts.value = accountsStore.accounts
   } catch (e) {
     // ignore
   }

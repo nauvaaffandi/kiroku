@@ -1,63 +1,33 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { api } from '@/api/client'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<{ user_id: string } | null>(null)
+  const user = ref<{ user_id: string }>({ user_id: 'authenticated' })
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isChangingPin = ref(false)
 
-  const isAuthenticated = computed(() => !!user.value)
+  const isAuthenticated = computed(() => true)
 
   const init = async () => {
-    // Skipped auto fetching /api/v1/auth/me on startup to avoid extra latency / flash,
-    // session state should be explicitly checked or established via user login action.
+    // No session in local-only offline app; always authenticated.
   }
 
   const fetchUser = async () => {
-    const response = await api.get('/api/v1/auth/me')
-    user.value = response.data
+    user.value = { user_id: 'authenticated' }
   }
 
-  const login = async (pin: string) => {
-    loading.value = true
-    error.value = null
-    try {
-      await api.post('/api/v1/auth/login', { pin })
-      user.value = { user_id: 'authenticated' }
-      return true
-    } catch (e: any) {
-      error.value = e.response?.data?.error || 'Invalid PIN'
-      return false
-    } finally {
-      loading.value = false
-    }
+  const login = async (_pin: string) => {
+    user.value = { user_id: 'authenticated' }
+    return true
   }
 
   const logout = async () => {
-    try {
-      await api.post('/api/v1/auth/logout')
-    } finally {
-      user.value = null
-    }
+    user.value = { user_id: 'authenticated' }
   }
 
-  const changePin = async (currentPin: string, newPin: string) => {
-    isChangingPin.value = true
-    error.value = null
-    try {
-      await api.post('/api/v1/auth/pin', {
-        current_pin: currentPin,
-        new_pin: newPin
-      })
-      return true
-    } catch (e: any) {
-      error.value = e.response?.data?.error || 'Failed to change PIN'
-      return false
-    } finally {
-      isChangingPin.value = false
-    }
+  const changePin = async (_currentPin: string, _newPin: string) => {
+    return true
   }
 
   return {

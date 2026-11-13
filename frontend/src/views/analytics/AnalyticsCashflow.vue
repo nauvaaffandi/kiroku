@@ -32,61 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import CashflowWaterfallWidget from '@/widgets/analytics/CashflowWaterfallWidget.vue'
 import CashflowTrendWidget from '@/widgets/analytics/CashflowTrendWidget.vue'
 import CashflowComparisonWidget from '@/widgets/analytics/CashflowComparisonWidget.vue'
 import ComparisonPeriodPickerWidget from '@/widgets/analytics/ComparisonPeriodPickerWidget.vue'
-
-interface FlowResponse {
-  opening_balance: number
-  total_income: number
-  total_expense: number
-  net_flow: number
-  closing_balance: number
-  by_category: Array<{
-    category_id: string
-    name: string
-    income: number
-    expense: number
-    net: number
-  }>
-}
-
-interface TrendPoint {
-  period: string
-  income: number
-  expense: number
-  net: number
-  cumulative_net: number
-}
-
-interface ComparisonResponse {
-  period_a: {
-    income: number
-    expense: number
-    net: number
-    avg_daily_income: number
-    avg_daily_expense: number
-    transaction_count: number
-  }
-  period_b: {
-    income: number
-    expense: number
-    net: number
-    avg_daily_income: number
-    avg_daily_expense: number
-    transaction_count: number
-  }
-  delta: {
-    income_pct: number
-    expense_pct: number
-    net_pct: number
-  }
-}
+import type { Transaction } from '@/types'
 
 const { t } = useI18n()
 
@@ -103,9 +57,9 @@ const flowLoading = ref(true)
 const trendLoading = ref(true)
 const comparisonLoading = ref(true)
 
-const flowData = ref<FlowResponse | null>(null)
-const trendData = ref<TrendPoint[]>([])
-const comparisonData = ref<ComparisonResponse | null>(null)
+const flowData = ref<any>(null)
+const trendData = ref<any>([])
+const comparisonData = ref<any>(null)
 
 function onDateChange(payload: { dateFrom: string; dateTo: string }) {
   dateFrom.value = payload.dateFrom
@@ -117,12 +71,41 @@ function onDateChange(payload: { dateFrom: string; dateTo: string }) {
 async function fetchFlow() {
   flowLoading.value = true
   try {
-    const res = await api.get<FlowResponse>(
-      `/analytics/cashflow/flow?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    flowData.value = res.data
+    const transactions = await localDb.list<Transaction>('transaction')
+    const inRange = transactions.filter((t) => {
+      const d = t.date_time.slice(0, 10)
+      return (!dateFrom.value || d >= dateFrom.value) && (!dateTo.value || d <= dateTo.value)
+    })
+    const opening_balance = 0
+    const total_income = inRange.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+    const total_expense = inRange.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+    const net_flow = total_income - total_expense
+    const closing_balance = opening_balance + net_flow
+    const byCategory = inRange.reduce((acc, t) => {
+      if (t.type === 'expense') {
+        const key = t.category_id ?? 'uncategorized'
+        if (!acc[key]) acc[key] = { category_id: key, name: t.category_id, income: 0, expense: 0, net: 0 }
+        acc[key].expense += t.amount
+        acc[key].net -= t.amount
+      } else {
+        const key = t.category_id ?? 'uncategorized'
+        if (!acc[key]) acc[key] = { category_id: key, name: t.category_id, income: 0, expense: 0, net: 0 }
+        acc[key].income += t.amount
+        acc[key].net += t.amount
+      }
+      return acc
+    }, {} as Record<string, any>)
+
+    flowData.value = {
+      opening_balance,
+      total_income,
+      total_expense,
+      net_flow,
+      closing_balance,
+      by_category: Object.values(byCategory)
+    }
   } catch (e) {
-    console.error('Failed to fetch cash flow:', e)
+    console.error('Failed to compute cash flow:', e)
   } finally {
     flowLoading.value = false
   }
@@ -131,10 +114,27 @@ async function fetchFlow() {
 async function fetchCashFlowTrend() {
   trendLoading.value = true
   try {
-    const res = await api.get<{ series: TrendPoint[] }>(
-      `/analytics/cashflow/trend?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${trendInterval.value}`
-    )
-    trendData.value = res.data.series
+    const transactions = await localDb.list<Transaction>('transaction')
+    const now = new Date()
+    const months: string[] = []
+    const count = trendInterval.value === 'year' ? 12 : 6
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+    }
+    const series: any[] = months.map((period) => {
+      const inMonth = transactions.filter((t) => t.date_time.slice(0, 7) === period)
+      const income = inMonth.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const expense = inMonth.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      return {
+        period,
+        income,
+        expense,
+        net: income - expense,
+        cumulative_net: 0
+      }
+    })
+    trendData.value = series
   } catch (e) {
     console.error('Failed to fetch cash flow trend:', e)
   } finally {
@@ -146,20 +146,50 @@ async function fetchComparison() {
   if (!periodAFrom.value || !periodATo.value || !periodBFrom.value || !periodBTo.value) return
   comparisonLoading.value = true
   try {
-    const res = await api.get<ComparisonResponse>(
-      `/analytics/cashflow/comparison?period_a_from=${periodAFrom.value}&period_a_to=${periodATo.value}&period_b_from=${periodBFrom.value}&period_b_to=${periodBTo.value}`
-    )
-    comparisonData.value = res.data
+    const transA = (await localDb.list<Transaction>('transaction')).filter((t) => {
+      const d = t.date_time.slice(0, 10)
+      return (!periodAFrom.value || d >= periodAFrom.value) && (!periodATo.value || d <= periodATo.value)
+    })
+    const transB = (await localDb.list<Transaction>('transaction')).filter((t) => {
+      const d = t.date_time.slice(0, 10)
+      return (!periodBFrom.value || d >= periodBFrom.value) && (!periodBTo.value || d <= periodBTo.value)
+    })
+    const compute = (transactions: Transaction[]) => ({
+      income: transactions.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0),
+      expense: transactions.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0),
+      net: transactions.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0) - transactions.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+    })
+    const pa = compute(transA)
+    const pb = compute(transB)
+    comparisonData.value = {
+      period_a: {
+        income: pa.income,
+        expense: pa.expense,
+        net: pa.net,
+        avg_daily_income: pa.income / Math.max(1, periodAFrom.value ? new Date(periodATo.value).getDate() - new Date(periodAFrom.value).getDate() + 1 : 1),
+        avg_daily_expense: pa.expense / Math.max(1, periodAFrom.value ? new Date(periodATo.value).getDate() - new Date(periodAFrom.value).getDate() + 1 : 1),
+        transaction_count: transA.length
+      },
+      period_b: {
+        income: pb.income,
+        expense: pb.expense,
+        net: pb.net,
+        avg_daily_income: pb.income / Math.max(1, periodBFrom.value ? new Date(periodBTo.value).getDate() - new Date(periodBFrom.value).getDate() + 1 : 1),
+        avg_daily_expense: pb.expense / Math.max(1, periodBFrom.value ? new Date(periodBTo.value).getDate() - new Date(periodBFrom.value).getDate() + 1 : 1),
+        transaction_count: transB.length
+      },
+      delta: {
+        income_pct: pa.income === 0 ? 0 : (pb.income - pa.income) / pa.income * 100,
+        expense_pct: pa.expense === 0 ? 0 : (pb.expense - pa.expense) / pa.expense * 100,
+        net_pct: pa.net === 0 ? 0 : (pb.net - pa.net) / Math.abs(pa.net) * 100
+      }
+    }
   } catch (e) {
     console.error('Failed to fetch cash flow comparison:', e)
   } finally {
     comparisonLoading.value = false
   }
 }
-
-watch(() => [periodAFrom.value, periodATo.value, periodBFrom.value, periodBTo.value], () => {
-  fetchComparison()
-})
 
 onMounted(async () => {
   const now = new Date()

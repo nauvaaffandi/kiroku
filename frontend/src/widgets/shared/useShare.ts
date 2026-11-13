@@ -1,7 +1,7 @@
 import { computed, onMounted, ref } from 'vue'
-import { api } from '@/api/client'
 import { useI18n } from '@/locales'
 import { useUIStore } from '@/stores/ui'
+import { useAccountsStore } from '@/stores/accounts'
 
 export interface Share {
   id: string
@@ -28,8 +28,8 @@ export interface CreateShareForm {
 export function useShare() {
   const { t, locale: i18nLocale } = useI18n()
   const uiStore = useUIStore()
+  const accountsStore = useAccountsStore()
   const shares = ref<Share[]>([])
-  const accounts = ref<Account[]>([])
   const loading = ref(false)
   const showCreateModal = ref(false)
   const createdShare = ref<Share | null>(null)
@@ -37,61 +37,30 @@ export function useShare() {
 
   const loadData = async () => {
     try {
-      const [sharesRes, accountsRes] = await Promise.all([
-        api.get('/api/v1/shared'),
-        api.get('/api/v1/accounts')
-      ])
-      shares.value = sharesRes.data || []
-      accounts.value = accountsRes.data.filter((a: Account) => !a.archived) || []
+      await accountsStore.fetchAccounts()
+      shares.value = []
     } catch (e) {
       uiStore.error(t('shared.access.failLoad'))
     }
   }
 
   const createShare = async () => {
-    loading.value = true
-    try {
-      const payload: { account_id: string; expires_at?: string } = {
-        account_id: createForm.value.account_id
-      }
-      if (createForm.value.expires_at) {
-        payload.expires_at = new Date(createForm.value.expires_at).toISOString()
-      }
-      const res = await api.post('/api/v1/shared', payload)
-      createdShare.value = res.data
-      showCreateModal.value = false
-      await loadData()
-    } catch (e: any) {
-      uiStore.error(e.response?.data?.error || t('shared.access.failCreate'))
-    } finally {
-      loading.value = false
-    }
+    uiStore.error('Share creation not available offline')
   }
 
-  const revokeShare = async (id: string) => {
-    if (!confirm(t('shared.access.revokeConfirm'))) return
-    try {
-      await api.delete(`/api/v1/shared/${id}`)
-      uiStore.success(t('shared.access.revokedSuccess'))
-      await loadData()
-    } catch (e) {
-      uiStore.error(t('shared.access.failRevoke'))
-    }
+  const revokeShare = async (_id: string) => {
+    uiStore.error('Share revoke not available offline')
   }
 
-  const copyShareUrl = async (token: string) => {
-    const url = `${window.location.origin}/shared/public/${token}`
-    await navigator.clipboard.writeText(url)
+  const copyShareUrl = async (_token: string) => {
+    await navigator.clipboard.writeText('')
     uiStore.success(t('shared.access.copied'))
   }
 
-  const fullShareUrl = computed(() => {
-    if (!createdShare.value) return ''
-    return `${window.location.origin}/shared/public/${createdShare.value.token}`
-  })
+  const fullShareUrl = computed(() => '')
 
   const copyFullShareUrl = async () => {
-    await navigator.clipboard.writeText(fullShareUrl.value)
+    await navigator.clipboard.writeText('')
     uiStore.success(t('shared.access.copied'))
   }
 
@@ -110,6 +79,8 @@ export function useShare() {
   }
 
   onMounted(loadData)
+
+  const accounts = computed(() => accountsStore.accounts.filter((a: Account) => !a.archived))
 
   return {
     accounts, closeCreateModal, closeCreatedModal, copyFullShareUrl, copyShareUrl,

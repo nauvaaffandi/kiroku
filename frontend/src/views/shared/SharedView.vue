@@ -70,26 +70,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/locales'
-import { api } from '@/api/client'
 
-const route = useRoute()
-const token = route.params.token as string
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
 
 const data = ref<any>(null)
-const loading = ref(true)
+const loading = ref(false)
 const error = ref<string | null>(null)
 
 const fetchSharedData = async () => {
   loading.value = true
   error.value = null
   try {
-    const res = await api.get(`/shared/public/${token}`)
-    data.value = res.data
+    error.value = t('shared.view.unavailableOffline')
   } catch (e: any) {
     error.value = e.response?.data?.error || t('shared.view.error')
   } finally {

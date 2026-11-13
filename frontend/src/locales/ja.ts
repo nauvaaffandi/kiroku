@@ -789,7 +789,8 @@ budgets: {
       payeeFallback: '取引',
       attribution: 'Recorded by you',
       linkInvalid: 'リンクが無効または期限切れの可能性があります。',
-      copied: 'リンクをコピーしました'
+      copied: 'リンクをコピーしました',
+      unavailableOffline: 'オフラインモードでは共有リンクは利用できません。'
     }
   },
   colorPicker: {

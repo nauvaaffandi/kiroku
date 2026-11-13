@@ -30,37 +30,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { api } from '@/api/client'
 import { useI18n } from '@/locales'
+import { localDb } from '@/storage/repository'
+import { useCategoriesStore } from '@/stores/categories'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import SpendingByCategoryWidget from '@/widgets/analytics/SpendingByCategoryWidget.vue'
 import SpendingByLabelWidget from '@/widgets/analytics/SpendingByLabelWidget.vue'
 import SpendingByNatureWidget from '@/widgets/analytics/SpendingByNatureWidget.vue'
-
-interface CategorySpending {
-  id: string
-  name: string
-  parent_id: string
-  color: string
-  kind: string
-  amount: number
-  count: number
-  percentage: number
-  children: any[]
-}
-
-interface LabelSpending {
-  label: string
-  amount: number
-  count: number
-  percentage: number
-}
-
-interface NatureSpending {
-  amount: number
-  count: number
-  percentage: number
-}
 
 const { t } = useI18n()
 
@@ -72,9 +48,9 @@ const categoryLoading = ref(true)
 const labelLoading = ref(true)
 const natureLoading = ref(true)
 
-const categoryData = ref<CategorySpending[]>([])
-const labelData = ref<LabelSpending[]>([])
-const natureData = ref<Record<string, NatureSpending>>({})
+const categoryData = ref<any[]>([])
+const labelData = ref<any[]>([])
+const natureData = ref<Record<string, any>>({})
 
 function onDateChange(payload: { dateFrom: string; dateTo: string }) {
   dateFrom.value = payload.dateFrom
@@ -93,10 +69,43 @@ async function fetchAll() {
 async function fetchSpendingByCategory() {
   categoryLoading.value = true
   try {
-    const res = await api.get<{ categories: CategorySpending[]; total: number }>(
-      `/analytics/spending/by-category?date_from=${dateFrom.value}&date_to=${dateTo.value}&group_by=${categoryGroupBy.value}`
-    )
-    categoryData.value = res.data.categories
+    const categoriesStore = useCategoriesStore()
+    await categoriesStore.fetchCategories()
+    const allTransactions = await localDb.list<any>('transaction')
+    const expenses = allTransactions.filter((t) => t.type === 'expense')
+    const cats: any[] = (categoriesStore.categories as any)?.value ?? []
+    const byCategory = new Map<string, any>()
+    let totalExpense = 0
+    for (const t of expenses) {
+      const catId = t.category_id ?? 'uncategorized'
+      const cat = (cats as any[]).find((c: any) => c.id === catId) ?? { name: 'Uncategorized', icon: '', color: '' }
+      const entry = byCategory.get(catId) ?? {
+        name: cat.name,
+        icon: cat.icon,
+        color: cat.color,
+        amount: 0,
+        count: 0,
+        percentage: 0,
+        children: []
+      }
+      entry.amount += t.amount
+      entry.count += 1
+      byCategory.set(catId, entry)
+      totalExpense += t.amount
+    }
+    const groups = [...byCategory.entries()].map(([category_id, entry]) => ({
+      id: category_id,
+      category_id,
+      category_name: entry.name,
+      category_icon: entry.icon,
+      category_color: entry.color,
+      kind: entry.kind ?? 'expense',
+      amount: entry.amount,
+      count: entry.count,
+      percentage: totalExpense ? (entry.amount / totalExpense) * 100 : 0,
+      children: []
+    }))
+    categoryData.value = groups
   } catch (e) {
     console.error('Failed to fetch spending by category:', e)
   } finally {
@@ -107,10 +116,36 @@ async function fetchSpendingByCategory() {
 async function fetchSpendingByLabel() {
   labelLoading.value = true
   try {
-    const res = await api.get<{ labels: LabelSpending[]; total: number }>(
-      `/analytics/spending/by-label?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    labelData.value = res.data.labels.slice(0, 10)
+    const allTransactions = await localDb.list<any>('transaction')
+    const labelsMap = new Map<string, any>()
+    let totalExpense = 0
+    for (const t of allTransactions) {
+      if (t.type !== 'expense') continue
+      const labels = Array.isArray(t.labels) ? t.labels : String(t.labels ?? '').split(',')
+      const valid = labels.filter((l: string) => l?.trim())
+      if (valid.length) {
+        for (const label of valid) {
+          const entry = labelsMap.get(label) ?? { label, amount: 0, count: 0 }
+          entry.amount += t.amount
+          entry.count += 1
+          labelsMap.set(label, entry)
+          totalExpense += t.amount
+        }
+      } else {
+        const entry = labelsMap.get('uncategorized') ?? { label: 'Uncategorized', amount: 0, count: 0 }
+        entry.amount += t.amount
+        entry.count += 1
+        labelsMap.set('uncategorized', entry)
+        totalExpense += t.amount
+      }
+    }
+    const items = [...labelsMap.entries()].map(([label, entry]) => ({
+      label,
+      amount: entry.amount,
+      count: entry.count,
+      percentage: totalExpense ? (entry.amount / totalExpense) * 100 : 0
+    }))
+    labelData.value = items.slice(0, 10)
   } catch (e) {
     console.error('Failed to fetch spending by label:', e)
   } finally {
@@ -121,21 +156,23 @@ async function fetchSpendingByLabel() {
 async function fetchSpendingByNature() {
   natureLoading.value = true
   try {
-    const res = await api.get<{
-      must: NatureSpending
-      have: NatureSpending
-      want: NatureSpending
-      unclassified: NatureSpending
-      total: number
-    }>(
-      `/analytics/spending/by-nature?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    natureData.value = {
-      must: res.data.must,
-      have: res.data.have,
-      want: res.data.want,
-      unclassified: res.data.unclassified,
+    const categories = await localDb.list<any>('category')
+    const allTransactions = await localDb.list<any>('transaction')
+    const nature: Record<string, { amount: number; count: number }> = {
+      must: { amount: 0, count: 0 },
+      have: { amount: 0, count: 0 },
+      want: { amount: 0, count: 0 },
+      unclassified: { amount: 0, count: 0 }
     }
+    for (const t of allTransactions) {
+      if (t.type === 'expense') continue
+      const cat = categories.find((c) => c.id === t.category_id)
+      const kind = cat?.kind ?? 'uncategorized'
+      if (!['must', 'have', 'want', 'uncategorized'].includes(kind)) continue
+      nature[kind].amount += t.amount
+      nature[kind].count += 1
+    }
+    natureData.value = nature
   } catch (e) {
     console.error('Failed to fetch spending by nature:', e)
   } finally {

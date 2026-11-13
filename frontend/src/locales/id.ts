@@ -789,7 +789,8 @@ export default {
       payeeFallback: 'Transaksi',
       attribution: 'Recorded by you',
       linkInvalid: 'Tautan mungkin tidak valid atau telah kadaluarsa.',
-      copied: 'Tautan telah disalin'
+      copied: 'Tautan telah disalin',
+      unavailableOffline: 'Tautan berbagi tidak tersedia dalam mode offline.'
     }
   },
   colorPicker: {

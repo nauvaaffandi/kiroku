@@ -1,7 +1,7 @@
-import { api } from '@/api/client'
 import { exportToExcel } from '@/utils/exportExcel'
 import { useTransactionsStore } from '@/stores/transactions'
 import { useUIStore } from '@/stores/ui'
+import { formatAmountForDisplay } from '@/utils/amountDisplay'
 
 export function useExport() {
   const transactionsStore = useTransactionsStore()
@@ -9,12 +9,19 @@ export function useExport() {
 
   const exportCSV = async () => {
     try {
-      const params = { ...transactionsStore.filters }
-      const response = await api.get('/api/v1/transactions/export', {
-        params,
-        responseType: 'blob'
-      })
-      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const transactions = transactionsStore.transactions
+      const headers = ['Date', 'Type', 'Amount', 'Category', 'Account', 'Note', 'Status']
+      const rows = transactions.map((tx: any) => [
+        tx.date_time,
+        tx.type,
+        formatAmountForDisplay(tx.amount, 'transfer'),
+        tx.category_name || '',
+        tx.from_account_name || '',
+        tx.note || '',
+        tx.status
+      ])
+      const csv = [headers.join(','), ...rows.map(r => r.map(String).join(','))].join('\n')
+      const url = window.URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
       const link = document.createElement('a')
       link.href = url
       link.setAttribute('download', `transactions-${new Date().toISOString().split('T')[0]}.csv`)
@@ -29,11 +36,9 @@ export function useExport() {
 
   const exportExcel = async () => {
     try {
-      const params = { page: 1, limit: 10000, ...transactionsStore.filters }
-      const response = await api.get('/api/v1/transactions', { params })
-      const data = Array.isArray(response.data) ? response.data : []
+      const transactions = transactionsStore.transactions
       const headers = ['Date', 'Type', 'Amount', 'Category', 'Account', 'Note', 'Status']
-      const rows = data.map((tx: any) => [
+      const rows = transactions.map((tx: any) => [
         tx.date_time,
         tx.type,
         tx.amount,

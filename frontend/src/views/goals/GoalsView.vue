@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
 import GoalCardWidget from '@/widgets/goals/GoalCardWidget.vue'
@@ -82,8 +82,28 @@ const goals = ref<GoalItem[]>([])
 async function fetchData() {
   loading.value = true
   try {
-    const res = await api.get<GoalItem[]>('/api/v1/goals/')
-    goals.value = res.data
+    const rows = await localDb.list<any>('goal')
+    goals.value = rows.map((g: any) => {
+      const target = g.target_amount ?? 0
+      const saved = g.saved_already ?? 0
+      const progress_pct = target ? (saved / target) * 100 : 0
+      const remaining = Math.max(0, target - saved)
+      return {
+        id: g.id,
+        name: g.name,
+        target_amount: target,
+        saved_already: saved,
+        currency: g.currency,
+        desired_date: g.desired_date,
+        icon: g.icon ?? '',
+        color: g.color_theme ?? '',
+        created_at: g.created_at ?? '',
+        updated_at: g.updated_at ?? '',
+        status: progress_pct >= 100 ? 'achieved' : progress_pct > 50 ? 'on_track' : 'behind',
+        progress_pct,
+        remaining,
+      }
+    })
   } catch (e) {
     console.error('Failed to fetch goals:', e)
     uiStore.error(t('goals.fetchError'))

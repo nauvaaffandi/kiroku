@@ -1,6 +1,5 @@
 import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
-import { api } from '@/api/client'
 
 export function useSettingsData() {
   const settingsStore = useSettingsStore()
@@ -30,26 +29,12 @@ export function useSettingsData() {
     } catch (e) { uiStore.error('Failed to restore backup') }
   }
 
-  const exportCSV = async (type: string) => {
-    try {
-      const response = await api.get(`/api/v1/export/${type}?format=csv`)
-      const blob = new Blob([response.data], { type: 'text/csv' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${type}.csv`
-      a.click()
-      URL.revokeObjectURL(url)
-    } catch (e) { uiStore.error(`Failed to export ${type}`) }
+  const exportCSV = async (_type: string) => {
+    uiStore.error('CSV export not available offline')
   }
 
-  const importCSV = async (file: File, type: string) => {
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      await api.post(`/api/v1/import/${type}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-      uiStore.success('Import completed')
-    } catch (e) { uiStore.error('Failed to import') }
+  const importCSV = async (_file: File, _type: string) => {
+    uiStore.error('CSV import not available offline')
   }
 
   const confirmClearData = async () => {

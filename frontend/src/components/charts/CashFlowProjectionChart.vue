@@ -60,10 +60,10 @@
 import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 import * as echarts from 'echarts'
 import { useAccountsStore } from '@/stores/accounts'
-import { api } from '@/api/client'
+import { useTransactionsStore } from '@/stores/transactions'
 import { formatAmountForDisplay } from '@/utils/amountDisplay'
 import { useSettingsStore } from '@/stores/settings'
-import type { ProjectionPoint, CashFlowResponse } from '@/types/report'
+import type { ProjectionPoint } from '@/types/report'
 
 const props = defineProps<{
   initialDateFrom?: string
@@ -126,17 +126,15 @@ function setPreset(preset: string) {
 async function fetchData() {
   loading.value = true
   try {
-    const params = new URLSearchParams()
-    if (dateFrom.value) params.append('date_from', dateFrom.value)
-    if (dateTo.value) params.append('date_to', dateTo.value)
-    if (selectedAccount.value) params.append('account_id', selectedAccount.value)
-    if (selectedCurrency.value) params.append('currency', selectedCurrency.value)
-
-    const res = await api.get<CashFlowResponse>(`/api/v1/analytics/cashflow/projection?${params}`)
-    projectionData.value = res.data.projected_balance || []
-    selectedCurrency.value = res.data.projected_balance[0]?.currency || 'JPY'
+    const transactionsStore = useTransactionsStore()
+    await transactionsStore.fetchTransactions(1)
+    projectionData.value = transactionsStore.transactions.map((tx: any) => {
+      const d = String(tx.date_time ?? '').slice(0, 10)
+      if (!d) return null
+      return { date: d, income: tx.type === 'income' ? tx.amount : 0, expense: tx.type === 'expense' ? tx.amount : 0, net: 0, running_balance: 0, currency: selectedCurrency.value }
+    }).filter(Boolean) as ProjectionPoint[]
   } catch (e) {
-    console.error('Failed to fetch cashflow projection:', e)
+    console.error('Failed to build cashflow projection:', e)
   } finally {
     loading.value = false
     await nextTick()

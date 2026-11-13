@@ -741,7 +741,8 @@ budgets: {
       payeeFallback: 'Transaction',
       attribution: 'Recorded by you',
       linkInvalid: 'Link may be invalid or expired.',
-      copied: 'Link copied'
+      copied: 'Link copied',
+      unavailableOffline: 'Shared links are not available in offline mode.'
     }
   },
   colorPicker: {

@@ -58,7 +58,6 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onBeforeUnmount } from 'vue'
-import { api } from '@/api/client'
 import { useSettingsStore } from '@/stores/settings'
 import { useExchangeRate } from '@/composables/useExchangeRate'
 import { formatAmountForDisplay, getCurrencySymbol } from '@/utils/amountDisplay'
@@ -114,8 +113,16 @@ async function renderProjectionChart(goal: Goal) {
   projectionChartInstance = null
 
   try {
-    const res = await api.get<GoalProjection>(`/api/v1/goals/${goal.id}/projection`)
-    projection.value = res.data
+    const proj: GoalProjection = {
+      current_saved: goal.saved_already ?? 0,
+      target_amount: goal.target_amount,
+      remaining: Math.max(0, goal.target_amount - (goal.saved_already ?? 0)),
+      weekly_rate: 0,
+      estimated_weeks: 0,
+      estimated_reach_date: '',
+      currency: goal.currency
+    }
+    projection.value = proj
     if (!projectionChartRef.value) return
 
     projectionChartInstance = echarts.init(projectionChartRef.value)
@@ -128,14 +135,14 @@ async function renderProjectionChart(goal: Goal) {
       series: [{
         name: t('goals.progress'),
         type: 'line',
-        data: [res.data.current_saved, res.data.target_amount],
+        data: [proj.current_saved, proj.target_amount],
         smooth: true,
         itemStyle: { color: goal.color_theme || 'var(--accent)' },
         lineStyle: { width: 3 }
       }]
     })
   } catch (e) {
-    console.error('Failed to fetch projection:', e)
+    console.error('Failed to compute projection:', e)
   }
 }
 

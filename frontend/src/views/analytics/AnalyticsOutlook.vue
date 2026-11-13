@@ -32,8 +32,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { api } from '@/api/client'
 import { useI18n } from '@/locales'
+import { localDb } from '@/storage/repository'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import PlannedByCategoryWidget from '@/widgets/analytics/PlannedByCategoryWidget.vue'
 import PlannedByTimelineWidget from '@/widgets/analytics/PlannedByTimelineWidget.vue'
@@ -41,34 +41,10 @@ import BalanceForecastWidget from '@/widgets/analytics/BalanceForecastWidget.vue
 
 const { t } = useI18n()
 
-interface PlannedCategory {
-  id: string
-  name: string
-  color: string
-  kind: string
-  planned_income: number
-  planned_expense: number
-  net: number
-  transaction_count: number
-}
-
-interface TimelinePoint {
-  period: string
-  planned_income: number
-  planned_expense: number
-  net: number
-  transaction_count: number
-}
-
-interface ForecastPoint {
-  date: string
-  projected_balance: number
-  confidence_level: string
-}
-
 const dateFrom = ref('')
 const dateTo = ref('')
 const timelineInterval = ref('month')
+
 const selectedConfidence = ref(['high', 'medium', 'low'])
 const confidenceLevels = ['high', 'medium', 'low']
 
@@ -76,9 +52,9 @@ const categoryLoading = ref(true)
 const timelineLoading = ref(true)
 const forecastLoading = ref(true)
 
-const categoryData = ref<PlannedCategory[]>([])
-const timelineData = ref<TimelinePoint[]>([])
-const forecastData = ref<ForecastPoint[]>([])
+const categoryData = ref<any[]>([])
+const timelineData = ref<any[]>([])
+const forecastData = ref<any[]>([])
 
 function onDateChange(payload: { dateFrom: string; dateTo: string }) {
   dateFrom.value = payload.dateFrom
@@ -97,12 +73,21 @@ async function fetchAll() {
 async function fetchPlannedByCategory() {
   categoryLoading.value = true
   try {
-    const res = await api.get<{ categories: PlannedCategory[] }>(
-      `/api/v1/analytics/outlook/category?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    categoryData.value = res.data.categories ?? []
+    const categories = await localDb.list<any>('category')
+    const allTransactions = await localDb.list<any>('transaction')
+    const byCategory = new Map<string, any>()
+    for (const t of allTransactions) {
+      const cat = categories.find((c: any) => c.id === t.category_id)
+      const name = cat?.name ?? 'Uncategorized'
+      const entry = byCategory.get(name) ?? { id: cat?.id ?? '', name, color: cat?.color ?? '', kind: cat?.kind ?? 'uncategorized', planned_income: 0, planned_expense: 0, net: 0, transaction_count: 0 }
+      entry.planned_income += t.amount
+      entry.planned_expense += t.amount
+      entry.net = entry.planned_income - entry.planned_expense
+      entry.transaction_count += 1
+      byCategory.set(name, entry)
+    }
+    categoryData.value = [...byCategory.values()]
   } catch (e) {
-    categoryData.value = []
     console.error('Failed to fetch planned by category:', e)
   } finally {
     categoryLoading.value = false
@@ -112,12 +97,27 @@ async function fetchPlannedByCategory() {
 async function fetchPlannedByTimeline() {
   timelineLoading.value = true
   try {
-    const res = await api.get<{ timeline: TimelinePoint[] }>(
-      `/api/v1/analytics/outlook/timeline?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${timelineInterval.value}`
-    )
-    timelineData.value = res.data.timeline ?? []
+    const allTransactions = await localDb.list<any>('transaction')
+    const months: string[] = []
+    const count = timelineInterval.value === 'year' ? 12 : 6
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(new Date().getFullYear(), new Date().getMonth() - i, 1)
+      months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+    }
+    const series = months.map((period) => {
+      const inMonth = allTransactions.filter((t) => t.date_time.slice(0, 7) === period)
+      const income = inMonth.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const expense = inMonth.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
+      return {
+        period,
+        planned_income: income,
+        planned_expense: expense,
+        net: income - expense,
+        transaction_count: inMonth.length
+      }
+    })
+    timelineData.value = series
   } catch (e) {
-    timelineData.value = []
     console.error('Failed to fetch planned by timeline:', e)
   } finally {
     timelineLoading.value = false
@@ -127,12 +127,21 @@ async function fetchPlannedByTimeline() {
 async function fetchBalanceForecast() {
   forecastLoading.value = true
   try {
-    const res = await api.get<{ forecast: ForecastPoint[] }>(
-      `/api/v1/analytics/outlook/forecast?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    forecastData.value = res.data.forecast ?? []
+    const allTransactions = await localDb.list<any>('transaction')
+    const series = []
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(new Date().getFullYear(), new Date().getMonth() + i, 1)
+      const date = d.toISOString().split('T')[0]
+      const inMonth = allTransactions.filter((t) => t.date_time.slice(0, 10) === date)
+      const cumulative = inMonth.reduce((s, t) => t.type === 'income' ? s + t.amount : t.type === 'expense' ? s - t.amount : s, 0)
+      series.push({
+        date,
+        projected_balance: cumulative,
+        confidence_level: i < 6 ? 'high' : 'medium'
+      })
+    }
+    forecastData.value = series
   } catch (e) {
-    forecastData.value = []
     console.error('Failed to fetch balance forecast:', e)
   } finally {
     forecastLoading.value = false

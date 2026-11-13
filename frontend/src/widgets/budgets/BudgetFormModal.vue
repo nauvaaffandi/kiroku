@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { computed, ref, reactive, watch } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import { useI18n } from '@/locales'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAccountsStore } from '@/stores/accounts'
@@ -138,19 +138,19 @@ watch(() => [props.open, props.id], async ([openVal]) => {
 async function fetchCurrent() {
   if (!props.open || !form.id) return
   try {
-    const res = await api.get<{ budget: any }>(`/api/v1/budgets/${form.id}`)
-    const b = res.data.budget
+    const b = await localDb.get<any>('budget', form.id)
+    if (!b) return
     form.name = b.name
     form.period = b.period
-    form.amount = parseFloat(b.AmountStr ?? '0') || 0
-    form.currency = b.currency
-    form.account_id = b.AccountID ?? ''
-    form.category_ids = (b.Categories ?? []).map((c: any) => c.id)
-    form.label_ids = (b.Labels ?? []).map((l: any) => l.id)
-    form.trending_over = !!b.TrendingOver
-    form.over_budget = !!b.OverBudget
-    if (b.StartsAt) form.starts_at = sliceDate(b.StartsAt)
-    if (b.EndsAt) form.ends_at = sliceDate(b.EndsAt)
+    form.amount = b.amount ?? 0
+    form.currency = b.currency ?? 'USD'
+    form.account_id = b.account_id ?? ''
+    form.category_ids = (b.category_ids ?? []).map((c: any) => c)
+    form.label_ids = (b.label_ids ?? []).map((l: any) => l)
+    form.trending_over = !!b.trending_over
+    form.over_budget = !!b.over_budget
+    if (b.starts_at) form.starts_at = sliceDate(b.starts_at)
+    if (b.ends_at) form.ends_at = sliceDate(b.ends_at)
   } catch (e) {
     console.error('Failed to fetch budget:', e)
     loading.value = false
@@ -189,9 +189,10 @@ async function save() {
       ...(form.ends_at ? { ends_at: form.ends_at } : {})
     }
     if (form.id) {
-      await api.put(`/api/v1/budgets/${form.id}`, payload)
+      const current = await localDb.get<any>('budget', form.id)
+      await localDb.put('budget', form.id, { ...current, ...payload })
     } else {
-      await api.post('/api/v1/budgets', payload)
+      await localDb.put('budget', crypto.randomUUID(), payload)
     }
     emit('save', { ...form })
     emit('close')

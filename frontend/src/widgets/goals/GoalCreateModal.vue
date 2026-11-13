@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import ColorPalette from '@/components/ui/ColorPalette.vue'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
@@ -76,7 +76,20 @@ const form = ref<CreateGoalInput>({
 async function submit() {
   submitting.value = true
   try {
-    await api.post('/api/v1/goals/', form.value)
+    const id = crypto.randomUUID()
+    const now = new Date().toISOString()
+    await localDb.put('goal', id, {
+      id,
+      name: form.value.name,
+      target_amount: form.value.target_amount,
+      currency: form.value.currency,
+      desired_date: form.value.desired_date,
+      color_theme: form.value.color_theme,
+      saved_already: 0,
+      note: '',
+      created_at: now,
+      updated_at: now
+    } as CreateGoalInput)
     uiStore.success(t('goals.createSuccess'))
     emit('created')
   } catch (e) {

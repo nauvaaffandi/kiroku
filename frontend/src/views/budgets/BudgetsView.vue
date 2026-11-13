@@ -35,30 +35,31 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import { useI18n } from '@/locales'
 import { useUIStore } from '@/stores/ui'
 import BudgetSummaryCardsWidget from '@/widgets/budgets/BudgetSummaryCardsWidget.vue'
 import BudgetTableWidget from '@/widgets/budgets/BudgetTableWidget.vue'
 import BudgetFormModal from '@/widgets/budgets/BudgetFormModal.vue'
 
-interface BudgetResult {
-  budget_id: string
+interface BudgetRow {
+  id: string
   name: string
   period: string
-  amount: string
+  amount: number
   currency: string
-  spent: string
-  remaining: string
-  percentage_used: number
-  is_over_budget: boolean
+  spent: number
+  remaining: number
+  percentageUsed: number
+  status: 'over' | 'under'
+  isOverBudget: boolean
 }
 
 const { t } = useI18n()
 const uiStore = useUIStore()
 
 const loading = ref(true)
-const rows = ref<any[]>([])
+const rows = ref<BudgetRow[]>([])
 const summary = ref({ totalBudgets: 0, overBudgets: 0, underBudgets: 0 })
 
 const modalOpen = ref(false)
@@ -71,11 +72,30 @@ const deletingName = ref('')
 async function fetchData() {
   loading.value = true
   try {
-    const res = await api.get<BudgetResult[]>('/api/v1/budgets/')
-    rows.value = (res.data || []).map(toRow)
+    const budgets = await localDb.list<any>('budget')
+    const transactions = await localDb.list<any>('transaction')
+    const list: BudgetRow[] = budgets.map((b: any) => {
+      const spent = transactions.reduce((s, t) => t.category_id === b.id && t.type === 'expense' ? s + t.amount : s, 0)
+      const amount = b.amount ?? 0
+      const remaining = amount - spent
+      const percentageUsed = amount ? (spent / amount) * 100 : 0
+      return {
+        id: b.id,
+        name: b.name,
+        period: b.period,
+        amount,
+        currency: b.currency ?? 'USD',
+        spent,
+        remaining,
+        percentageUsed,
+        status: (percentageUsed > 100 ? 'over' : 'under') as 'over' | 'under',
+        isOverBudget: percentageUsed > 100
+      }
+    })
     let over = 0, under = 0
-    for (const b of rows.value) { if (b.is_over_budget) over++; else under++ }
-    summary.value = { totalBudgets: rows.value.length, overBudgets: over, underBudgets: under }
+    for (const b of list) { if (b.status === 'over') over++; else under++ }
+    rows.value = list
+    summary.value = { totalBudgets: list.length, overBudgets: over, underBudgets: under }
   } catch (e) {
     console.error('Failed to fetch budgets:', e)
     uiStore.error(t('budgets.fetchError'))
@@ -84,17 +104,22 @@ async function fetchData() {
   }
 }
 
-function toRow(b: BudgetResult) {
-  return {
-    id: b.budget_id, name: b.name, period: b.period,
-    amount: parseNum(b.amount), currency: b.currency,
-    spent: parseNum(b.spent), remaining: parseNum(b.remaining),
-    percentageUsed: b.percentage_used || 0,
-    status: b.is_over_budget ? 'over' : 'under'
+function openCreate() { editingId.value = null; modalOpen.value = true }
+function openEdit(id: string) { editingId.value = id; modalOpen.value = true }
+function confirmDelete(row: BudgetRow) { deletingId.value = row.id; deletingName.value = row.name; deleteConfirm.value = true }
+function cancelDelete() { deleteConfirm.value = false; deletingId.value = null; deletingName.value = '' }
+
+async function doDelete() {
+  if (!deletingId.value) return
+  try {
+    await localDb.remove('budget', deletingId.value)
+    cancelDelete()
+    await fetchData()
+  } catch (e) {
+    console.error('Failed to delete budget:', e)
+    uiStore.error((e as Error).message || t('budgets.deleteError'))
   }
 }
-
-function parseNum(s: string): number { return parseFloat(s) || 0 }
 
 function exportCSV() {
   const headers = [t('budgets.table.name'), t('budgets.table.period'), t('budgets.table.budget'), t('budgets.table.spent'), t('budgets.table.remaining'), t('budgets.table.usage'), t('budgets.table.status')]
@@ -105,23 +130,6 @@ function exportCSV() {
   link.href = URL.createObjectURL(blob)
   link.download = `budgets-${Date.now()}.csv`
   link.click()
-}
-
-function openCreate() { editingId.value = null; modalOpen.value = true }
-function openEdit(id: string) { editingId.value = id; modalOpen.value = true }
-function confirmDelete(row: any) { deletingId.value = row.id; deletingName.value = row.name; deleteConfirm.value = true }
-function cancelDelete() { deleteConfirm.value = false; deletingId.value = null; deletingName.value = '' }
-
-async function doDelete() {
-  if (!deletingId.value) return
-  try {
-    await api.delete(`/api/v1/budgets/${deletingId.value}`)
-    cancelDelete()
-    await fetchData()
-  } catch (e) {
-    console.error('Failed to delete budget:', e)
-    uiStore.error((e as any).response?.data?.error || t('budgets.deleteError'))
-  }
 }
 
 onMounted(() => fetchData())

@@ -33,19 +33,20 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAccountsStore } from '@/stores/accounts'
-import { api } from '@/api/client'
+import { useTransactionsStore } from '@/stores/transactions'
 import CalendarHeaderWidget from '@/widgets/calendar/CalendarHeaderWidget.vue'
 import CalendarGridWidget from '@/widgets/calendar/CalendarGridWidget.vue'
 import DayDetailModalWidget from '@/widgets/calendar/DayDetailModalWidget.vue'
-import type { CalendarDayBackend, DisplayDay } from '@/types'
+import type { DisplayDay } from '@/types'
 
 const router = useRouter()
 const accountsStore = useAccountsStore()
+const transactionsStore = useTransactionsStore()
 
 const loading = ref(true)
 const currentDate = ref(new Date())
 const selectedAccount = ref('')
-const calendarData = ref<Map<string, CalendarDayBackend>>(new Map())
+const calendarData = ref<Map<string, any>>(new Map())
 const activeDay = ref<DisplayDay | null>(null)
 
 const year = computed(() => currentDate.value.getFullYear())
@@ -129,18 +130,18 @@ function goToday() {
 async function fetchCalendar() {
   loading.value = true
   try {
-    const params = new URLSearchParams({
-      year: year.value.toString(),
-      month: month.value.toString()
-    })
-    if (selectedAccount.value) params.append('account_id', selectedAccount.value)
-
-    const res = await api.get<{ days: CalendarDayBackend[] }>(`/api/v1/analytics/calendar?${params}`)
-    const map = new Map<string, CalendarDayBackend>()
-    res.data.days.forEach(d => map.set(d.date, d))
+    await transactionsStore.fetchTransactions(1)
+    const list = transactionsStore.transactions
+    const map = new Map<string, any>()
+    for (const tx of list) {
+      const d = String(tx.date_time ?? '').slice(0, 10)
+      if (!d) continue
+      if (!map.has(d)) map.set(d, { transactions: [], scheduled: [], projected_balance: 0 })
+      map.get(d).transactions.push(tx)
+    }
     calendarData.value = map
   } catch (e) {
-    console.error('Failed to fetch calendar:', e)
+    console.error('Failed to build calendar:', e)
   } finally {
     loading.value = false
   }

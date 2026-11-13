@@ -31,12 +31,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import BalanceTrendWidget from '@/widgets/analytics/BalanceTrendWidget.vue'
 import BalanceByAccountsWidget from '@/widgets/analytics/BalanceByAccountsWidget.vue'
 import BalanceByCurrenciesWidget from '@/widgets/analytics/BalanceByCurrenciesWidget.vue'
 import type { BalanceTrendPoint, AccountBalanceSummary, CurrencyBalanceSummary } from '@/types/report'
+import type { Account, Transaction } from '@/types'
 
 const { t } = useI18n()
 
@@ -69,12 +70,29 @@ async function fetchAll() {
 async function fetchBalanceTrend() {
   trendLoading.value = true
   try {
-    const res = await api.get<{ series: BalanceTrendPoint[] }>(
-      `/api/v1/analytics/balance/trend?date_from=${dateFrom.value}&date_to=${dateTo.value}&interval=${trendInterval.value}`
-    )
-    trendData.value = res.data.series
+    const accounts = await localDb.list<Account>('account')
+    const transactions = await localDb.list<Transaction>('transaction')
+    const now = new Date()
+    const months: string[] = []
+    const count = trendInterval.value === 'year' ? 12 : 6
+    for (let i = count - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`)
+    }
+    const series: BalanceTrendPoint[] = months.map((period) => {
+      const inMonth = transactions.filter((t) => t.date_time.slice(0, 7) === period)
+      const net = inMonth.reduce((s, t) => t.type === 'income' ? s + t.amount : t.type === 'expense' ? s - t.amount : s, 0)
+      return {
+        period,
+        opening_balance: 0,
+        closing_balance: accounts.reduce((s, a) => s + a.balance, 0) + net,
+        net_change: net,
+        currency: accounts[0]?.currency ?? 'USD'
+      }
+    })
+    trendData.value = series
   } catch (e) {
-    console.error('Failed to fetch balance trend:', e)
+    console.error('Failed to compute balance trend:', e)
   } finally {
     trendLoading.value = false
   }
@@ -83,10 +101,16 @@ async function fetchBalanceTrend() {
 async function fetchBalanceByAccounts() {
   accountsLoading.value = true
   try {
-    const res = await api.get<{ accounts: AccountBalanceSummary[]; total_by_currency: Record<string, number> }>(
-      `/api/v1/analytics/balance/accounts?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    accountsData.value = res.data.accounts
+    const accounts = await localDb.list<Account>('account')
+    accountsData.value = accounts.map((a) => ({
+      id: Number(a.id) || 0,
+      name: a.name,
+      currency: a.currency,
+      opening_balance: a.balance,
+      closing_balance: a.balance,
+      net_change: 0,
+      color: a.color
+    }))
   } catch (e) {
     console.error('Failed to fetch balance by accounts:', e)
   } finally {
@@ -97,10 +121,21 @@ async function fetchBalanceByAccounts() {
 async function fetchBalanceByCurrencies() {
   currenciesLoading.value = true
   try {
-    const res = await api.get<{ currencies: CurrencyBalanceSummary[] }>(
-      `/api/v1/analytics/balance/currencies?date_from=${dateFrom.value}&date_to=${dateTo.value}`
-    )
-    currenciesData.value = res.data.currencies
+    const accounts = await localDb.list<Account>('account')
+    const byCurrency = new Map<string, { balance: number }>()
+    for (const a of accounts) {
+      const entry = byCurrency.get(a.currency) ?? { balance: 0 }
+      entry.balance += a.balance
+      byCurrency.set(a.currency, entry)
+    }
+    currenciesData.value = [...byCurrency.entries()].map(([currency, entry]) => ({
+      currency,
+      opening_balance: entry.balance,
+      closing_balance: entry.balance,
+      net_change: 0,
+      fx_rate_to_base: 1,
+      converted_total: entry.balance
+    }))
   } catch (e) {
     console.error('Failed to fetch balance by currencies:', e)
   } finally {

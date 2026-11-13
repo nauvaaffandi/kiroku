@@ -59,7 +59,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
 import { useI18n } from '@/locales'
 import { useCurrencies } from '@/composables/useCurrencies'
@@ -68,7 +67,6 @@ import { Bell } from '@lucide/vue'
 
 const route = useRoute()
 const router = useRouter()
-const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
 const { currencies } = useCurrencies()
@@ -97,9 +95,8 @@ const navigateTo = (name: string) => {
   showMoreMenu.value = false
 }
 
-const logout = async () => {
-  await authStore.logout()
-  router.push('/login')
+const logout = () => {
+  router.push('/')
 }
 
 onMounted(() => {

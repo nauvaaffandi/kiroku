@@ -33,20 +33,7 @@ const copyToken = async () => {
 }
 
 const checkRegistration = async () => {
-  try {
-    const response = await fetch('/api/v1/auth/telegram/status', {
-      credentials: 'include'
-    })
-    if (response.ok) {
-      const data = await response.json()
-      if (data.linked) {
-        emit('update:modelValue', false)
-        emit('register', '', '')
-      }
-    }
-  } catch {
-    // ignore
-  }
+  // Telegram linking requires a backend; not available offline.
 }
 
 onMounted(() => {
