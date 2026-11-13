@@ -150,22 +150,19 @@ Handlers depend on `domain` interfaces, never on `database/sql` directly. Keep n
 
 ### Config and logging
 
-- `backend/config.yaml` is loaded from the working directory. Run the server from `backend/`.
-- koanf maps `KIROKU_*` env vars by turning every `_` into `.`, so only single-word keys (like `KIROKU_ADDR`) override the YAML. Multi-word keys such as `jwt_secret` must be set in `config.yaml`. Telegram, Upstash, backup git token, log retention and tunnel flags have explicit `os.Getenv` fallbacks in `internal/config/config.go`.
-- Use zerolog (`github.com/rs/zerolog/log`). Do not use `fmt.Println` or the std `log`.
+- Configuration uses environment variables; use `.env.example` to understand available variable names and expected values. **Never open or read `.env`**; do not assume its contents. Run the server from `backend/` when required.
 - Return JSON for success and `http.Error` with a short message for failures. Never leak internals or secrets in error bodies.
 
 ### Logging levels
 
-Backend code uses zerolog (`github.com/rs/zerolog/log`) at the appropriate level. Do not use `fmt.Println` or std `log`.
+Use the project's available logging mechanism and its severity levels. Apply levels consistently and log operations where failures are likely or consequential; use trace/debug for useful troubleshooting detail and info for important lifecycle events, without noisy or repetitive logs.
 
-- `trace` — very verbose tracing, development-only detail
+- `trace` — very detailed execution tracing; use selectively
 - `debug` — diagnostic detail for troubleshooting
-- `info` — normal operation lifecycle events (requests, startups, completions)
-- `warn` — unexpected but non-fatal conditions (retries, missing optional data)
-- `error` — errors that did not crash the request/handler; include `.Err(err)`
-- `panic` / `fatal` — unrecoverable failures that terminate the process
-- `zerolog.NoLevel` — message-level logging when no severity applies
+- `info` — important normal operation events, such as startup and completion; avoid request-by-request noise unless useful
+- `warn` — unexpected but non-fatal conditions
+- `error` — failures that prevent an operation from succeeding; include relevant error context
+- `panic` / `fatal` — unrecoverable failures that require process termination, only when appropriate
 
 Never log secrets, PINs, tokens, raw request bodies, or `backend/data/` paths.
 
