@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - uses: actions/setup-java@v4
         with:
@@ -33,23 +33,20 @@ jobs:
           packages: 'platform-tools'
 
       - name: Install dependencies
-        working-directory: frontend
         run: npm ci --ignore-scripts
-        
+
       - name: Build Vue
-        working-directory: frontend
         run: npm run build
 
       - name: Sync Capacitor
-        working-directory: frontend
         run: npx cap sync android
 
       - name: Build APK
-        working-directory: frontend/android
+        working-directory: android
         run: chmod +x gradlew && ./gradlew assembleDebug
-        
+
       - name: Rename APK
-        run: cp frontend/android/app/build/outputs/apk/debug/app-debug.apk kiroku.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk kiroku.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

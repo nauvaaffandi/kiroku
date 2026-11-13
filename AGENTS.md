@@ -8,7 +8,7 @@ Read this file fully before changing anything. For any UI work, also read [DESIG
 
 1. **Styling: Tailwind first, and only through the `<style>` tag.** Start every component style block with `@reference "tailwindcss";`, then write normal CSS rules whose declarations use `@apply`. See [section 3](#3-styling-rule-tailwind-via-style-tag).
 2. **UI follows DESIGN.md.** Do not invent colors, radii, spacing, shadows or CSS variable names. If DESIGN.md has no answer, pick the closest existing token and say so in your summary.
-3. **Never open `.env`.** Read `.env.example` only. Never print, log or commit secrets, tokens, PINs, `backend/data/`, `*.db*` or tunnel URLs.
+3. **Never open `.env`.** Read `.env.example` only. Never print, log or commit secrets, tokens, PINs, `data/`, `*.db*` or tunnel URLs.
 4. **Keep diffs small.** Do the task asked. No drive-by refactors, renames or reformatting of files you were not asked to touch.
 5. **Every user-facing string goes through i18n** (`en`, `ja`, `id`). No hard-coded UI text.
 6. **Verify before claiming done** (see [section 7](#7-definition-of-done)).
@@ -18,8 +18,9 @@ Read this file fully before changing anything. For any UI work, also read [DESIG
 
 | Part       | Stack                                                                                     |
 | ---------- | ----------------------------------------------------------------------------------------- |
-| `backend/` | Go 1.27, chi v5, SQLite via `modernc.org/sqlite` (pure Go, `CGO_ENABLED=0`), zerolog, koanf |
-| `frontend/`| Vue 3 + `<script setup lang="ts">`, Vite, Pinia, Vue Router, Tailwind CSS v4, ECharts, PWA |
+| Part       | Stack                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| frontend   | Vue 3 + `<script setup lang="ts">`, Vite, Pinia, Vue Router, Tailwind CSS v4, ECharts   |
 | Ops        | `start.sh` generates a PM2 config; `cloudflared` tunnel; Upstash Redis publishes backend URL |
 
 Single user, many accounts and currencies. Mobile-first PWA: the app shell is a centered column (max 480px).
@@ -27,15 +28,10 @@ Single user, many accounts and currencies. Mobile-first PWA: the app shell is a 
 ### Commands
 
 ```bash
-# backend (run from backend/)
-KIROKU_TUNNEL_ENABLED=false go run ./cmd/server
-go build ./... && go test ./...
-CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bin/server ./cmd/server
-
-# frontend (run from frontend/)
+# frontend (run from repo root)
 npm run dev
 npm run build        # vue-tsc + vite build, this is the type-check
-npm run test:run     # vitest, tests belong in frontend/tests/
+npm run test:run     # vitest, tests belong in tests/
 ```
 
 ## 3. Styling rule: Tailwind via style tag
@@ -150,7 +146,7 @@ Handlers depend on `domain` interfaces, never on `database/sql` directly. Keep n
 
 ### Config and logging
 
-- Configuration uses environment variables; use `.env.example` to understand available variable names and expected values. **Never open or read `.env`**; do not assume its contents. Run the server from `backend/` when required.
+- Configuration uses environment variables; use `.env.example` to understand available variable names and expected values. **Never open or read `.env`**; do not assume its contents.
 - Return JSON for success and `http.Error` with a short message for failures. Never leak internals or secrets in error bodies.
 
 ### Logging levels
@@ -164,31 +160,27 @@ Use the project's available logging mechanism and its severity levels. Apply lev
 - `error` — failures that prevent an operation from succeeding; include relevant error context
 - `panic` / `fatal` — unrecoverable failures that require process termination, only when appropriate
 
-Never log secrets, PINs, tokens, raw request bodies, or `backend/data/` paths.
+Never log secrets, PINs, tokens, raw request bodies, or `data/` paths.
 
 ### Tests
 
-- Table-driven tests with testify. Run `go test ./...` from `backend/`.
-- `.gitignore` currently excludes `backend/**/*_test.go`, so new tests are silently untracked. Tell the user instead of changing `.gitignore` on your own.
+- Frontend tests: vitest configured for `tests/**`.
 
 ## 6. Known gaps
 
 Do not assume these are fine. Flag them to the user when your work touches them.
 
-1. **Data routes have no authentication.** In `cmd/server/main.go` only part of `/api/v1/auth/*` has `AuthMiddleware`. Under `/api/v1`, `/accounts`, `/categories`, `/transactions`, `/templates`, `/scheduled`, `/reports`, `/settings` and `/fx` are mounted without it. The top-level `/shared` mount is also open, including create, list and revoke (not only the public view). The backend is exposed through a public tunnel.
-2. **Default PIN.** The first login auto-creates the user with a random 6-digit PIN written to `{DATA_DIR}/persistent/genesis-pin.txt`. The admin must retrieve this PIN from the file on first startup and change it immediately via the UI.
-3. **CORS reflects any `Origin` with credentials**, and auth cookies use `SameSite=None`. Treat as unsafe until restricted.
-4. **Unmounted backend packages.** `internal/{accounts,analytics,backup,categories,fx,impexp,receipts,reports,scheduled,settings,shared,templates,transactions}` are not imported by `main.go`. The frontend already calls routes such as `/api/v1/backup/*`, analytics and receipts that are not served. Do not copy patterns from these packages into new code.
-5. **`.env.example` is partly decorative.** `PORT`, `DB_PATH`, `JWT_SECRET`, the `ARGON2_*` values and the 9Router/OCR keys are not read from the environment. They must go in `config.yaml`.
-6. **CI is stale.** `.github/workflows/go.yml` uses Go 1.20 and runs `go build ./...` from the repo root, but `go.mod` is in `backend/` and requires Go 1.27.
-7. **No frontend tests.** `vitest` is configured for `tests/**` but the folder does not exist.
-8. **`start.sh` assumes Termux** for `air` (`/data/data/com.termux/files/home/go/bin/air`).
-9. **Swagger spec is empty.** No handler has swag annotations.
+1. **Backend removed.** `backend/` (Go server, SQLite, migrations) has been deleted from the repo. No backend routes, auth, JWT, or tunnel remain.
+2. **CORS reflects any `Origin` with credentials** — N/A after backend removal (no auth cookies remain).
+3. **`.env.example` is partly decorative.** `PORT`, `DB_PATH`, `JWT_SECRET`, the `ARGON2_*` values and the 9Router/OCR keys are not read from the environment. They must go in `config.yaml` if a backend is ever re-added.
+4. **CI is stale.** `.github/workflows/go.yml` references Go and `backend/`; only `build-app.yml` (Android) is active now.
+5. **No frontend tests.** `vitest` is configured for `tests/**` but the folder does not exist.
+6. **`start.sh` assumes Termux** for `air` (`/data/data/com.termux/files/home/go/bin/air`).
+7. **Swagger spec is empty.** N/A after backend removal.
 
 ## 7. Definition of done
 
-- Backend change: `go build ./...` and `go test ./...` pass from `backend/`.
-- Frontend change: `npm run build` passes from `frontend/` (this runs `vue-tsc`).
+- Frontend change: `npm run build` passes from repo root (this runs `vue-tsc`).
 - UI change: checked in **light and dark**, at 360px width, with long text (Japanese and Indonesian strings are longer or wider than English), and with the hide-amounts setting on.
 - New strings exist in `en`, `ja` and `id`.
 - Styling follows section 3 and uses only tokens from DESIGN.md.

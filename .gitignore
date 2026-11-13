@@ -1,20 +1,9 @@
-# Backend
-backend/bin/
-backend/data/
-backend/backup/
-backend/*.db
-backend/*.db-*
-backend/go.work
-backend/go.work.sum
-backend/server
-backend/config.yaml
-
 # Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
-frontend/*.local
-frontend/dev-dist/
+node_modules/
+dist/
+.vite/
+*.local
+dev-dist/
 
 # Logctl
 logctl/logctl

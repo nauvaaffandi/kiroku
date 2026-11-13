@@ -278,7 +278,7 @@ components:
 
 ### Token to CSS variable map
 
-Tokens live in `frontend/src/assets/main.css` as CSS variables and flip with `[data-theme]`. **Use only these names in components** (see AGENTS.md for how to apply them with `@reference "tailwindcss"`).
+Tokens live in `src/assets/main.css` as CSS variables and flip with `[data-theme]`. **Use only these names in components** (see AGENTS.md for how to apply them with `@reference "tailwindcss"`).
 
 | Token (light / `-dark`)          | CSS variable                              |
 | -------------------------------- | ----------------------------------------- |
