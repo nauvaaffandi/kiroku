@@ -663,8 +663,8 @@ budgets: {
       want: 'Want (欲求)'
     },
     spending: {
-      title: '支出分析',
-      subtitle: 'カテゴリ、ラベル、性質別の支出内訳'
+      title: '支出',
+      subtitle: 'カテゴリ・ラベル・性質別の支出内訳'
     },
   },
   balanceAnalytics: {

@@ -631,8 +631,8 @@ budgets: {
       want: 'Want (Desired)'
     },
     spending: {
-      title: 'Spending Analysis',
-      subtitle: 'Breakdown of spending by category, label, and nature'
+      title: 'Spending',
+      subtitle: 'Breakdown by category, label, and nature'
     },
   },
   balanceAnalytics: {

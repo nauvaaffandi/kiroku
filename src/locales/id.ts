@@ -646,7 +646,7 @@ export default {
       want: 'Want (Inginkan)'
     },
     spending: {
-      title: 'Analisis Pengeluaran',
+      title: 'Pengeluaran',
       subtitle: 'Rincian pengeluaran per kategori, label, dan jenis'
     },
   },
