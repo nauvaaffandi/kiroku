@@ -12,6 +12,10 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@capacitor-community/sqlite": "^6.0.2",
+    "@capacitor/android": "^6.2.3",
+    "@capacitor/cli": "^6.2.3",
+    "@capacitor/core": "^6.2.3",
     "@lucide/vue": "^1.59.0",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
