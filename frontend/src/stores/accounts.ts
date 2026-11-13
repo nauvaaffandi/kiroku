@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import { useUIStore } from './ui'
 import type { Account, AccountFilters } from '@/types'
 
@@ -21,24 +21,23 @@ export const useAccountsStore = defineStore('accounts', () => {
   const fetchAccounts = async (page = 1) => {
     loading.value = true
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(pagination.value.pageSize),
-        sort: filters.value.sort,
-        order: filters.value.order,
-        ...Object.fromEntries(
-          Object.entries(filters.value).filter(([, v]) => v !== '')
-        )
-      })
-      const response = await api.get(`/api/v1/accounts?${params}`)
-      accounts.value = Array.isArray(response.data) ? response.data : []
-      pagination.value = {
-        ...pagination.value,
-        page,
-        total: accounts.value.length
+      const rows = await localDb.list<Account>('account')
+      let list = rows.filter((a) => !a.archived)
+      if (filters.value.q) {
+        const q = filters.value.q.toLowerCase()
+        list = list.filter((a) => a.name.toLowerCase().includes(q))
       }
+      if (filters.value.type) list = list.filter((a) => a.type === filters.value.type)
+      if (filters.value.currency) list = list.filter((a) => a.currency === filters.value.currency)
+      if (filters.value.archived === 'true') list = rows
+      list.sort((a, b) => {
+        const d = filters.value.order === 'DESC' ? -1 : 1
+        return a[filters.value.sort as keyof Account] < b[filters.value.sort as keyof Account] ? -d : d
+      })
+      accounts.value = list
+      pagination.value = { ...pagination.value, page, total: list.length }
     } catch (e) {
-      uiStore.error('Failed to fetch accounts')
+      uiStore.error('Failed to load accounts')
     } finally {
       loading.value = false
     }
@@ -46,31 +45,34 @@ export const useAccountsStore = defineStore('accounts', () => {
 
   const createAccount = async (data: Partial<Account>) => {
     try {
-      const response = await api.post('/api/v1/accounts', data)
+      const id = crypto.randomUUID()
+      await localDb.put('account', id, { ...data, id, archived: false } as Account)
       await fetchAccounts(pagination.value.page)
-      return response.data.id
+      return id
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to create account')
+      uiStore.error(e?.message || 'Failed to create account')
       throw e
     }
   }
 
   const updateAccount = async (id: string, data: Partial<Account>) => {
     try {
-      await api.put(`/api/v1/accounts/${id}`, data)
+      const current = await localDb.get<Account>('account', id)
+      if (!current) throw new Error('Account not found')
+      await localDb.put('account', id, { ...current, ...data } as Account)
       await fetchAccounts(pagination.value.page)
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to update account')
+      uiStore.error(e?.message || 'Failed to update account')
       throw e
     }
   }
 
   const deleteAccount = async (id: string) => {
     try {
-      await api.delete(`/api/v1/accounts/${id}`)
+      await localDb.remove('account', id)
       await fetchAccounts(pagination.value.page)
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to delete account')
+      uiStore.error(e?.message || 'Failed to delete account')
       throw e
     }
   }

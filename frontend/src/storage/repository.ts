@@ -1,7 +1,7 @@
 import { CapacitorSQLite, SQLiteConnection, type SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { MIGRATIONS, SCHEMA_VERSION } from './schema';
 
-export type EntityKind = 'account' | 'category' | 'label' | 'transaction' | 'template' | 'scheduled' | 'budget' | 'goal' | 'setting';
+export type EntityKind = 'account' | 'category' | 'label' | 'notification' | 'transaction' | 'template' | 'scheduled' | 'budget' | 'goal' | 'setting';
 
 export interface StoredEntity<T = Record<string, unknown>> {
   id: string;

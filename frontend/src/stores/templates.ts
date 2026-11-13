@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
+import { useTransactionsStore } from './transactions'
 import { useUIStore } from './ui'
-import type { Template } from '@/types'
+import type { ApplyTemplateResponse, Template } from '@/types'
 
 export const useTemplatesStore = defineStore('templates', () => {
   const templates = ref<Template[]>([])
@@ -12,10 +13,9 @@ export const useTemplatesStore = defineStore('templates', () => {
   const fetchTemplates = async () => {
     loading.value = true
     try {
-      const response = await api.get('/api/v1/templates')
-      templates.value = response.data
-    } catch (e) {
-      uiStore.error('Failed to fetch templates')
+      templates.value = await localDb.list<Template>('template')
+    } catch (e: any) {
+      uiStore.error(e?.message || 'Failed to load templates')
     } finally {
       loading.value = false
     }
@@ -23,41 +23,81 @@ export const useTemplatesStore = defineStore('templates', () => {
 
   const createTemplate = async (data: Partial<Template>) => {
     try {
-      const response = await api.post('/api/v1/templates', data)
+      const id = crypto.randomUUID()
+      const now = new Date().toISOString()
+      const template: Template = {
+        id,
+        created_at: now,
+        updated_at: now,
+        ...data
+      } as Template
+      await localDb.put('template', id, template)
       await fetchTemplates()
-      return response.data.id
+      return id
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to create template')
+      uiStore.error(e?.message || 'Failed to create template')
       throw e
     }
   }
 
   const updateTemplate = async (id: string, data: Partial<Template>) => {
     try {
-      await api.put(`/api/v1/templates/${id}`, data)
+      const current = await localDb.get<Template>('template', id)
+      if (!current) throw new Error('Template not found')
+      const updated: Template = { ...current, ...data, updated_at: new Date().toISOString() } as Template
+      await localDb.put('template', id, updated)
       await fetchTemplates()
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to update template')
+      uiStore.error(e?.message || 'Failed to update template')
       throw e
     }
   }
 
   const deleteTemplate = async (id: string) => {
     try {
-      await api.delete(`/api/v1/templates/${id}`)
+      await localDb.remove('template', id)
       await fetchTemplates()
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to delete template')
+      uiStore.error(e?.message || 'Failed to delete template')
       throw e
     }
   }
 
-  const applyTemplate = async (id: string) => {
+  const applyTemplate = async (id: string): Promise<ApplyTemplateResponse | null> => {
     try {
-      const response = await api.post(`/api/v1/templates/${id}/apply`)
-      return response.data
+      const template = await localDb.get<Template>('template', id)
+      if (!template) throw new Error('Template not found')
+      const transactionsStore = useTransactionsStore()
+      const transactionId = crypto.randomUUID()
+      const now = new Date().toISOString()
+      const transaction = {
+        id: transactionId,
+        type: template.type,
+        date_time: now,
+        amount: template.amount ?? 0,
+        currency: template.currency ?? null,
+        from_account_id: template.from_account_id,
+        to_account_id: template.to_account_id,
+        category_id: template.category_id,
+        labels: template.labels,
+        note: template.note,
+        payee_payer: template.payee_payer,
+        payment_type: template.payment_type,
+        warranty_until: template.warranty_until,
+        status: template.status,
+        place_name: template.place_name,
+        place_lat: template.place_lat,
+        place_lng: template.place_lng,
+        attachments: template.attachments,
+        template_id: id,
+        created_at: now,
+        updated_at: now
+      }
+      await localDb.put('transaction', transactionId, transaction)
+      await transactionsStore.fetchTransactions()
+      return { ...transaction, template_id: id } as ApplyTemplateResponse
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to apply template')
+      uiStore.error(e?.message || 'Failed to apply template')
       throw e
     }
   }

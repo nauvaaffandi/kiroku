@@ -8,7 +8,7 @@ export function useSettingsData() {
 
   const createBackup = async () => {
     try {
-      const response = await settingsStore.createBackup()
+      const response = await settingsStore.createBackup() as { data: { filename?: string } }
       const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')

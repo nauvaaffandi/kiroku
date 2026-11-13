@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import { useUIStore } from './ui'
 import type { ScheduledTransaction, ScheduledFilters } from '@/types'
 
@@ -21,24 +21,26 @@ export const useScheduledStore = defineStore('scheduled', () => {
   const fetchScheduled = async (page = 1) => {
     loading.value = true
     try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(pagination.value.pageSize),
-        sort: filters.value.sort,
-        order: filters.value.order,
-        ...Object.fromEntries(
-          Object.entries(filters.value).filter(([, v]) => v !== '')
-        )
-      })
-      const response = await api.get(`/api/v1/scheduled?${params}`)
-      scheduled.value = Array.isArray(response.data) ? response.data : []
-      pagination.value = {
-        ...pagination.value,
-        page,
-        total: scheduled.value.length
+      const rows = await localDb.list<ScheduledTransaction>('scheduled')
+      let list = [...rows]
+      if (filters.value.q) {
+        const q = filters.value.q.toLowerCase()
+        list = list.filter((s) => s.name.toLowerCase().includes(q))
       }
+      if (filters.value.type) list = list.filter((s) => s.type === filters.value.type)
+      if (filters.value.frequency) list = list.filter((s) => s.frequency === filters.value.frequency)
+      if (filters.value.active === 'true') list = list.filter((s) => s.active)
+      list.sort((a, b) => {
+        const d = filters.value.order === 'DESC' ? -1 : 1
+        const key = filters.value.sort as keyof ScheduledTransaction
+        const av = String(a[key] ?? '')
+        const bv = String(b[key] ?? '')
+        return av < bv ? -d : av > bv ? d : 0
+      })
+      scheduled.value = list
+      pagination.value = { ...pagination.value, page, total: list.length }
     } catch (e) {
-      uiStore.error('Failed to fetch scheduled transactions')
+      uiStore.error('Failed to load scheduled transactions')
     } finally {
       loading.value = false
     }
@@ -46,41 +48,69 @@ export const useScheduledStore = defineStore('scheduled', () => {
 
   const createScheduled = async (data: Partial<ScheduledTransaction>) => {
     try {
-      const response = await api.post('/api/v1/scheduled', data)
+      const id = crypto.randomUUID()
+      const now = new Date().toISOString()
+      const row: ScheduledTransaction = {
+        id,
+        name: '',
+        type: 'expense',
+        frequency: 'monthly',
+        start_date: now,
+        end_date: null,
+        cron_expression: null,
+        amount: 0,
+        currency: '',
+        from_account_id: null,
+        to_account_id: null,
+        category_id: null,
+        description: '',
+        active: true,
+        next_run: null,
+        occurrences_done: 0,
+        created_at: now,
+        updated_at: now,
+        ...data
+      } as ScheduledTransaction
+      await localDb.put('scheduled', id, row)
       await fetchScheduled(pagination.value.page)
-      return response.data.id
+      return id
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to create scheduled transaction')
+      uiStore.error(e?.message || 'Failed to create scheduled transaction')
       throw e
     }
   }
 
   const updateScheduled = async (id: string, data: Partial<ScheduledTransaction>) => {
     try {
-      await api.put(`/api/v1/scheduled/${id}`, data)
+      const current = await localDb.get<ScheduledTransaction>('scheduled', id)
+      if (!current) throw new Error('Scheduled transaction not found')
+      await localDb.put('scheduled', id, { ...current, ...data, updated_at: new Date().toISOString() } as ScheduledTransaction)
       await fetchScheduled(pagination.value.page)
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to update scheduled transaction')
+      uiStore.error(e?.message || 'Failed to update scheduled transaction')
       throw e
     }
   }
 
   const deleteScheduled = async (id: string) => {
     try {
-      await api.delete(`/api/v1/scheduled/${id}`)
+      await localDb.remove('scheduled', id)
       await fetchScheduled(pagination.value.page)
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to delete scheduled transaction')
+      uiStore.error(e?.message || 'Failed to delete scheduled transaction')
       throw e
     }
   }
 
   const toggleScheduled = async (id: string) => {
     try {
-      await api.post(`/api/v1/scheduled/${id}/toggle`)
+      const current = await localDb.get<ScheduledTransaction>('scheduled', id)
+      if (current) {
+        await localDb.put('scheduled', id, { ...current, active: !current.active, updated_at: new Date().toISOString() } as ScheduledTransaction)
+      }
       await fetchScheduled(pagination.value.page)
     } catch (e: any) {
-      uiStore.error(e.response?.data?.error || 'Failed to toggle scheduled transaction')
+      uiStore.error(e?.message || 'Failed to toggle scheduled transaction')
       throw e
     }
   }

@@ -1,19 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { api } from '@/api/client'
+import { localDb } from '@/storage/repository'
 import type { Settings, Theme, Language, DateFormat, NumberFormat, WeekStart } from '@/types'
 
+const SETTINGS_ID = 'settings'
+
+const defaultSettings: Settings = {
+  theme: 'system',
+  language: 'ja',
+  base_currency: 'USD',
+  date_format: 'YYYY-MM-DD',
+  number_format: 'ja-JP',
+  week_start: 1,
+  totp_enabled: false,
+  hide_amounts: false
+}
+
 export const useSettingsStore = defineStore('settings', () => {
-  const settings = ref<Settings>({
-    theme: 'system',
-    language: 'ja',
-    base_currency: 'USD',
-    date_format: 'YYYY-MM-DD',
-    number_format: 'ja-JP',
-    week_start: 1,
-    totp_enabled: false,
-    hide_amounts: false
-  })
+  const settings = ref<Settings>({ ...defaultSettings })
   const loading = ref(false)
 
   const theme = computed<Theme>(() => settings.value.theme || 'system')
@@ -31,11 +35,11 @@ export const useSettingsStore = defineStore('settings', () => {
   const fetchSettings = async () => {
     loading.value = true
     try {
-      const response = await api.get('/api/v1/settings')
-      settings.value = { ...settings.value, ...response.data } as Settings
+      const stored = await localDb.get<Settings>('setting', SETTINGS_ID)
+      if (stored) settings.value = { ...defaultSettings, ...stored }
       applyTheme(settings.value.theme || 'system')
     } catch (e) {
-      console.error('Failed to fetch settings:', e)
+      console.error('Failed to load settings:', e)
     } finally {
       loading.value = false
     }
@@ -43,12 +47,12 @@ export const useSettingsStore = defineStore('settings', () => {
 
   const updateSettings = async (newSettings: Partial<Settings>) => {
     try {
-      await api.put('/api/v1/settings', newSettings)
       settings.value = { ...settings.value, ...newSettings } as Settings
+      await localDb.put('setting', SETTINGS_ID, settings.value)
       if (newSettings.theme) applyTheme(newSettings.theme)
       return true
     } catch (e) {
-      console.error('Failed to update settings:', e)
+      console.error('Failed to save settings:', e)
       return false
     }
   }
@@ -59,21 +63,15 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   const createBackup = async () => {
-    const response = await api.post('/api/v1/backup/create')
-    return response.data
+    throw new Error('Backup is not available offline yet')
   }
 
-  const restoreBackup = async (file: File, password: string) => {
-    const formData = new FormData()
-    formData.append('backup', file)
-    formData.append('password', password)
-    await api.post('/api/v1/backup/restore', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+  const restoreBackup = async (_file: File, _password: string) => {
+    throw new Error('Restore is not available offline yet')
   }
 
   const clearAllData = async () => {
-    await api.post('/api/v1/settings/clear')
+    throw new Error('Clear all data is not available offline yet')
   }
 
   const applyTheme = (themeValue: string) => {

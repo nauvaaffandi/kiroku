@@ -1,14 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { NotificationFilter, NotificationItem } from '@/types'
-import {
-  fetchNotifications,
-  fetchUnreadCount,
-  markNotificationRead,
-  markAllNotificationsRead,
-  deleteNotification,
-  deleteReadNotifications
-} from '@/api/notifications'
+import { localDb } from '@/storage/repository'
+import type { NotificationItem } from '@/types'
+
+const NOTIFICATION_KIND = 'notification'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const notifications = ref<NotificationItem[]>([])
@@ -16,17 +11,15 @@ export const useNotificationStore = defineStore('notifications', () => {
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
 
-  let pollingTimer: ReturnType<typeof setInterval> | null = null
-
   const loadNotifications = async (unreadOnly = false) => {
     loading.value = true
     error.value = null
     try {
-      const filter: NotificationFilter | undefined = unreadOnly
-        ? { unread: true }
-        : undefined
-      const data = await fetchNotifications(filter)
-      notifications.value = data
+      const rows = await localDb.list<NotificationItem>(NOTIFICATION_KIND)
+      let list = rows.filter((n) => !n.deleted_at)
+      if (unreadOnly) list = list.filter((n) => !n.read_at)
+      notifications.value = list
+      unreadCount.value = list.filter((n) => !n.read_at).length
     } catch (e: any) {
       error.value = e?.message || 'Failed to load notifications'
     } finally {
@@ -36,8 +29,8 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const loadUnreadCount = async () => {
     try {
-      const data = await fetchUnreadCount()
-      unreadCount.value = data.unread_count
+      const rows = await localDb.list<NotificationItem>(NOTIFICATION_KIND)
+      unreadCount.value = rows.filter((n) => !n.deleted_at && !n.read_at).length
     } catch {
       // Silently fail — badge is best-effort
     }
@@ -45,12 +38,12 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const markAsRead = async (id: string) => {
     try {
-      await markNotificationRead(id)
-      const item = notifications.value.find((n) => n.id === id)
-      if (item && !item.read_at) {
-        item.read_at = new Date().toISOString()
-        if (unreadCount.value > 0) unreadCount.value--
+      const item = await localDb.get<NotificationItem>(NOTIFICATION_KIND, id)
+      if (item) {
+        const now = new Date().toISOString()
+        await localDb.put(NOTIFICATION_KIND, id, { ...item, read_at: now, updated_at: now })
       }
+      await loadNotifications()
     } catch (e: any) {
       error.value = e?.message || 'Failed to mark as read'
     }
@@ -58,12 +51,14 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const markAllAsRead = async () => {
     try {
-      await markAllNotificationsRead()
       const now = new Date().toISOString()
-      notifications.value.forEach((n) => {
-        if (!n.read_at) n.read_at = now
-      })
-      unreadCount.value = 0
+      const rows = await localDb.list<NotificationItem>(NOTIFICATION_KIND)
+      for (const n of rows) {
+        if (!n.read_at) {
+          await localDb.put(NOTIFICATION_KIND, n.id, { ...n, read_at: now, updated_at: now })
+        }
+      }
+      await loadNotifications()
     } catch (e: any) {
       error.value = e?.message || 'Failed to mark all as read'
     }
@@ -71,10 +66,10 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const remove = async (id: string) => {
     try {
-      const item = notifications.value.find((n) => n.id === id)
-      await deleteNotification(id)
-      notifications.value = notifications.value.filter((n) => n.id !== id)
-      if (item && !item.read_at && unreadCount.value > 0) unreadCount.value--
+      const now = new Date().toISOString()
+      const item = await localDb.get<NotificationItem>(NOTIFICATION_KIND, id)
+      if (item) await localDb.put(NOTIFICATION_KIND, id, { ...item, deleted_at: now, updated_at: now })
+      await loadNotifications()
     } catch (e: any) {
       error.value = e?.message || 'Failed to delete notification'
     }
@@ -82,27 +77,23 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const clearRead = async () => {
     try {
-      await deleteReadNotifications()
-      notifications.value = notifications.value.filter(
-        (n) => !n.read_at
-      )
+      const now = new Date().toISOString()
+      const rows = await localDb.list<NotificationItem>(NOTIFICATION_KIND)
+      for (const n of rows) {
+        if (n.read_at) await localDb.put(NOTIFICATION_KIND, n.id, { ...n, deleted_at: now, updated_at: now })
+      }
+      await loadNotifications()
     } catch (e: any) {
       error.value = e?.message || 'Failed to clear read notifications'
     }
   }
 
-  const initPolling = (intervalMs = 30000) => {
-    stopPolling()
-    pollingTimer = setInterval(() => {
-      loadUnreadCount()
-    }, intervalMs)
+  const initPolling = () => {
+    // Offline mode: no server polling
   }
 
   const stopPolling = () => {
-    if (pollingTimer) {
-      clearInterval(pollingTimer)
-      pollingTimer = null
-    }
+    // Offline mode: nothing to stop
   }
 
   return {
