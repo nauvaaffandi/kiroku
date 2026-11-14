@@ -64,7 +64,12 @@ export class LocalDatabase {
       [kind, id]
     );
     const payload = result.values?.[0]?.payload;
-    return payload ? JSON.parse(payload) as T : null;
+    if (!payload) return null;
+    try {
+      return JSON.parse(payload) as T;
+    } catch {
+      return null;
+    }
   }
 
   async list<T>(kind: EntityKind): Promise<T[]> {
@@ -73,7 +78,17 @@ export class LocalDatabase {
       `SELECT payload FROM entities WHERE kind = ? AND deleted = 0 ORDER BY updated_at DESC;`,
       [kind]
     );
-    return (result.values ?? []).map((row) => JSON.parse(row.payload) as T);
+    const rows = result.values ?? [];
+    const items: T[] = [];
+    for (const row of rows) {
+      try {
+        items.push(JSON.parse(row.payload) as T);
+      } catch {
+        // Skip baris data yang rusak/invalid JSON agar tidak gagal seluruhnya
+        continue;
+      }
+    }
+    return items;
   }
 
   async remove(kind: EntityKind, id: string): Promise<void> {
