@@ -32,7 +32,7 @@ const route = useRoute()
 const router = useRouter()
 
 const navItems = [
-  { path: '/dashboard', label: 'Home', icon: DashboardIcon },
+  { path: '/', label: 'Home', icon: DashboardIcon },
   { path: '/transactions', label: 'Txns', icon: TransactionsIcon },
   { path: '/accounts', label: 'Accts', icon: AccountsIcon },
   { path: '/reports', label: 'Reports', icon: ReportsIcon }

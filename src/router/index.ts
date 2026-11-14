@@ -4,147 +4,115 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/login',
-      name: 'Login',
-      component: () => import('@/views/auth/LoginView.vue'),
-      meta: { guest: true }
-    },
-    {
       path: '/',
-      redirect: '/dashboard'
+      name: 'Dashboard',
+      component: () => import('@/views/misc/DashboardView.vue')
     },
     {
       path: '/dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/misc/DashboardView.vue'),
-      meta: { requiresAuth: true }
+      redirect: '/'
     },
     {
       path: '/notifications',
       name: 'Notifications',
-      component: () => import('@/views/notifications/NotificationsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/notifications/NotificationsView.vue')
     },
     {
       path: '/transactions',
       name: 'Transactions',
-      component: () => import('@/views/transactions/TransactionsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/transactions/TransactionsView.vue')
     },
     {
       path: '/transactions/scan',
       name: 'ScanReceipt',
-      component: () => import('@/views/transactions/ScanReceiptView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/transactions/ScanReceiptView.vue')
     },
     {
       path: '/budgets',
       name: 'Budgets',
-      component: () => import('@/views/budgets/BudgetsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/budgets/BudgetsView.vue')
     },
     {
       path: '/accounts',
       name: 'Accounts',
-      component: () => import('@/views/accounts/AccountsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/accounts/AccountsView.vue')
     },
     {
       path: '/categories',
       name: 'Categories',
-      component: () => import('@/views/categories/CategoriesView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/categories/CategoriesView.vue')
     },
     {
       path: '/categories/sub/:parentName',
       name: 'SubCategories',
-      component: () => import('@/views/categories/SubCategoriesView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/categories/SubCategoriesView.vue')
     },
     {
       path: '/scheduled',
       name: 'Scheduled',
-      component: () => import('@/views/scheduled/ScheduledView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/scheduled/ScheduledView.vue')
     },
     {
       path: '/reports',
       name: 'Reports',
-      component: () => import('@/views/reports/ReportsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/reports/ReportsView.vue')
     },
     {
       path: '/settings',
       name: 'Settings',
-      component: () => import('@/views/settings/SettingsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/settings/SettingsView.vue')
     },
     {
       path: '/about',
       name: 'About',
-      component: () => import('@/views/misc/AboutView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/misc/AboutView.vue')
     },
     {
       path: '/shared-access',
       name: 'SharedAccess',
-      component: () => import('@/views/shared/SharedAccessView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/shared/SharedAccessView.vue')
     },
     {
       path: '/labels',
       name: 'Labels',
-      component: () => import('@/views/labels/LabelsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/labels/LabelsView.vue')
     },
     {
       path: '/shared/:token',
       name: 'SharedView',
-      component: () => import('@/views/shared/SharedView.vue'),
-      meta: { guest: true }
+      component: () => import('@/views/shared/SharedView.vue')
     },
     {
       path: '/calendar',
       name: 'Calendar',
-      component: () => import('@/views/misc/CalendarView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/misc/CalendarView.vue')
     },
     {
       path: '/analytics/balance',
       name: 'AnalyticsBalance',
-      component: () => import('@/views/analytics/AnalyticsBalance.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/analytics/AnalyticsBalance.vue')
     },
     {
       path: '/analytics/outlook',
       name: 'AnalyticsOutlook',
-      component: () => import('@/views/analytics/AnalyticsOutlook.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/analytics/AnalyticsOutlook.vue')
     },
     {
       path: '/analytics/cashflow',
       name: 'AnalyticsCashflow',
-      component: () => import('@/views/analytics/AnalyticsCashflow.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/analytics/AnalyticsCashflow.vue')
     },
     {
       path: '/analytics/spending',
       name: 'AnalyticsSpending',
-      component: () => import('@/views/analytics/AnalyticsSpending.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/analytics/AnalyticsSpending.vue')
     },
-
     {
       path: '/goals',
       name: 'Goals',
-      component: () => import('@/views/goals/GoalsView.vue'),
-      meta: { requiresAuth: true }
+      component: () => import('@/views/goals/GoalsView.vue')
     }
   ]
-})
-
-router.beforeEach((_to, _from, next) => {
-  next()
 })
 
 export default router

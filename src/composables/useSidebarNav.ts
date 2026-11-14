@@ -21,7 +21,7 @@ export function useSidebarNav() {
   const isMobile = computed(() => window.innerWidth < 768)
 
   const mainNavItems = [
-    { path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, color: '#3b82f6' },
+    { path: '/', label: t('nav.dashboard'), icon: DashboardIcon, color: '#3b82f6' },
     { path: '/accounts', label: t('nav.accounts'), icon: AccountsIcon, color: '#06b6d4' },
     { path: '/transactions', label: t('nav.transactions'), icon: TransactionsIcon, color: '#10b981' }
   ]

@@ -45,11 +45,6 @@
             </button>
           </div>
           <div class="dropdown-divider" />
-          <div class="dropdown-section">
-            <button @click="logout" class="dropdown-item danger">
-              <span>{{ t('nav.logout') }}</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -93,10 +88,6 @@ const toggleMoreMenu = () => {
 const navigateTo = (name: string) => {
   router.push({ name })
   showMoreMenu.value = false
-}
-
-const logout = () => {
-  router.push('/')
 }
 
 onMounted(() => {

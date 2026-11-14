@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar">
     <div class="sidebar-header">
-      <router-link to="/dashboard" class="logo">
+      <router-link to="/" class="logo">
         <AppIcon class="app-icon-logo" />
         <span>{{ t('common.appName') }}</span>
       </router-link>
