@@ -5,6 +5,16 @@ dist/
 *.local
 dev-dist/
 
+# Android build outputs (keep source platform files, ignore generated artifacts)
+android/build/
+android/.gradle/
+android/app/build/
+android/app/.gradle/
+android/app/capacitor.build.gradle
+android/capacitor.build.gradle
+android/app/src/main/assets/public/
+
+
 # Logctl
 logctl/logctl
 

@@ -38,9 +38,6 @@ jobs:
       - name: Build Vue
         run: npm run build
 
-      - name: Sync Capacitor
-        run: npx cap sync android
-
       - name: Build APK
         working-directory: android
         run: chmod +x gradlew && ./gradlew assembleDebug
