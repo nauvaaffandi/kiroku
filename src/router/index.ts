@@ -1,4 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import DashboardView from '@/views/misc/DashboardView.vue'
+import NotificationsView from '@/views/notifications/NotificationsView.vue'
+import TransactionsView from '@/views/transactions/TransactionsView.vue'
+import ScanReceiptView from '@/views/transactions/ScanReceiptView.vue'
+import BudgetsView from '@/views/budgets/BudgetsView.vue'
+import AccountsView from '@/views/accounts/AccountsView.vue'
+import CategoriesView from '@/views/categories/CategoriesView.vue'
+import SubCategoriesView from '@/views/categories/SubCategoriesView.vue'
+import ScheduledView from '@/views/scheduled/ScheduledView.vue'
+import ReportsView from '@/views/reports/ReportsView.vue'
+import SettingsView from '@/views/settings/SettingsView.vue'
+import AboutView from '@/views/misc/AboutView.vue'
+import SharedAccessView from '@/views/shared/SharedAccessView.vue'
+import LabelsView from '@/views/labels/LabelsView.vue'
+import SharedView from '@/views/shared/SharedView.vue'
+import CalendarView from '@/views/misc/CalendarView.vue'
+import AnalyticsBalance from '@/views/analytics/AnalyticsBalance.vue'
+import AnalyticsOutlook from '@/views/analytics/AnalyticsOutlook.vue'
+import AnalyticsCashflow from '@/views/analytics/AnalyticsCashflow.vue'
+import AnalyticsSpending from '@/views/analytics/AnalyticsSpending.vue'
+import GoalsView from '@/views/goals/GoalsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -6,7 +27,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Dashboard',
-      component: () => import('@/views/misc/DashboardView.vue')
+      component: DashboardView
     },
     {
       path: '/dashboard',
@@ -15,102 +36,102 @@ const router = createRouter({
     {
       path: '/notifications',
       name: 'Notifications',
-      component: () => import('@/views/notifications/NotificationsView.vue')
+      component: NotificationsView
     },
     {
       path: '/transactions',
       name: 'Transactions',
-      component: () => import('@/views/transactions/TransactionsView.vue')
+      component: TransactionsView
     },
     {
       path: '/transactions/scan',
       name: 'ScanReceipt',
-      component: () => import('@/views/transactions/ScanReceiptView.vue')
+      component: ScanReceiptView
     },
     {
       path: '/budgets',
       name: 'Budgets',
-      component: () => import('@/views/budgets/BudgetsView.vue')
+      component: BudgetsView
     },
     {
       path: '/accounts',
       name: 'Accounts',
-      component: () => import('@/views/accounts/AccountsView.vue')
+      component: AccountsView
     },
     {
       path: '/categories',
       name: 'Categories',
-      component: () => import('@/views/categories/CategoriesView.vue')
+      component: CategoriesView
     },
     {
       path: '/categories/sub/:parentName',
       name: 'SubCategories',
-      component: () => import('@/views/categories/SubCategoriesView.vue')
+      component: SubCategoriesView
     },
     {
       path: '/scheduled',
       name: 'Scheduled',
-      component: () => import('@/views/scheduled/ScheduledView.vue')
+      component: ScheduledView
     },
     {
       path: '/reports',
       name: 'Reports',
-      component: () => import('@/views/reports/ReportsView.vue')
+      component: ReportsView
     },
     {
       path: '/settings',
       name: 'Settings',
-      component: () => import('@/views/settings/SettingsView.vue')
+      component: SettingsView
     },
     {
       path: '/about',
       name: 'About',
-      component: () => import('@/views/misc/AboutView.vue')
+      component: AboutView
     },
     {
       path: '/shared-access',
       name: 'SharedAccess',
-      component: () => import('@/views/shared/SharedAccessView.vue')
+      component: SharedAccessView
     },
     {
       path: '/labels',
       name: 'Labels',
-      component: () => import('@/views/labels/LabelsView.vue')
+      component: LabelsView
     },
     {
       path: '/shared/:token',
       name: 'SharedView',
-      component: () => import('@/views/shared/SharedView.vue')
+      component: SharedView
     },
     {
       path: '/calendar',
       name: 'Calendar',
-      component: () => import('@/views/misc/CalendarView.vue')
+      component: CalendarView
     },
     {
       path: '/analytics/balance',
       name: 'AnalyticsBalance',
-      component: () => import('@/views/analytics/AnalyticsBalance.vue')
+      component: AnalyticsBalance
     },
     {
       path: '/analytics/outlook',
       name: 'AnalyticsOutlook',
-      component: () => import('@/views/analytics/AnalyticsOutlook.vue')
+      component: AnalyticsOutlook
     },
     {
       path: '/analytics/cashflow',
       name: 'AnalyticsCashflow',
-      component: () => import('@/views/analytics/AnalyticsCashflow.vue')
+      component: AnalyticsCashflow
     },
     {
       path: '/analytics/spending',
       name: 'AnalyticsSpending',
-      component: () => import('@/views/analytics/AnalyticsSpending.vue')
+      component: AnalyticsSpending
     },
     {
       path: '/goals',
       name: 'Goals',
-      component: () => import('@/views/goals/GoalsView.vue')
+      component: GoalsView
     }
   ]
 })
