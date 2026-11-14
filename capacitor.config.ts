@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
   // Untuk build produksi via CI/CD, komentar bagian server ini terlebih dahulu agar APK
   // memuat aset web lokal (dist/) alih-alih mencoba menghubungi dev server.
   server: {
-    url: 'http://192.168.1.100:5173',
+    url: 'http://192.168.0.160:5173',
     cleartext: true,
   },
 };
