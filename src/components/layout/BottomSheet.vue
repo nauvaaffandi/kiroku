@@ -1,12 +1,12 @@
 <template>
   <transition name="bs" appear>
-    <div v-if="modelValue" class="bs-overlay" @click.self="handleScrimClick" />
-    <div
-      v-if="modelValue"
-      class="bs-sheet"
-      @click.self
-      @keydown.escape="close"
-    >
+    <div v-if="modelValue" class="bs-wrapper">
+      <div class="bs-overlay" @click.self="handleScrimClick" />
+      <div
+        class="bs-sheet"
+        @click.self
+        @keydown.escape="close"
+      >
       <header class="bs-header">
         <h2 class="bs-title">{{ title }}</h2>
         <button
@@ -25,6 +25,7 @@
         <slot name="footer" />
       </footer>
     </div>
+  </div>
   </transition>
 </template>
 
