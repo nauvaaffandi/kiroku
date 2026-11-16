@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { localDb } from '@/storage/repository'
+import JSZip from 'jszip'
+import { localDb, type EntityKind } from '@/storage/repository'
 import type { Settings, Theme, Language, DateFormat, NumberFormat, WeekStart } from '@/types'
+
+const BACKUP_KINDS: readonly string[] = [
+  'account', 'category', 'label', 'notification', 'transaction', 'template', 'scheduled', 'budget', 'goal', 'setting'
+]
 
 const SETTINGS_ID = 'settings'
 
@@ -62,12 +67,30 @@ export const useSettingsStore = defineStore('settings', () => {
     await updateSettings({ [key]: value } as Partial<Settings>)
   }
 
-  const createBackup = async () => {
-    throw new Error('Backup is not available offline yet')
-  }
+  const createBackup = async (): Promise<Blob> => {
+    console.log('[Backup] Starting backup creation')
+    const zip = new JSZip()
+    const payload: Record<string, unknown[]> = {}
 
-  const restoreBackup = async (_file: File, _password: string) => {
-    throw new Error('Restore is not available offline yet')
+    for (const kind of BACKUP_KINDS) {
+      console.log(`[Backup] Fetching data for kind: ${kind}`)
+      const items = await localDb.list(kind as EntityKind)
+      console.log(`[Backup] Retrieved ${items.length} records for kind: ${kind}`)
+      payload[kind] = items
+      zip.file(`${kind}.json`, JSON.stringify(items, null, 2))
+    }
+
+    const manifest = {
+      version: '1.0',
+      exported_at: new Date().toISOString(),
+      counts: Object.fromEntries(Object.entries(payload).map(([k, v]) => [k, v.length]))
+    }
+    console.log('[Backup] Manifest generated:', manifest)
+    zip.file('manifest.json', JSON.stringify(manifest, null, 2))
+
+    const blob = await zip.generateAsync({ type: 'blob' })
+    console.log(`[Backup] ZIP created successfully, size: ${blob.size} bytes`)
+    return blob
   }
 
   const clearAllData = async () => {
@@ -99,7 +122,6 @@ export const useSettingsStore = defineStore('settings', () => {
     getSetting,
     setSetting,
     createBackup,
-    restoreBackup,
     clearAllData
   }
 })

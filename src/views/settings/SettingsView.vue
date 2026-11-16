@@ -14,14 +14,12 @@
       @week-start-change="(v: any) => settingsStore.setSetting('week_start', parseInt(v, 10) as WeekStart)"
       @base-currency-change="(v: any) => (settingsStore.settings.base_currency = v)" />
 
-    <SettingsDataSection @manage-backup="showBackupModal = true" @clear-data="confirmClearData" />
-
-    <SettingsBackupModal v-model="showBackupModal" :title="t('settings.backup')" @create-backup="createBackup" @restore-backup="restoreBackup" @export-csv="exportCSV" @import-csv="importCSV" />
+    <SettingsDataSection @download-backup="createBackup" @clear-data="confirmClearData" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useI18n } from '@/locales'
 import { useSettingsStore } from '@/stores/settings'
 import { useSettingsPage } from '@/composables/useSettingsPage'
@@ -30,7 +28,6 @@ import type { WeekStart } from '@/types'
 import SettingsThemeSection from '@/components/settings/SettingsThemeSection.vue'
 import SettingsCurrencyLanguageSection from '@/components/settings/SettingsCurrencyLanguageSection.vue'
 import SettingsDataSection from '@/components/settings/SettingsDataSection.vue'
-import { SettingsBackupModal } from '@/widgets/settings'
 
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
@@ -38,8 +35,7 @@ const {
   theme, weekStartStr, newCurrencyCode, currencyOptions, themeOptions,
   dateFormatOptions, numberFormatOptions, weekStartOptions, handleAddCurrency, onThemeChange,
 } = useSettingsPage()
-const { createBackup, restoreBackup, exportCSV, importCSV, confirmClearData } = useSettingsData()
-const showBackupModal = ref(false)
+const { createBackup, confirmClearData } = useSettingsData()
 
 const settings = settingsStore.settings
 

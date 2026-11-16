@@ -1,40 +1,37 @@
 import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
+import { useI18n } from '@/locales'
 
 export function useSettingsData() {
   const settingsStore = useSettingsStore()
   const uiStore = useUIStore()
+  const { t } = useI18n()
 
   const createBackup = async () => {
     try {
-      const response = await settingsStore.createBackup() as { data: { filename?: string } }
-      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' })
+      console.log('[SettingsData] Initiating backup download')
+      const blob = await settingsStore.createBackup()
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+      const filename = `kiroku-backup-${timestamp}.zip`
+
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = response.data.filename || 'backup.json'
-      a.click()
-      URL.revokeObjectURL(url)
-      uiStore.success('Backup downloaded')
-    } catch (e) { uiStore.error('Failed to create backup') }
-  }
+      a.download = filename
+      try {
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+      } finally {
+        URL.revokeObjectURL(url)
+      }
 
-  const restoreBackup = async (file: File) => {
-    const password = prompt('Enter backup password:')
-    if (!password) return
-    try {
-      await settingsStore.restoreBackup(file, password)
-      uiStore.success('Backup restored. Reloading...')
-      window.location.reload()
-    } catch (e) { uiStore.error('Failed to restore backup') }
-  }
-
-  const exportCSV = async (_type: string) => {
-    uiStore.error('CSV export not available offline')
-  }
-
-  const importCSV = async (_file: File, _type: string) => {
-    uiStore.error('CSV import not available offline')
+      console.log(`[SettingsData] Backup downloaded as ${filename}`)
+      uiStore.success(t('settings.backupDownloaded'))
+    } catch (e) {
+      console.error('[SettingsData] Failed to create backup:', e)
+      uiStore.error(t('settings.backupFailed'))
+    }
   }
 
   const confirmClearData = async () => {
@@ -47,5 +44,5 @@ export function useSettingsData() {
     } catch (e) { uiStore.error('Failed to clear data') }
   }
 
-  return { createBackup, restoreBackup, exportCSV, importCSV, confirmClearData }
+  return { createBackup, confirmClearData }
 }

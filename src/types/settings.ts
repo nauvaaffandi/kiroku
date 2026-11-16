@@ -39,14 +39,3 @@ export interface UpdateSettingsRequest {
   totp_enabled?: boolean
   [key: string]: string | boolean | number | undefined
 }
-
-export interface BackupCreateResponse {
-  filename: string
-  size: number
-  created_at: string
-}
-
-export interface BackupRestoreRequest {
-  backup: File
-  password: string
-}
