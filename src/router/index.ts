@@ -11,9 +11,7 @@ import ScheduledView from '@/views/scheduled/ScheduledView.vue'
 import ReportsView from '@/views/reports/ReportsView.vue'
 import SettingsView from '@/views/settings/SettingsView.vue'
 import AboutView from '@/views/misc/AboutView.vue'
-import SharedAccessView from '@/views/shared/SharedAccessView.vue'
 import LabelsView from '@/views/labels/LabelsView.vue'
-import SharedView from '@/views/shared/SharedView.vue'
 import CalendarView from '@/views/misc/CalendarView.vue'
 import AnalyticsBalance from '@/views/analytics/AnalyticsBalance.vue'
 import AnalyticsOutlook from '@/views/analytics/AnalyticsOutlook.vue'
@@ -89,19 +87,9 @@ const router = createRouter({
       component: AboutView
     },
     {
-      path: '/shared-access',
-      name: 'SharedAccess',
-      component: SharedAccessView
-    },
-    {
       path: '/labels',
       name: 'Labels',
       component: LabelsView
-    },
-    {
-      path: '/shared/:token',
-      name: 'SharedView',
-      component: SharedView
     },
     {
       path: '/calendar',

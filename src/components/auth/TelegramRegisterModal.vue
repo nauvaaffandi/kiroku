@@ -101,7 +101,7 @@ onUnmounted(() => {
                     @click="copyToken"
                     class="trm-copy-btn"
                   >
-                    {{ t('shared.access.copy') }}
+                    {{ t('common.copy') }}
                   </button>
                 </div>
               </div>

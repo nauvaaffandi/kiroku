@@ -230,7 +230,6 @@ Vue Router manages client-side page transitions between core views:
 - **Reports:** Spending report (category / parent_category / account filtering) and cashflow table.
 - **Analytics:** Balance trend, accounts, currencies, outlook (category/timeline/forecast), budget vs actual, cashflow projection, spending analytics, goals progress.
 - **Settings:** User preferences, currency settings, theme toggle, data export.
-- **SharedAccess / SharedView:** Create & view time-limited public share tokens.
 - **Labels:** Transaction label management.
 - **About / Calendar:** Miscellaneous utility views.
 

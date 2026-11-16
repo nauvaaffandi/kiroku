@@ -10,7 +10,6 @@ import CategoriesIcon from '@/components/icons/CategoriesIcon.vue'
 import LabelsIcon from '@/components/icons/LabelsIcon.vue'
 import ScheduledIcon from '@/components/icons/ScheduledIcon.vue'
 import ReportsIcon from '@/components/icons/ReportsIcon.vue'
-import SharedAccessIcon from '@/components/icons/SharedAccessIcon.vue'
 import BudgetIcon from '@/components/icons/BudgetIcon.vue'
 import GoalsIcon from '@/components/icons/GoalsIcon.vue'
 
@@ -41,8 +40,7 @@ export function useSidebarNav() {
 
   const section3NavItems = [
     { path: '/scheduled', label: t('nav.scheduled'), icon: ScheduledIcon, color: '#0ea5e9' },
-    { path: '/reports', label: t('nav.reports'), icon: ReportsIcon, color: '#a855f7' },
-    { path: '/shared-access', label: t('nav.sharedAccess'), icon: SharedAccessIcon, color: '#f97316' }
+    { path: '/reports', label: t('nav.reports'), icon: ReportsIcon, color: '#a855f7' }
   ]
 
   const section4NavItems = [
