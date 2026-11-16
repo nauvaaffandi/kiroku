@@ -25,8 +25,8 @@
   
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   
-  --radius: 12px;
-  --radius-sm: 8px;
+  --radius-sm: 6px;
+  --radius: 10px;
   
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -101,33 +101,33 @@
 
 /* Light theme (default) */
 :root, [data-theme="light"] {
-  --bg-primary: #f8f9fa;
-  --bg-secondary: #f1f3f5;
-  --bg-tertiary: #e9ecef;
-  --bg-card: #ffffff;
-  --bg-hover: #e9ecef;
+  --bg-primary: #f6f5f2;
+  --bg-secondary: #fcfbf9;
+  --bg-tertiary: #efede8;
+  --bg-card: #fcfbf9;
+  --bg-hover: #efede8;
   
-  --text-primary: #212529;
-  --text-secondary: #495057;
-  --text-muted: #868e96;
-  --text-inverse: #ffffff;
+  --text-primary: #1f1e1b;
+  --text-secondary: #55524c;
+  --text-muted: #6f6b63;
+  --text-inverse: #fcfbf9;
   
-  --accent: #4a90d9;
-  --accent-hover: #3a7bc8;
-  --accent-light: #e7f1fc;
+  --accent: #2b67ad;
+  --accent-hover: #245a99;
+  --accent-light: #e6eef7;
   
-  --border-primary: #dee2e6;
-  --border-secondary: #e9ecef;
-  --border-focus: #4a90d9;
+  --border-primary: #e6e3dd;
+  --border-secondary: #d2cec5;
+  --border-focus: #2b67ad;
   
-  --success: #28a745;
-  --success-light: #d4edda;
-  --warning: #ffc107;
-  --warning-light: #fff3cd;
-  --error: #dc3545;
-  --error-light: #f8d7da;
-  --info: #17a2b8;
-  --info-light: #d1ecf1;
+  --success: #0d7a50;
+  --success-light: #e3f2ea;
+  --warning: #a15c07;
+  --warning-light: #faf2e4;
+  --error: #c0213f;
+  --error-light: #f9e6ea;
+  --info: #2b67ad;
+  --info-light: #e6eef7;
   
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -135,9 +135,9 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
   
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 16px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
   --radius-full: 9999px;
 }
 
@@ -151,25 +151,25 @@
   
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-muted: #93939c;
   --text-inverse: #18181b;
   
-  --accent: #38bdf8;
-  --accent-hover: #7dd3fc;
-  --accent-light: #0369a1;
+  --accent: #7db7ee;
+  --accent-hover: #9ccbf4;
+  --accent-light: #16222e;
   
   --border-primary: #27272a;
   --border-secondary: #3f3f46;
-  --border-focus: #38bdf8;
+  --border-focus: #7db7ee;
   
-  --success: #4ade80;
-  --success-light: #052e16;
-  --warning: #facc15;
-  --warning-light: #422006;
-  --error: #f87171;
-  --error-light: #450a0a;
-  --info: #38bdf8;
-  --info-light: #082f49;
+  --success: #34d399;
+  --success-light: #0f2a20;
+  --warning: #fbbf24;
+  --warning-light: #2b2110;
+  --error: #fb7185;
+  --error-light: #2e1519;
+  --info: #7db7ee;
+  --info-light: #16222e;
   
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
   --shadow: 0 2px 8px 0 rgb(0 0 0 / 0.4);
@@ -189,31 +189,41 @@
     
     --text-primary: #f4f4f5;
     --text-secondary: #a1a1aa;
-    --text-muted: #71717a;
+    --text-muted: #93939c;
     --text-inverse: #18181b;
     
-    --accent: #38bdf8;
-    --accent-hover: #7dd3fc;
-    --accent-light: #0369a1;
+    --accent: #7db7ee;
+    --accent-hover: #9ccbf4;
+    --accent-light: #16222e;
     
     --border-primary: #27272a;
     --border-secondary: #3f3f46;
-    --border-focus: #38bdf8;
+    --border-focus: #7db7ee;
     
-    --success: #4ade80;
-    --success-light: #052e16;
-    --warning: #facc15;
-    --warning-light: #422006;
-    --error: #f87171;
-    --error-light: #450a0a;
-    --info: #38bdf8;
-    --info-light: #082f49;
+    --success: #34d399;
+    --success-light: #0f2a20;
+    --warning: #fbbf24;
+    --warning-light: #2b2110;
+    --error: #fb7185;
+    --error-light: #2e1519;
+    --info: #7db7ee;
+    --info-light: #16222e;
     
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
     --shadow: 0 2px 8px 0 rgb(0 0 0 / 0.4);
     --shadow-md: 0 4px 12px 0 rgb(0 0 0 / 0.5);
     --shadow-lg: 0 8px 24px 0 rgb(0 0 0 / 0.6);
     --shadow-xl: 0 16px 48px 0 rgb(0 0 0 / 0.7);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

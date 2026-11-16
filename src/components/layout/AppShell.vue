@@ -4,7 +4,7 @@
       <header class="app-header">
         <Header @toggle-sidebar="uiStore.toggleSidebar" />
       </header>
-      
+
       <main class="app-main">
         <router-view v-slot="{ Component }">
           <transition name="page" mode="out-in">
@@ -13,15 +13,15 @@
         </router-view>
       </main>
     </div>
-    
-    <FAB />
-    
+
+    <BottomNav />
+
     <div v-if="uiStore.sidebarOpen" class="sidebar-overlay" @click="uiStore.toggleSidebar">
       <aside class="sidebar open" @click.stop>
         <Sidebar @close="uiStore.toggleSidebar" />
       </aside>
     </div>
-    
+
     <ToastContainer />
   </div>
 </template>
@@ -31,7 +31,7 @@ import { useUIStore } from '@/stores/ui'
 
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
-import FAB from '@/components/forms/FAB.vue'
+import BottomNav from './BottomNav.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 
 const uiStore = useUIStore()
@@ -39,18 +39,18 @@ const uiStore = useUIStore()
 
 <style scoped>
 @reference "tailwindcss";
+
 .app-shell {
   @apply flex flex-col m-auto w-full max-w-[480px];
   min-height: 100vh;
   position: relative;
   background-color: var(--bg-primary);
-  box-shadow: var(--shadow-xl);
 }
 
 .sidebar-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   @apply z-[200] flex justify-start;
 }
 
@@ -79,21 +79,9 @@ const uiStore = useUIStore()
   border-bottom: 1px solid var(--border-primary);
 }
 
-:where([data-theme="dark"], [data-theme="dark"] *) .app-shell {
-  background-color: #121212;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .sidebar {
-  background-color: #18181b;
-  border-right-color: #27272a;
-}
-
-:where([data-theme="dark"], [data-theme="dark"] *) .app-header {
-  background-color: #18181b;
-  border-bottom-color: #27272a;
-}
-
 .app-main {
   @apply flex-1 p-4 w-full;
+  /* Keep content clear of the fixed bottom nav + safe area */
+  padding-bottom: calc(60px + env(safe-area-inset-bottom) + 1rem);
 }
 </style>

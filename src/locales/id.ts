@@ -156,6 +156,7 @@ export default {
     title: 'Akun',
     subtitle: 'Kelola semua akun dan saldo Anda',
     addAccount: 'Tambah Akun',
+    deleteConfirm: 'Hapus akun ini?',
     balance: 'Saldo',
     type: 'Tipe',
     archive: 'Arsipkan',
@@ -527,6 +528,14 @@ export default {
     database: 'Basis Data',
     auth: 'Autentikasi',
     architecture: 'Arsitektur',
+    stackFrontend: 'Vue 3 + TypeScript + Vite',
+    stackUi: 'Tailwind CSS v4',
+    stackState: 'Pinia',
+    stackChart: 'ECharts',
+    stackBackend: 'SQLite lokal (offline-first)',
+    stackDatabase: 'SQLite (mode WAL)',
+    stackAuth: 'Pengguna tunggal (tanpa autentikasi)',
+    stackArch: 'Frontend halaman tunggal',
     acknowledgments: 'Pengakuan',
     acknowledgmentsDesc: 'Dibangun dengan teknologi sumber terbuka. Terima kasih kepada semua kontributor dan komunitas sumber terbuka.'
   },
@@ -728,7 +737,68 @@ export default {
     subtitle: 'Kelola pembayaran dan pendapatan berkala Anda',
     addScheduled: 'Tambah Terjadwal',
     noScheduledTransactions: 'Belum ada transaksi terjadwal',
-    addScheduledTransaction: 'Tambah Transaksi Terjadwal'
+    addScheduledTransaction: 'Tambah Transaksi Terjadwal',
+    deleteConfirm: 'Hapus transaksi terjadwal ini?'
+  },
+  receipt: {
+    scanDesc: 'Pindai atau unggah receipt untuk membuat transaksi',
+    backToTransactions: 'Kembali ke transaksi',
+    processingTitle: 'Sedang memproses receipt',
+    processingDesc: 'Menganalisis gambar. Harap tunggu.',
+    originalSize: 'Ukuran asli',
+    compressedSize: 'Ukuran terkompresi',
+    reviewTitle: 'Tinjau transaksi',
+    reviewDesc: 'Periksa detail sebelum menyimpan',
+    dateTime: 'Tanggal & waktu',
+    payeeMerchant: 'Penerima / pedagang',
+    merchantPlaceholder: 'Nama pedagang',
+    discardScan: 'Buang pemindaian',
+    confirmSave: 'Konfirmasi & simpan',
+    compressing: 'Sedang mengompresi gambar',
+    prepared: 'Siap diproses',
+    processFailed: 'Gagal memproses receipt',
+    offlineUnavailable: 'Pemrosesan OCR receipt tidak tersedia secara offline',
+    offlineDraft: 'Transaksi dibuat (draft offline)'
+  },
+  map: {
+    pickLocation: 'Pilih Lokasi',
+    hint: 'Klik pada peta untuk menetapkan koordinat lokasi.'
+  },
+  stat: {
+    totalBalance: 'Total Saldo',
+    monthlyIncome: 'Pendapatan Bulanan',
+    monthlyExpense: 'Pengeluaran Bulanan',
+    amountHidden: '(jumlah disembunyikan)'
+  },
+  badge: {
+    pending: 'Tertunda',
+    recurring: 'Berulang',
+    archived: 'Diarsipkan'
+  },
+  emptyState: {
+    noTransactions: 'Belum ada transaksi',
+    noAccounts: 'Belum ada akun',
+    noGoals: 'Belum ada tujuan',
+    noBudgets: 'Belum ada anggaran',
+    noLabels: 'Belum ada label'
+  },
+  bottomSheet: {
+    close: 'Tutup'
+  },
+  transactionRow: {
+    edit: 'Edit transaksi',
+    delete: 'Hapus transaksi',
+    pending: 'Tertunda',
+    income: 'Pemasukan',
+    expense: 'Pengeluaran',
+    transfer: 'Transfer'
+  },
+  chart: {
+    period: 'Periode',
+    income: 'Pemasukan',
+    expense: 'Pengeluaran',
+    balance: 'Saldo',
+    thirtyDays: '30 Hari Terakhir'
   },
   colorPicker: {
     open: 'Buka pilihan warna',

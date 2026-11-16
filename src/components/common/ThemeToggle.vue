@@ -25,18 +25,15 @@ const settingsStore = useSettingsStore()
 const { t } = useI18n()
 
 const isDark = computed(() => {
-  return document.documentElement.classList.contains('dark') || settingsStore.theme === 'dark'
+  const theme = settingsStore.theme
+  if (theme === 'dark') return true
+  if (theme === 'light') return false
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
 })
 
 const toggleTheme = () => {
   const newTheme = isDark.value ? 'light' : 'dark'
-  document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  if (newTheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark')
-  } else {
-    document.documentElement.setAttribute('data-theme', 'light')
-  }
-  localStorage.setItem('theme', newTheme)
+  console.log('[ThemeToggle] toggling theme', { from: settingsStore.theme, to: newTheme })
   settingsStore.updateSettings({ theme: newTheme })
 }
 </script>

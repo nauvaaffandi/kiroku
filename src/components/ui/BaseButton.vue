@@ -40,18 +40,24 @@ defineEmits<{
   font-family: inherit;
 }
 
+.btn:focus-visible {
+  @apply ring-2 ring-offset-2;
+  ring-offset-color: var(--bg-card);
+  ring-color: var(--accent);
+}
+
 .btn:disabled,
 .btn.loading {
   @apply opacity-60 cursor-not-allowed;
 }
 
 .btn-primary {
-  background-color: var(--accent);
-  color: #ffffff;
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
 }
 
 .btn-primary:hover:not(:disabled):not(.loading) {
-  background-color: var(--accent-hover);
+  opacity: 0.9;
 }
 
 .btn-secondary {
@@ -93,7 +99,7 @@ defineEmits<{
 }
 
 .btn-sm {
-  @apply px-3 py-1 text-sm h-[36px];
+  @apply px-3 py-1 text-sm h-[44px];
 }
 
 .btn-md {

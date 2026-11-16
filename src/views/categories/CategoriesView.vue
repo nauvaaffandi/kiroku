@@ -6,10 +6,7 @@
         <p class="page-subtitle">{{ t('categories.subtitle') }}</p>
       </div>
       <BaseButton @click="openCreateModal">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <Plus :size="20" stroke-width="1.75" aria-hidden="true" />
         {{ t('categories.addCategory') }}
       </BaseButton>
     </header>
@@ -56,6 +53,7 @@ import { useI18n } from '@/locales'
 import type { Category, CategoryFilters as CategoryFiltersType } from '@/types'
 import { CategoryParentRow, CategoryFormModal, CategoryFilters } from '@/widgets/categories'
 import { BaseButton } from '@/components/ui'
+import { Plus } from '@lucide/vue'
 
 const categoriesStore = useCategoriesStore()
 const { t } = useI18n()
@@ -88,6 +86,7 @@ watch(searchQuery, (value) => {
 })
 
 const fetchCategories = async (page = 1) => {
+  console.log('[CategoriesView] fetching categories', { page })
   await categoriesStore.fetchCategories(page)
 }
 
@@ -115,6 +114,7 @@ const openCreateModal = () => {
 }
 
 const handleFormSubmit = async (data: Partial<Category>) => {
+  console.log('[CategoriesView] saving category', { data })
   await categoriesStore.createCategory(data)
 
   showFormModal.value = false
@@ -128,7 +128,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 @reference "tailwindcss";
 
 .categories-page {
-  @apply px-4 py-6;
+  @apply px-4 py-6 w-full max-w-[480px] mx-auto;
 }
 
 .page-header {
@@ -136,7 +136,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 }
 
 .page-header h1 {
-  @apply text-2xl font-bold m-0;
+  @apply text-[20px] font-semibold m-0;
   color: var(--text-primary);
 }
 
@@ -155,7 +155,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 }
 
 .section-header h2 {
-  @apply text-lg font-semibold m-0;
+  @apply text-[16px] font-semibold m-0;
   color: var(--text-primary);
 }
 
@@ -163,7 +163,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
   background-color: var(--bg-card);
   border: 1px dashed var(--border-primary);
   color: var(--text-muted);
-  @apply text-center py-8 px-6 rounded-xl;
+  @apply text-center py-8 px-6 rounded-[14px];
 }
 
 .empty-state p {

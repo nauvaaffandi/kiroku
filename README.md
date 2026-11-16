@@ -196,7 +196,7 @@ frontend/
 │   ├── api/                    # Axios client instance & interceptors
 │   ├── assets/                 # Global stylesheet (main.css) & design tokens
 │   ├── components/             # Reusable UI controls, widgets, charts, icons, layout
-│   ├── composables/            # Vue composables (useBiometric, useCurrencies, useDebounce, useHaptics, usePagination)
+│   ├── composables/            # Vue composables (useBiometric, useCurrencies, useDebounce, usePagination)
 │   ├── locales/                # i18n dictionaries (en.ts, ja.ts, id.ts, index.ts)
 │   ├── router/                 # Vue Router config & navigation guards
 │   ├── stores/                 # Pinia state stores (auth, accounts, categories, transactions, scheduled, settings, reports, ui, labels, templates, push, backendUrl)

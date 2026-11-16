@@ -1,11 +1,11 @@
 <template>
   <section class="charts-section">
     <div class="chart-card">
-      <h2>{{ t('dashboard.spendingByCategory') }}</h2>
+      <h2 class="chart-title">{{ t('dashboard.spendingByCategory') }}</h2>
       <div class="chart-container" ref="spendingChart"></div>
     </div>
     <div class="chart-card">
-      <h2>{{ t('dashboard.monthlyTrend') }}</h2>
+      <h2 class="chart-title">{{ t('dashboard.monthlyTrend') }}</h2>
       <div class="chart-container" ref="trendChart"></div>
     </div>
   </section>
@@ -43,25 +43,49 @@ const formatCurrency = (num: number) => {
   return new Intl.NumberFormat(numberFormat.value).format(Math.abs(num))
 }
 
+const prefersReducedMotion = (): boolean => {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false
+}
+
 const initCharts = () => {
+  console.log('[DashboardCharts] initializing charts', {
+    categoryCount: categoriesStore.categories.length,
+    transactionCount: transactionsStore.transactions?.length
+  })
+
+  const reducedMotion = prefersReducedMotion()
+
   if (spendingChart.value && categoriesStore.categories.length > 0) {
     spendingChartInstance = echarts.init(spendingChart.value)
     const expenseCats = categoriesStore.categories.slice(0, 8)
     const data = expenseCats.map(c => {
       const total = (transactionsStore.transactions || []).filter(t => t.category_id === c.id).reduce((sum, t) => sum + t.amount, 0)
-      return { name: translate(c), value: total, color: c.color }
+      return { name: translate(c), value: total, color: c.color || getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim() }
     }).sort((a, b) => b.value - a.value)
 
     spendingChartInstance.setOption({
-      title: { text: t('dashboard.spendingByCategory'), left: 'center' },
-      tooltip: { trigger: 'item', formatter: '{b}: ' + formatCurrency(0).replace('0', '{c}') },
-      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-      xAxis: { type: 'value', axisLabel: { formatter: (val: number) => formatCurrency(val) } },
-      yAxis: { type: 'category', data: data.map(d => d.name), inverse: true },
+      animation: !reducedMotion,
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: ' + formatCurrency(0).replace('0', '{c}')
+      },
+      grid: { left: '3%', right: '4%', bottom: '3%', top: '5%', containLabel: true },
+      xAxis: {
+        type: 'value',
+        axisLabel: { formatter: (val: number) => formatCurrency(val) },
+        splitLine: { lineStyle: { color: 'var(--border-primary)' } }
+      },
+      yAxis: {
+        type: 'category',
+        data: data.map(d => d.name),
+        inverse: true,
+        axisLine: { lineStyle: { color: 'var(--border-primary)' } },
+        axisLabel: { color: 'var(--text-secondary)' }
+      },
       series: [{
         type: 'bar',
-        data: data.map(d => ({ value: d.value, itemStyle: { color: d.color } })),
-        label: { show: true, position: 'right', formatter: (params: any) => formatCurrency(params.value) }
+        data: data.map(d => ({ value: d.value, itemStyle: { color: d.color, borderRadius: [0, 2, 2, 0] } })),
+        label: { show: true, position: 'right', formatter: (params: any) => formatCurrency(params.value), color: 'var(--text-muted)' }
       }]
     })
   }
@@ -69,10 +93,20 @@ const initCharts = () => {
   if (trendChart.value) {
     trendChartInstance = echarts.init(trendChart.value)
     trendChartInstance.setOption({
-      title: { text: t('dashboard.monthlyTrend'), left: 'center' },
+      animation: !reducedMotion,
       tooltip: { trigger: 'axis' },
-      xAxis: { type: 'category', data: [] },
-      yAxis: { type: 'value' },
+      grid: { left: '3%', right: '4%', bottom: '3%', top: '5%', containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: [],
+        axisLine: { lineStyle: { color: 'var(--border-primary)' } },
+        axisLabel: { color: 'var(--text-muted)' }
+      },
+      yAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: 'var(--border-primary)' } },
+        splitLine: { lineStyle: { color: 'var(--border-primary)' } }
+      },
       series: []
     })
   }
@@ -97,9 +131,20 @@ onBeforeUnmount(() => {
 
 <style scoped>
 @reference "tailwindcss";
-.charts-section { @apply grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6 mb-6; }
-@media (max-width: 768px) { .charts-section { @apply grid-cols-1; } }
-.chart-card { @apply rounded-xl shadow-sm p-[1.5rem]; background-color: var(--bg-card); }
-.chart-card h2 { @apply text-base font-semibold mb-4; color: var(--text-primary); }
-.chart-container { @apply w-full h-[300px]; }
+
+.charts-section {
+  @apply flex flex-col gap-6 mb-6;
+}
+
+.chart-card {
+  @apply rounded-[14px] border p-4 bg-[var(--bg-card)] border-[var(--border-primary)] text-[var(--text-primary)];
+}
+
+.chart-title {
+  @apply text-sm font-semibold mb-3 text-[var(--text-primary)];
+}
+
+.chart-container {
+  @apply w-full h-[240px];
+}
 </style>

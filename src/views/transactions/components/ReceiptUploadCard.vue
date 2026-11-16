@@ -1,11 +1,7 @@
 <template>
   <div class="upload-card">
-    <div class="dropzone" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
+    <div class="dropzone" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop" role="button" tabindex="0" :aria-label="t('receipt.dropzoneTitle')">
+      <Upload :size="48" stroke-width="1.75" aria-hidden="true" />
       <h3>{{ t('receipt.dropzoneTitle') }}</h3>
       <p>{{ t('receipt.dropzoneDesc') }}</p>
       <input ref="fileInput" type="file" accept="image/*" class="hidden-input" @change="handleFileSelect" />
@@ -16,6 +12,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from '@/locales'
+import { Upload } from '@lucide/vue'
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
@@ -40,33 +37,26 @@ const handleFileSelect = (e: Event) => {
 
 <style scoped>
 @reference "tailwindcss";
+
 .upload-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 2rem;
-  box-shadow: var(--shadow);
+  @apply bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-[14px] p-6;
 }
 
 .dropzone {
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius);
-  padding: 3rem 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  @apply border-2 border-dashed border-[var(--border-primary)] rounded-[10px] p-8 text-center cursor-pointer transition-colors duration-120 ease-out flex flex-col items-center gap-4;
 }
 
 .dropzone:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-neutral-100);
+  @apply border-[var(--accent)] bg-[var(--bg-tertiary)];
+}
+
+.dropzone:focus-visible {
+  @apply ring-2 ring-offset-2 rounded-[10px];
+  ring-offset-color: var(--bg-card);
+  ring-color: var(--accent);
 }
 
 .hidden-input {
-  display: none;
+  @apply hidden;
 }
 </style>

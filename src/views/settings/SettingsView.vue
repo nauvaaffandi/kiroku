@@ -47,5 +47,5 @@ onMounted(async () => {
 <style scoped>
 @reference "tailwindcss";
 .page-header { @apply mb-8; }
-.page-header h1 { @apply text-2xl font-bold m-0; color: var(--text-primary); }
+.page-header h1 { @apply text-2xl font-semibold m-0 text-[var(--text-primary)]; }
 </style>

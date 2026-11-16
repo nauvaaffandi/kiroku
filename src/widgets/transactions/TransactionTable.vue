@@ -3,14 +3,14 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th>{{ t('transactions.columnDate') }}</th>
-          <th>{{ t('transactions.columnType') }}</th>
-          <th>{{ t('transactions.columnAmount') }}</th>
-          <th>{{ t('transactions.columnCategory') }}</th>
-          <th>{{ t('transactions.columnAccount') }}</th>
-          <th>{{ t('transactions.columnNote') }}</th>
-          <th>{{ t('transactions.columnStatus') }}</th>
-          <th class="text-right">{{ t('transactions.columnActions') }}</th>
+          <th class="cell-date-head">{{ t('transactions.columnDate') }}</th>
+          <th class="cell-type-head">{{ t('transactions.columnType') }}</th>
+          <th class="cell-amount-head">{{ t('transactions.columnAmount') }}</th>
+          <th class="cell-category-head">{{ t('transactions.columnCategory') }}</th>
+          <th class="cell-account-head">{{ t('transactions.columnAccount') }}</th>
+          <th class="cell-note-head">{{ t('transactions.columnNote') }}</th>
+          <th class="cell-status-head">{{ t('transactions.columnStatus') }}</th>
+          <th class="cell-actions-head">{{ t('transactions.columnActions') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -58,11 +58,12 @@ const { t } = useI18n()
 
 <style scoped>
 @reference "tailwindcss";
+
 .table-container {
+  @apply w-full overflow-x-auto;
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  @apply w-full overflow-x-auto;
 }
 
 .data-table {
@@ -70,31 +71,27 @@ const { t } = useI18n()
 }
 
 .data-table th {
-  background-color: var(--bg-secondary);
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-primary);
-  @apply px-4 py-3 font-semibold whitespace-nowrap;
+  @apply bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-b-[var(--border-primary)] px-4 py-3 font-semibold whitespace-nowrap;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
 .data-table td {
-  border-bottom: 1px solid var(--border-primary);
-  @apply px-4 py-3;
+  @apply border-b-[var(--border-primary)] px-4 py-3;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
 .data-table tr:last-child td {
   border-bottom: none;
 }
 
-.text-right {
+.cell-amount-head,
+.cell-actions-head {
   @apply text-right;
 }
 
 .td-empty {
-  @apply text-center py-8;
-  color: var(--text-muted);
-}
-
-.text-muted {
-  color: var(--text-muted);
+  @apply text-center py-8 text-[var(--text-muted)];
 }
 </style>

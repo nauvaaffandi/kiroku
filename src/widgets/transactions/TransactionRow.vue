@@ -4,40 +4,42 @@
       <time>{{ formatDate(transaction.date_time) }}</time>
     </td>
     <td class="cell-type">
-      <span :class="['type-badge', transaction.type]">{{ transaction.type }}</span>
+      <span :class="['type-badge', typeBadgeClass(transaction.type)]">{{ typeLabel(transaction.type) }}</span>
     </td>
     <td class="cell-amount" :class="amountClass">
-      {{ formatAmount(transaction.amount) }}
+      {{ formatRowAmount(transaction.amount, transaction.type) }}
     </td>
     <td class="cell-category">
-      <span v-if="category" class="category-badge" :style="{ backgroundColor: category.color + '20', color: category.color }">
-        <span class="category-icon" :style="{ backgroundColor: category.color }">{{ category.icon }}</span>
-        {{ translate(category) }}
+      <span v-if="category" class="category-cell">
+        <span class="category-dot" :style="{ backgroundColor: category.color || 'var(--text-muted)' }" aria-hidden="true" />
+        <span class="category-name">{{ translate(category) }}</span>
       </span>
-      <span v-else class="text-muted">—</span>
+      <span v-else class="placeholder-text">—</span>
     </td>
     <td class="cell-account">
       <span v-if="fromAccount">{{ fromAccount.name }}</span>
-      <span v-else class="text-muted">—</span>
+      <span v-else class="placeholder-text">—</span>
       <span v-if="transaction.type === 'transfer' && toAccount" class="transfer-arrow">→ {{ toAccount.name }}</span>
     </td>
     <td class="cell-note">{{ transaction.note || '—' }}</td>
     <td class="cell-status">
-      <span :class="['status-badge', transaction.status]">{{ transaction.status }}</span>
+      <span :class="['status-badge', statusBadgeClass(transaction.status)]">{{ statusLabel(transaction.status) }}</span>
     </td>
     <td class="cell-actions">
       <div class="action-buttons">
-        <button @click="$emit('edit', transaction)" class="btn-icon" aria-label="Edit">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
+        <button
+          @click="$emit('edit', transaction)"
+          class="btn-icon"
+          :aria-label="t('transactions.editTransaction')"
+        >
+          <Edit :size="18" stroke-width="1.75" />
         </button>
-        <button @click="$emit('delete', transaction.id)" class="btn-icon text-danger" aria-label="Delete">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
+        <button
+          @click="$emit('delete', transaction.id)"
+          class="btn-delete"
+          :aria-label="t('transactions.deleteTransaction')"
+        >
+          <Trash2 :size="18" stroke-width="1.75" />
         </button>
       </div>
     </td>
@@ -50,7 +52,11 @@ import { useCategoriesStore } from '@/stores/categories'
 import { useAccountsStore } from '@/stores/accounts'
 import { formatAmountForDisplay } from '@/utils/amountDisplay'
 import { useCategoryName } from '@/utils/categoryName'
+import { Edit, Trash2 } from '@lucide/vue'
+import { useI18n } from '@/locales'
+import { useSettingsStore } from '@/stores/settings'
 import type { Transaction } from '@/types'
+import dayjs from 'dayjs'
 
 interface Props {
   transaction: Transaction
@@ -64,11 +70,36 @@ defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 const accountsStore = useAccountsStore()
+const settingsStore = useSettingsStore()
 const { translate } = useCategoryName()
+
+const { t } = useI18n()
+
+if (import.meta.env.DEV) console.log('[TransactionRow] rendering transaction', {
+  id: props.transaction.id,
+  type: props.transaction.type,
+  amount: props.transaction.amount
+})
 
 const category = computed(() => categoriesStore.categories.find(c => c.id === props.transaction.category_id))
 const fromAccount = computed(() => accountsStore.accounts.find(a => a.id === props.transaction.from_account_id))
 const toAccount = computed(() => accountsStore.accounts.find(a => a.id === props.transaction.to_account_id))
+
+const typeLabel = (type: string) => {
+  return t(`transactions.type${type.charAt(0).toUpperCase() + type.slice(1)}`) || type
+}
+
+const typeBadgeClass = (type: string) => {
+  return type === 'income' ? 'income' : type === 'expense' ? 'expense' : 'transfer'
+}
+
+const statusLabel = (status: string) => {
+  return status === 'pending' ? t('transactions.statusPending') : t('transactions.statusCleared')
+}
+
+const statusBadgeClass = (status: string) => {
+  return status === 'pending' ? 'pending' : 'cleared'
+}
 
 const amountClass = computed(() => {
   if (props.transaction.type === 'income') return 'positive'
@@ -76,28 +107,26 @@ const amountClass = computed(() => {
   return 'neutral'
 })
 
-const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
+const formatRowAmount = (amount: number, type: 'income' | 'expense' | 'transfer') => {
+  if (import.meta.env.DEV) console.log('[TransactionRow] formatting amount', { amount, type })
+  return formatAmountForDisplay(amount, type)
 }
 
-const formatAmount = (amount: number) => {
-  return formatAmountForDisplay(amount, props.transaction.type as 'income' | 'expense' | 'transfer')
+const formatDate = (dateStr: string) => {
+  const fmt = settingsStore.dateFormat || 'YYYY-MM-DD'
+  return dayjs(dateStr).format(fmt)
 }
 </script>
 
 <style scoped>
 @reference "tailwindcss";
-.transaction-row:hover {
-  background-color: var(--bg-hover);
+
+.transaction-row {
+  @apply hover:bg-[var(--bg-hover)] transition-colors duration-120 ease-out;
 }
 
 .cell-date {
-  color: var(--text-primary);
-  @apply whitespace-nowrap text-xs;
+  @apply whitespace-nowrap text-xs text-[var(--text-primary)];
 }
 
 .cell-type {
@@ -105,52 +134,52 @@ const formatAmount = (amount: number) => {
 }
 
 .type-badge {
-  @apply inline-block px-2 py-0.5 text-[0.625rem] font-semibold uppercase rounded-full;
+  @apply inline-block px-2 py-0.5 text-[0.625rem] font-medium rounded-full whitespace-nowrap;
 }
 
 .type-badge.income {
-  background-color: var(--success-light);
-  color: var(--success);
+  @apply bg-[var(--success-light)] text-[var(--success)];
 }
 
 .type-badge.expense {
-  background-color: var(--error-light);
-  color: var(--error);
+  @apply bg-[var(--error-light)] text-[var(--error)];
 }
 
 .type-badge.transfer {
-  background-color: var(--accent-light);
-  color: var(--accent);
+  @apply bg-[var(--accent-light)] text-[var(--accent)];
 }
 
 .cell-amount {
-  @apply font-semibold whitespace-nowrap text-[0.8125rem] tabular-nums;
+  @apply font-semibold tabular-nums text-right text-xs;
 }
 
 .cell-amount.positive {
-  color: var(--success);
+  @apply text-[var(--success)];
 }
 
-.cell-amount.negative {
-  color: var(--error);
-}
-
+.cell-amount.negative,
 .cell-amount.neutral {
-  color: var(--text-primary);
+  @apply text-[var(--text-primary)];
 }
 
 .cell-category {
   @apply max-w-[140px] text-xs;
 }
 
-.category-badge {
-  border-radius: var(--radius);
-  @apply inline-flex items-center gap-1.5 px-2 py-0.5 text-xs whitespace-nowrap overflow-hidden text-ellipsis;
+.category-cell {
+  @apply flex items-center gap-1.5;
 }
 
-.category-icon {
-  border-radius: var(--radius-sm);
-  @apply w-3.5 h-3.5 flex items-center justify-center text-[0.6875rem];
+.category-dot {
+  @apply w-1.5 h-1.5 rounded-full shrink-0;
+}
+
+.category-name {
+  @apply truncate text-[var(--text-primary)];
+}
+
+.placeholder-text {
+  @apply text-[var(--text-muted)];
 }
 
 .cell-account {
@@ -158,13 +187,11 @@ const formatAmount = (amount: number) => {
 }
 
 .transfer-arrow {
-  color: var(--accent);
-  @apply ml-2 font-medium;
+  @apply ml-2 font-medium text-[var(--accent)];
 }
 
 .cell-note {
-  color: var(--text-secondary);
-  @apply max-w-[160px] text-xs overflow-hidden text-ellipsis whitespace-nowrap;
+  @apply max-w-[160px] text-xs overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-secondary)];
 }
 
 .cell-status {
@@ -172,17 +199,15 @@ const formatAmount = (amount: number) => {
 }
 
 .status-badge {
-  @apply inline-block px-2 py-0.5 text-[0.625rem] font-semibold uppercase rounded-full;
+  @apply inline-block px-2 py-0.5 text-[0.625rem] font-medium rounded-full whitespace-nowrap;
 }
 
 .status-badge.cleared {
-  background-color: var(--success-light);
-  color: var(--success);
+  @apply bg-[var(--success-light)] text-[var(--success)];
 }
 
 .status-badge.pending {
-  background-color: var(--warning-light);
-  color: var(--warning);
+  @apply bg-[var(--warning-light)] text-[var(--warning)];
 }
 
 .cell-actions {
@@ -194,35 +219,26 @@ const formatAmount = (amount: number) => {
 }
 
 .btn-icon {
+  @apply flex items-center justify-center p-2.5 bg-transparent border-none cursor-pointer transition-colors duration-150 ease-in-out rounded-md;
   color: var(--text-muted);
-  border-radius: var(--radius);
-  @apply flex items-center justify-center w-6 h-6 border-none bg-transparent cursor-pointer transition-colors duration-150 ease-in-out;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .btn-icon:hover {
-  background-color: var(--bg-hover);
+  @apply bg-[var(--bg-hover)];
   color: var(--text-primary);
 }
 
-.btn-icon.text-danger:hover {
-  color: var(--error);
-  background-color: var(--error-light);
-}
-
-.text-muted {
+.btn-delete {
+  @apply flex items-center justify-center p-2.5 bg-transparent border-none cursor-pointer transition-colors duration-150 ease-in-out rounded-md;
   color: var(--text-muted);
+  min-width: 44px;
+  min-height: 44px;
 }
 
-@media (max-width: 480px) {
-  .cell-date { @apply text-[0.6875rem]; }
-  .cell-amount { @apply text-xs; }
-  .cell-category { @apply max-w-[100px]; }
-  .cell-account { @apply max-w-[90px]; }
-  .cell-note { @apply max-w-[120px]; }
-  .type-badge { @apply text-[0.5625rem] px-1.5 py-0.5; }
-  .status-badge { @apply text-[0.5625rem] px-1.5 py-0.5; }
-  .category-badge { @apply text-[0.6875rem]; }
-  .category-icon { @apply w-3 h-3 text-[0.625rem]; }
-  .btn-icon { @apply w-[22px] h-[22px]; }
+.btn-delete:hover {
+  @apply bg-[var(--error-light)];
+  color: var(--error);
 }
 </style>

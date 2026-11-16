@@ -159,25 +159,19 @@ onMounted(async () => {
 <style scoped>
 @reference "tailwindcss";
 .analytics-outlook-view {
-  @apply max-w-[80rem] mx-auto p-4 flex flex-col gap-4;
+  @apply mx-auto p-4 flex flex-col gap-4 w-full max-w-[480px];
 }
-.page-header { 
-  @apply flex flex-col gap-1; 
+.page-header {
+  @apply flex flex-col gap-1;
 }
-.page-header h1 { 
-  @apply text-xl font-bold; 
-  color: var(--text-primary); 
+.page-header h1 {
+  @apply text-[20px] font-semibold text-[var(--text-primary)];
 }
-.page-subtitle { 
-  color: var(--text-muted); 
+.page-subtitle {
+  @apply text-[var(--text-muted)];
 }
-.widgets-grid { 
-  @apply grid gap-4; 
-  grid-template-columns: 1fr;
-}
-@media (min-width: 768px) {
-  .widgets-grid {
-    grid-template-columns: minmax(400px, 1fr);
-  }
+.widgets-grid {
+  @apply grid gap-4 w-full;
+  grid-template-columns: minmax(0, 1fr);
 }
 </style>

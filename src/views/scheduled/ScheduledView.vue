@@ -6,10 +6,7 @@
         <p class="page-subtitle">{{ t('scheduled.subtitle') }}</p>
       </div>
       <BaseButton @click="openCreateModal">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <Plus :size="20" stroke-width="1.75" aria-hidden="true" />
         {{ t('scheduled.addScheduled') }}
       </BaseButton>
     </header>
@@ -44,6 +41,7 @@ import { useI18n } from '@/locales'
 import type { ScheduledTransaction, ScheduledFilters as ScheduledFiltersType } from '@/types'
 import { ScheduledList, ScheduledFormModal, ScheduledFilters } from '@/widgets/scheduled'
 import { BaseButton } from '@/components/ui'
+import { Plus } from '@lucide/vue'
 
 const scheduledStore = useScheduledStore()
 const { t } = useI18n()
@@ -74,6 +72,7 @@ watch(searchQuery, (value) => {
 })
 
 const fetchScheduled = async (page = 1) => {
+  console.log('[ScheduledView] fetching scheduled', { page })
   await scheduledStore.fetchScheduled(page)
 }
 
@@ -100,7 +99,8 @@ const handleToggle = (s: ScheduledTransaction) => {
 }
 
 const handleDelete = (id: string) => {
-  if (confirm('Are you sure you want to delete this scheduled transaction?')) {
+  if (confirm(t('scheduled.deleteConfirm'))) {
+    if (import.meta.env.DEV) console.log('[ScheduledView] deleting scheduled', { id })
     scheduledStore.deleteScheduled(id)
   }
 }
@@ -111,6 +111,7 @@ const openCreateModal = () => {
 }
 
 const handleFormSubmit = async (data: Partial<ScheduledTransaction>) => {
+  if (import.meta.env.DEV) console.log('[ScheduledView] saving scheduled', { id: editingScheduled.value?.id, data })
   if (editingScheduled.value) {
     await scheduledStore.updateScheduled(editingScheduled.value.id, data)
   } else {
@@ -128,12 +129,14 @@ const handleFormSubmit = async (data: Partial<ScheduledTransaction>) => {
   @apply flex justify-between items-start mb-6 gap-4;
 }
 
-.page-header svg {
+.page-header svg,
+.page-header [class*="lucide-icon"],
+.page-header i {
   @apply mr-2;
 }
 
 .page-header h1 {
-  @apply text-2xl font-bold m-0;
+  @apply text-[20px] font-semibold m-0;
   color: var(--text-primary);
 }
 

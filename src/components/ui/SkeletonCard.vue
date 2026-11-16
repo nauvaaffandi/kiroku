@@ -2,11 +2,10 @@
   <div class="skeleton-card" :class="{ 'skeleton': loading }">
     <slot v-if="!loading" />
     <template v-else>
-      <div class="skeleton skeleton-title" />
-    <template v-else>
-      <div class="skeleton skeleton-text skeleton-text-md" />
-      <div class="skeleton skeleton-text skeleton-text-lg" />
-      <div class="skeleton skeleton-text skeleton-text-sm" />
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-text skeleton-text-md"></div>
+      <div class="skeleton skeleton-text skeleton-text-lg"></div>
+      <div class="skeleton skeleton-text skeleton-text-sm"></div>
     </template>
   </div>
 </template>

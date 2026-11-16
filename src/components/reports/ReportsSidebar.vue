@@ -59,20 +59,20 @@ const { t } = useI18n()
 @reference "tailwindcss";
 
 .reports-sidebar {
-  @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm h-fit;
+  @apply bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-[14px] p-4;
 }
 
 .sidebar-section { @apply mb-6; }
 
 .sidebar-label {
-  @apply text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3;
+  @apply text-[0.625rem] font-semibold text-[var(--text-secondary)] mb-3;
 }
 
 .sidebar-group { @apply space-y-3; }
 
-.field-label { @apply block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1; }
+.field-label { @apply block text-[0.75rem] font-medium text-[var(--text-secondary)] mb-1; }
 
 .field-select {
-  @apply w-full sm:w-auto px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500;
+  @apply w-full px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-[10px] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)];
 }
 </style>

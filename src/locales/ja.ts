@@ -131,7 +131,7 @@ export default {
     summaryIncome: '収入',
     summaryExpense: '支出',
     summaryNet: '純収支',
-    summaryCount: '{{count}} 件の取引',
+    summaryCount: '{{count}}件の取引',
     selectedCount: '{{count}} 件選択中',
     batchDeleteConfirm: '選択した {{count}} 件の取引を削除しますか？',
     batchApplyTemplate: 'テンプレートを適用',
@@ -156,6 +156,7 @@ export default {
     title: '口座管理',
     subtitle: 'すべての口座と残高を管理',
     addAccount: '口座を追加',
+    deleteConfirm: 'この口座を削除しますか？',
     balance: '残高',
     type: '種類',
     archive: 'アーカイブ',
@@ -527,6 +528,14 @@ budgets: {
     database: 'データベース',
     auth: '認証',
     architecture: 'アーキテクチャ',
+    stackFrontend: 'Vue 3 + TypeScript + Vite',
+    stackUi: 'Tailwind CSS v4',
+    stackState: 'Pinia',
+    stackChart: 'ECharts',
+    stackBackend: 'ローカル SQLite（オフラインファースト）',
+    stackDatabase: 'SQLite（WAL モード）',
+    stackAuth: 'シングルユーザー（認証なし）',
+    stackArch: 'シングルページ フロントエンド',
     acknowledgments: '謝辞',
     acknowledgmentsDesc: 'オープンソーステクノロジーで構築されています。すべてのコントリビューターとオープンソースコミュニティに感謝します。'
   },
@@ -728,7 +737,68 @@ budgets: {
     subtitle: '定期支払いと収入を管理',
     addScheduled: '定期取引を追加',
     noScheduledTransactions: '定期取引はまだありません',
-    addScheduledTransaction: '定期取引を追加'
+    addScheduledTransaction: '定期取引を追加',
+    deleteConfirm: 'この定期取引を削除しますか？'
+  },
+  receipt: {
+    scanDesc: 'レシートをスキャンまたはアップロードして取引を作成',
+    backToTransactions: '取引一覧に戻る',
+    processingTitle: 'レシートを処理中',
+    processingDesc: '画像を分析しています。お待ちください。',
+    originalSize: '元のサイズ',
+    compressedSize: '圧縮後のサイズ',
+    reviewTitle: '取引を確認',
+    reviewDesc: '保存する前に詳細を確認してください',
+    dateTime: '日時',
+    payeeMerchant: '支払先 / 加盟店',
+    merchantPlaceholder: '加盟店名',
+    discardScan: 'スキャンを破棄',
+    confirmSave: '確認して保存',
+    compressing: '画像を圧縮中',
+    prepared: '処理の準備ができました',
+    processFailed: 'レシートの処理に失敗しました',
+    offlineUnavailable: 'オフラインではレシートOCR処理は利用できません',
+    offlineDraft: 'オフライン下書きとして取引を作成しました'
+  },
+  map: {
+    pickLocation: '場所を選択',
+    hint: '地図をクリックして座標を設定してください。'
+  },
+  stat: {
+    totalBalance: '総残高',
+    monthlyIncome: '月間収入',
+    monthlyExpense: '月間支出',
+    amountHidden: '(金額非表示)'
+  },
+  badge: {
+    pending: '保留中',
+    recurring: '定期',
+    archived: 'アーカイブ済み'
+  },
+  emptyState: {
+    noTransactions: '取引はまだありません',
+    noAccounts: '口座はまだありません',
+    noGoals: '目標はまだありません',
+    noBudgets: '予算はまだありません',
+    noLabels: 'ラベルはまだありません'
+  },
+  bottomSheet: {
+    close: '閉じる'
+  },
+  transactionRow: {
+    edit: '取引を編集',
+    delete: '取引を削除',
+    pending: '保留中',
+    income: '収入',
+    expense: '支出',
+    transfer: '振替'
+  },
+  chart: {
+    period: '期間',
+    income: '収入',
+    expense: '支出',
+    balance: '残高',
+    thirtyDays: '過去30日間'
   },
   colorPicker: {
     open: '色の選択肢を開く',

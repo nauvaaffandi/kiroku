@@ -6,10 +6,7 @@
         <p class="page-subtitle">{{ t('accounts.subtitle') }}</p>
       </div>
       <BaseButton @click="openCreateModal">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        <Plus :size="20" stroke-width="1.75" aria-hidden="true" />
         {{ t('accounts.addAccount') }}
       </BaseButton>
     </header>
@@ -43,6 +40,7 @@ import { useI18n } from '@/locales'
 import type { Account, AccountFilters as AccountFiltersType } from '@/types'
 import { AccountList, AccountFormModal, AccountFilters } from '@/widgets/accounts'
 import { BaseButton } from '@/components/ui'
+import { Plus } from '@lucide/vue'
 
 const accountsStore = useAccountsStore()
 const { t } = useI18n()
@@ -73,6 +71,7 @@ watch(searchQuery, (value) => {
 })
 
 const fetchAccounts = async (page = 1) => {
+  console.log('[AccountsView] fetching accounts', { page })
   await accountsStore.fetchAccounts(page)
 }
 
@@ -95,7 +94,9 @@ const handleEdit = (account: Account) => {
 }
 
 const handleDelete = (id: string) => {
-  if (confirm('Are you sure you want to delete this account?')) {
+  const acc = accounts.value.find(a => a.id === id)
+  if (confirm(t('accounts.deleteConfirm', { name: acc?.name ?? '' }))) {
+    if (import.meta.env.DEV) console.log('[AccountsView] deleting account', { id })
     accountsStore.deleteAccount(id)
   }
 }
@@ -106,6 +107,7 @@ const openCreateModal = () => {
 }
 
 const handleFormSubmit = async (data: Partial<Account>) => {
+  if (import.meta.env.DEV) console.log('[AccountsView] saving account', { id: editingAccount.value?.id, data })
   if (editingAccount.value) {
     await accountsStore.updateAccount(editingAccount.value.id, data)
   } else {
@@ -123,12 +125,14 @@ const handleFormSubmit = async (data: Partial<Account>) => {
   @apply flex justify-between items-start mb-6 gap-4;
 }
 
-.page-header svg {
+.page-header svg,
+.page-header [class*="lucide-icon"],
+.page-header i {
   @apply mr-2;
 }
 
 .page-header h1 {
-  @apply text-2xl font-bold m-0;
+  @apply text-[20px] font-semibold m-0;
   color: var(--text-primary);
 }
 

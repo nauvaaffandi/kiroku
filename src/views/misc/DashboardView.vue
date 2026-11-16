@@ -27,11 +27,17 @@ const transactionsStore = useTransactionsStore()
 const accountsStore = useAccountsStore()
 const categoriesStore = useCategoriesStore()
 
+console.log('[DashboardView] reading store data', {
+  transactionCount: transactionsStore.transactions?.length,
+  accountCount: accountsStore.accounts?.length,
+  categoryCount: categoriesStore.categories?.length
+})
+
 const recentTransactions = computed(() => (transactionsStore.transactions || []).slice(0, 5))
 </script>
 
 <style scoped>
 @reference "tailwindcss";
 .dashboard-page { @apply min-h-screen flex flex-col; }
-.dashboard-main { @apply flex-1 px-4 py-6 mx-auto w-full max-w-[1200px]; }
+.dashboard-main { @apply flex-1 px-4 py-4 w-full; }
 </style>

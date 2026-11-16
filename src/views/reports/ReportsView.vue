@@ -6,19 +6,12 @@
         <select v-model="selectedCurrency" @change="fetchSpending" class="currency-select">
           <option v-for="c of currencies" :key="c" :value="c">{{ c }}</option>
         </select>
-        <button @click="exportCSV" class="export-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          Export CSV
+        <button @click="exportCSV" class="export-btn" :aria-label="t('reports.exportCsv')">
+          <Download :size="18" stroke-width="1.75" aria-hidden="true" />
+          {{ t('reports.exportCsv') }}
         </button>
-        <button @click="exportExcel" class="export-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-          </svg>
+        <button @click="exportExcel" class="export-btn" :aria-label="t('reports.exportExcel')">
+          <FileText :size="18" stroke-width="1.75" aria-hidden="true" />
           {{ t('reports.exportExcel') }}
         </button>
       </div>
@@ -67,6 +60,7 @@ import ReportsSidebar from '@/components/reports/ReportsSidebar.vue'
 import ReportsSpendingPanel from '@/components/reports/ReportsSpendingPanel.vue'
 import ReportsTrendPanel from '@/components/reports/ReportsTrendPanel.vue'
 import CashflowTable from '@/components/charts/CashflowTable.vue'
+import { Download, FileText } from '@lucide/vue'
 
 const { t } = useI18n()
 const activeTab = ref('spending')
@@ -80,21 +74,40 @@ const {
 <style scoped>
 @reference "tailwindcss";
 
-.reports-page { @apply min-h-screen flex flex-col pb-20; }
-.reports-header { @apply p-4 bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800; }
-.reports-title { @apply text-xl font-bold text-zinc-900 dark:text-zinc-100; }
+.reports-page { @apply min-h-screen flex flex-col pb-20 w-full; }
+
+.reports-header { @apply p-4 border-b; background-color: var(--bg-card); border-color: var(--border-primary); }
+
+.reports-title { @apply text-[20px] font-semibold text-[var(--text-primary)]; }
+
 .toolbar { @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3; }
+
 .currency-select {
-  @apply w-full sm:w-auto px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500;
+  @apply w-full sm:w-auto px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-[10px] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)];
 }
+
 .export-btn {
-  @apply flex items-center justify-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-sm font-medium rounded-lg transition-colors cursor-pointer border-none;
+  @apply flex items-center justify-center gap-2 px-4 py-2 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] rounded-[10px] text-sm font-medium transition-colors duration-120 ease-out cursor-pointer border-none;
+  color: var(--text-primary);
 }
-.reports-body { @apply flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-4 p-4 flex-1; }
+
+.export-btn:hover {
+  @apply bg-[var(--bg-hover)];
+}
+
+.reports-body { @apply flex flex-col gap-4 p-4 flex-1; }
+
 .reports-main { @apply flex flex-col gap-4; }
-.tab-panel { @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm; }
-.tab-bar { @apply flex bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 overflow-x-auto; }
-.tab-btn { @apply flex-1 px-4 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2; }
-.tab-btn--active { @apply text-sky-500 border-sky-500 bg-white dark:bg-zinc-900; }
+
+.tab-panel {
+  @apply bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-[14px] overflow-hidden;
+}
+
+.tab-bar { @apply flex border-b overflow-x-auto; border-color: var(--border-primary); }
+
+.tab-btn { @apply flex-1 px-4 py-3 text-[0.75rem] font-medium whitespace-nowrap transition-colors duration-120 ease-out cursor-pointer border-b-2 border-transparent; color: var(--text-secondary); }
+
+.tab-btn--active { @apply text-[var(--accent)] border-b-2 border-[var(--accent)] bg-[var(--accent-light)]; }
+
 .tab-content { @apply p-4; }
 </style>

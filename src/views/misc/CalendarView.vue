@@ -18,7 +18,7 @@
     />
 
     <div v-else class="calendar-loading">
-      <div class="skeleton skeleton-card calendar-loading-card" />
+      <div class="skeleton skeleton-card calendar-loading-card"></div>
     </div>
 
     <DayDetailModalWidget
@@ -58,7 +58,7 @@ const calendarDays = computed(() => {
   const m = month.value
   const firstDayOfMonth = new Date(y, m - 1, 1)
   const lastDayOfMonth = new Date(y, m, 0)
-  
+
   const days: DisplayDay[] = []
   const todayStr = new Date().toISOString().split('T')[0]
 
@@ -165,10 +165,10 @@ onMounted(async () => {
 @reference "tailwindcss";
 
 .calendar-view {
-  @apply mx-auto p-4 flex flex-col gap-4 max-w-[80rem];
+  @apply mx-auto p-4 flex flex-col gap-4 w-full max-w-[480px];
 }
 
 .calendar-loading-card {
-  @apply h-[600px];
+  @apply min-h-[400px];
 }
 </style>

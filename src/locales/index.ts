@@ -79,7 +79,12 @@ export const useI18nStore = defineStore('i18n', () => {
     }
 
     if (params) {
-      return result.replace(/\{(\w+)\}/g, (_, k) => String(params[k] ?? ''))
+      let str = result
+      // double-brace first: {{count}} -> value
+      str = str.replace(/\{\{(\w+)\}\}/g, (_, k) => String(params[k] ?? ''))
+      // single-brace backward compatibility: {month} -> value
+      str = str.replace(/\{(\w+)\}/g, (_, k) => String(params[k] ?? ''))
+      return str
     }
 
     return result

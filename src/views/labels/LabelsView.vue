@@ -56,6 +56,7 @@ const showFormModal = ref(false)
 const editingLabel = ref<Label | null>(null)
 
 const fetchLabels = async () => {
+  console.log('[LabelsView] fetching labels')
   await labelsStore.fetchLabels()
 }
 
@@ -74,12 +75,15 @@ const handleEdit = (label: Label) => {
 }
 
 const handleDelete = async (id: string) => {
-  if (confirm('Delete this label?')) {
+  const label = labels.value.find(l => l.id === id)
+  if (confirm(t('labels.deleteConfirm', { name: label?.name ?? '' }))) {
+    if (import.meta.env.DEV) console.log('[LabelsView] deleting label', { id })
     await labelsStore.deleteLabel(id)
   }
 }
 
 const handleFormSubmit = async (data: CreateLabelRequest) => {
+  console.log('[LabelsView] saving label', { id: editingLabel.value?.id, data })
   if (editingLabel.value) {
     await labelsStore.updateLabel(editingLabel.value.id, data)
   } else {
@@ -95,7 +99,7 @@ const handleFormSubmit = async (data: CreateLabelRequest) => {
 @reference "tailwindcss";
 
 .labels-page {
-  @apply max-w-4xl mx-auto px-4 py-6;
+  @apply mx-auto p-4 py-6 w-full max-w-[480px];
 }
 
 .page-header {
@@ -107,7 +111,7 @@ const handleFormSubmit = async (data: CreateLabelRequest) => {
 }
 
 .page-header h1 {
-  @apply text-2xl font-bold m-0;
+  @apply text-[20px] font-semibold m-0;
   color: var(--text-primary);
 }
 

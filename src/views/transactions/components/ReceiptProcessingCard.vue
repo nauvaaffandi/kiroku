@@ -13,7 +13,7 @@
 
     <div class="events-timeline">
       <div v-for="ev in events" :key="ev.id" :class="['timeline-item', ev.status]">
-        <div class="timeline-dot"></div>
+        <div class="timeline-dot" aria-hidden="true"></div>
         <div class="timeline-content">
           <span class="timeline-message">{{ ev.message || ev.event_type }}</span>
           <span class="timeline-time">{{ new Date(ev.created_at).toLocaleTimeString() }}</span>
@@ -51,62 +51,40 @@ const formatSize = (bytes: number) => {
 
 <style scoped>
 @reference "tailwindcss";
+
 .processing-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 2rem;
-  box-shadow: var(--shadow);
+  @apply bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-[14px] p-6;
 }
 
 .metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin: 1.5rem 0;
+  @apply grid grid-cols-2 gap-4 my-6;
 }
 
 .metric-item {
-  background: var(--color-neutral-100);
-  padding: 1rem;
-  border-radius: var(--radius-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @apply bg-[var(--bg-tertiary)] p-4 rounded-[6px] flex flex-col gap-1;
 }
 
 .metric-item .label {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  @apply text-[0.75rem] text-[var(--text-muted)];
 }
 
 .metric-item .value {
-  font-size: 1.125rem;
-  font-weight: 600;
+  @apply text-[1.125rem] font-semibold text-[var(--text-primary)];
 }
 
 .events-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  border-left: 2px solid var(--color-border);
-  padding-left: 1rem;
+  @apply flex flex-col gap-3 mt-6 border-l border-[var(--border-primary)] pl-4;
 }
 
 .timeline-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.875rem;
+  @apply flex items-center justify-between text-sm;
 }
 
-.timeline-item.success { color: #16a34a; }
-.timeline-item.warning { color: #f59e0b; }
-.timeline-item.error { color: #dc2626; }
+.timeline-item.success { @apply text-[var(--success)]; }
+.timeline-item.warning { @apply text-[var(--warning)]; }
+.timeline-item.error { @apply text-[var(--error)]; }
 
 .timeline-time {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  @apply text-[0.75rem] text-[var(--text-muted)];
 }
 </style>

@@ -4,17 +4,20 @@
       <router-link
         :to="item.path"
         :class="['bottom-nav-item', { active: isActive(item.path) }]"
+        :aria-label="t(item.labelKey)"
       >
         <component :is="item.icon" class="bottom-nav-icon" />
-        <span class="bottom-nav-label">{{ item.label }}</span>
+        <span class="bottom-nav-label">{{ t(item.labelKey) }}</span>
       </router-link>
 
-      <button v-if="index === 1" @click="handleFABClick" class="bottom-add-btn" aria-label="Add transaction">
+      <button
+        v-if="index === 1"
+        @click="handleFABClick"
+        class="bottom-add-btn"
+        :aria-label="t('common.addTransaction')"
+      >
         <div class="bottom-add-circle">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
+          <Plus class="bottom-add-icon" />
         </div>
       </button>
     </template>
@@ -23,6 +26,8 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from '@/locales'
+import { Plus } from '@lucide/vue'
 import DashboardIcon from '@/components/icons/DashboardIcon.vue'
 import TransactionsIcon from '@/components/icons/TransactionsIcon.vue'
 import AccountsIcon from '@/components/icons/AccountsIcon.vue'
@@ -30,15 +35,20 @@ import ReportsIcon from '@/components/icons/ReportsIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const navItems = [
-  { path: '/', label: 'Home', icon: DashboardIcon },
-  { path: '/transactions', label: 'Txns', icon: TransactionsIcon },
-  { path: '/accounts', label: 'Accts', icon: AccountsIcon },
-  { path: '/reports', label: 'Reports', icon: ReportsIcon }
+  { path: '/', labelKey: 'nav.dashboard', icon: DashboardIcon },
+  { path: '/transactions', labelKey: 'nav.transactions', icon: TransactionsIcon },
+  { path: '/accounts', labelKey: 'nav.accounts', icon: AccountsIcon },
+  { path: '/reports', labelKey: 'nav.reports', icon: ReportsIcon }
 ]
 
-const isActive = (path: string) => {
+const isActive = (path: string): boolean => {
+  // '/' must match exactly (it matches every route under startsWith)
+  if (path === '/') {
+    return route.path === '/'
+  }
   return route.path.startsWith(path)
 }
 
@@ -56,6 +66,7 @@ const handleFABClick = () => {
 
 <style scoped>
 @reference "tailwindcss";
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -76,7 +87,8 @@ const handleFABClick = () => {
 }
 
 .bottom-nav-item.active {
-  color: var(--accent);
+  color: var(--text-primary);
+  border-top: 2px solid var(--accent);
 }
 
 .bottom-nav-icon {
@@ -86,21 +98,25 @@ const handleFABClick = () => {
 }
 
 .bottom-nav-label {
-  font-size: 0.6875rem;
-  font-weight: 600;
+  @apply text-[11px] font-medium;
 }
 
 .bottom-add-btn {
   position: static;
-  @apply flex items-center justify-center flex-1 h-full border-0 bg-transparent cursor-pointer;
+  @apply flex items-center justify-center border-0 bg-transparent cursor-pointer;
 }
 
 .bottom-add-circle {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background-color: var(--accent);
-  color: white;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
   @apply flex items-center justify-center shadow-md;
+}
+
+.bottom-add-icon {
+  width: 1.125rem;
+  height: 1.125rem;
 }
 </style>

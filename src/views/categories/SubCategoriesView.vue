@@ -2,7 +2,7 @@
   <div class="sub-categories-page">
     <header class="page-header">
       <button class="back-button" @click="goBack" :aria-label="t('common.back')">
-        <ChevronLeft :size="20" />
+        <ChevronLeft :size="20" stroke-width="1.75" aria-hidden="true" />
       </button>
     </header>
 
@@ -10,14 +10,14 @@
       <h1 class="parent-title">{{ t('categories.subcategoriesTitle', { name: parentName }) }}</h1>
       <div class="parent-actions">
         <BaseButton size="sm" @click="openCreateModal">
-          <Plus :size="16" />
+          <Plus :size="16" stroke-width="1.75" aria-hidden="true" />
           {{ t('categories.addChild') }}
         </BaseButton>
-        <button type="button" class="action-btn" @click="handleEdit(parentCategory!)">
-          <Pencil :size="16" />
+        <button type="button" class="action-btn" @click="handleEdit(parentCategory!)" :aria-label="t('categories.edit')">
+          <Pencil :size="16" stroke-width="1.75" aria-hidden="true" />
         </button>
-        <button type="button" class="action-btn danger" @click="handleDelete(parentCategory!.id)">
-          <Trash2 :size="16" />
+        <button type="button" class="action-btn danger" @click="handleDelete(parentCategory!.id)" :aria-label="t('categories.delete')">
+          <Trash2 :size="16" stroke-width="1.75" aria-hidden="true" />
         </button>
       </div>
     </section>
@@ -108,6 +108,7 @@ const handleDelete = async (id: string) => {
 }
 
 const handleFormSubmit = async (data: Partial<Category>) => {
+  console.log('[SubCategoriesView] saving category', { id: editingCategory.value?.id, data })
   if (editingCategory.value) {
     await categoriesStore.updateCategory(editingCategory.value.id, data)
   } else if (parentCategory.value) {
@@ -123,7 +124,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 @reference "tailwindcss";
 
 .sub-categories-page {
-  @apply px-4 py-6 w-full;
+  @apply px-4 py-6 w-full max-w-[480px] mx-auto;
 }
 
 .page-header {
@@ -132,7 +133,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 }
 
 .back-button {
-  @apply w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0;
+  @apply w-[44px] h-[44px] rounded-[10px] flex items-center justify-center flex-shrink-0;
   color: var(--text-muted);
   background-color: transparent;
   border: none;
@@ -145,20 +146,19 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 }
 
 .back-button:focus-visible {
-  @apply ring-2 ring-offset-2 rounded-lg;
+  @apply ring-2 ring-offset-2 rounded-[10px];
   ring-offset-color: var(--bg-primary);
   ring-color: var(--accent);
 }
 
 .parent-action-bar {
-  @apply mb-4;
-  padding: 1rem;
+  @apply mb-4 p-4;
   background-color: var(--bg-card);
   border-bottom: 1px solid var(--border-primary);
 }
 
 .parent-title {
-  @apply text-base font-bold m-0 leading-snug text-left max-w-md;
+  @apply text-base font-semibold m-0 leading-snug text-left max-w-md;
   color: var(--text-primary);
   margin-bottom: 0.75rem;
 }
@@ -168,7 +168,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 }
 
 .action-btn {
-  @apply p-2 rounded-lg transition-colors flex items-center justify-center bg-transparent border;
+  @apply p-2 rounded-[10px] transition-colors duration-120 ease-out flex items-center justify-center bg-transparent border;
   color: var(--text-muted);
   background-color: var(--bg-hover);
   border-color: var(--border-secondary);
@@ -189,7 +189,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
 }
 
 .action-btn:focus-visible {
-  @apply ring-2 ring-offset-2 rounded-lg;
+  @apply ring-2 ring-offset-2 rounded-[10px];
   ring-offset-color: var(--bg-primary);
   ring-color: var(--accent);
 }
@@ -202,7 +202,7 @@ const handleFormSubmit = async (data: Partial<Category>) => {
   background-color: var(--bg-card);
   border: 1px dashed var(--border-primary);
   color: var(--text-muted);
-  @apply text-center py-12 px-6 rounded-xl mt-6;
+  @apply text-center py-12 px-6 rounded-[14px] mt-6;
 }
 
 .empty-state p {

@@ -156,6 +156,7 @@ export default {
     title: 'Accounts',
     subtitle: 'Manage all your accounts and balances',
     addAccount: 'Add Account',
+    deleteConfirm: 'Delete this account?',
     balance: 'Balance',
     type: 'Type',
     archive: 'Archive',
@@ -516,6 +517,14 @@ budgets: {
     database: 'Database',
     auth: 'Auth',
     architecture: 'Architecture',
+    stackFrontend: 'Vue 3 + TypeScript + Vite',
+    stackUi: 'Tailwind CSS v4',
+    stackState: 'Pinia',
+    stackChart: 'ECharts',
+    stackBackend: 'Local SQLite (offline-first)',
+    stackDatabase: 'SQLite (WAL mode)',
+    stackAuth: 'Single user (no auth)',
+    stackArch: 'Single-page frontend',
     acknowledgments: 'Acknowledgments',
     acknowledgmentsDesc: 'Built with open source technologies. Thanks to all contributors and the open source community.'
   },
@@ -717,11 +726,72 @@ budgets: {
     subtitle: 'Manage your recurring payments and income',
     addScheduled: 'Add Scheduled',
     noScheduledTransactions: 'No scheduled transactions yet',
-    addScheduledTransaction: 'Add Scheduled Transaction'
+    addScheduledTransaction: 'Add Scheduled Transaction',
+    deleteConfirm: 'Delete this scheduled transaction?'
   },
   colorPicker: {
     open: 'Open color choices',
     options: 'Color choices',
     select: 'Select color {{color}}'
+  },
+  receipt: {
+    scanDesc: 'Scan or upload a receipt to create a transaction',
+    backToTransactions: 'Back to transactions',
+    processingTitle: 'Processing receipt',
+    processingDesc: 'Analyzing the image. Please wait.',
+    originalSize: 'Original size',
+    compressedSize: 'Compressed size',
+    reviewTitle: 'Review transaction',
+    reviewDesc: 'Check the details before saving',
+    dateTime: 'Date & time',
+    payeeMerchant: 'Payee / merchant',
+    merchantPlaceholder: 'Merchant name',
+    discardScan: 'Discard scan',
+    confirmSave: 'Confirm & save',
+    compressing: 'Compressing image',
+    prepared: 'Prepared for processing',
+    processFailed: 'Failed to process receipt',
+    offlineUnavailable: 'OCR receipt processing not available offline',
+    offlineDraft: 'Transaction created (offline draft)'
+  },
+  map: {
+    pickLocation: 'Pick Location',
+    hint: 'Click on the map to set location coordinates.'
+  },
+  stat: {
+    totalBalance: 'Total Balance',
+    monthlyIncome: 'Monthly Income',
+    monthlyExpense: 'Monthly Expense',
+    amountHidden: '(amount hidden)'
+  },
+  badge: {
+    pending: 'Pending',
+    recurring: 'Recurring',
+    archived: 'Archived'
+  },
+  emptyState: {
+    noTransactions: 'No transactions yet',
+    noAccounts: 'No accounts yet',
+    noGoals: 'No goals yet',
+    noBudgets: 'No budgets yet',
+    noLabels: 'No labels yet'
+  },
+  bottomSheet: {
+    close: 'Close'
+  },
+  transactionRow: {
+    edit: 'Edit transaction',
+    delete: 'Delete transaction',
+    pending: 'Pending',
+    income: 'Income',
+    expense: 'Expense',
+    transfer: 'Transfer'
+  },
+  chart: {
+    period: 'Period',
+    income: 'Income',
+    expense: 'Expense',
+    balance: 'Balance',
+    thirtyDays: 'Last 30 Days'
   }
 }

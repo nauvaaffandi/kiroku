@@ -45,6 +45,8 @@ const { t } = useI18n()
 const accountsStore = useAccountsStore()
 const settingsStore = useSettingsStore()
 
+console.log('[DashboardAccounts] reading accounts from store', { accountCount: accountsStore.accounts?.length })
+
 const accounts = computed(() => accountsStore.accounts)
 const isHideAmounts = computed(() => settingsStore.isHideAmounts)
 const numberFormat = computed(() => settingsStore.numberFormat)
@@ -52,10 +54,12 @@ const formatAccountBalance = (balance: number, currency: string): string => {
   const symbol = getCurrencySymbol(currency)
   if (isHideAmounts.value) {
     const sign = balance < 0 ? '−' : ''
-    return `${sign}${symbol}*****`
+    if (import.meta.env.DEV) console.log('[DashboardAccounts] formatting balance (hidden)', { balance, currency, sign })
+    return `${sign}${symbol}••••`
   }
   const formatted = new Intl.NumberFormat(numberFormat.value).format(Math.abs(balance))
   const sign = balance < 0 ? '−' : ''
+  if (import.meta.env.DEV) console.log('[DashboardAccounts] formatting balance', { balance, currency, formatted, sign })
   return `${sign}${symbol}${formatted}`
 }
 
@@ -75,25 +79,69 @@ const tAccountType = (type: string): string => {
 
 <style scoped>
 @reference "tailwindcss";
-.dashboard-accounts { @apply rounded-[14px] border p-6 mb-6; background-color: var(--bg-card); border-color: var(--border-primary); color: var(--text-primary); }
-.accounts-header { @apply flex items-center justify-between mb-4; }
-.view-all { @apply text-xs font-medium no-underline; color: var(--accent); }
-.view-all:hover { color: var(--accent-hover); text-decoration: underline; }
-.accounts-empty { @apply text-center py-8; }
-.accounts-empty-text { @apply text-sm mb-4 m-0; color: var(--text-muted); }
-.accounts-empty-link { @apply text-sm font-medium no-underline; color: var(--accent); }
-.accounts-empty-link:hover { color: var(--accent-hover); text-decoration: underline; }
-.accounts-list { @apply flex flex-col; }
-.account-row { @apply flex items-center py-3 gap-3; border-bottom: 1px solid var(--border-primary); }
-.account-row:last-child { border-bottom: none; }
-.account-row.is-archived { opacity: 0.6; }
-.account-info { @apply flex items-center gap-2 flex-1 min-w-0; }
-.account-dot { @apply w-2 h-2 rounded-full shrink-0; }
-.account-details { @apply flex flex-col min-w-0; }
-.account-name { @apply text-sm font-medium truncate; color: var(--text-primary); }
-.account-type { @apply text-xs truncate; color: var(--text-muted); }
-.account-archived { @apply text-[10px] font-medium ml-1; color: var(--error); }
-.account-balance { @apply flex flex-col items-end shrink-0; }
-.account-amount { @apply text-sm font-semibold tabular-nums; color: var(--text-primary); }
-.account-currency { @apply text-xs; color: var(--text-muted); }
+
+.dashboard-accounts {
+  @apply rounded-[14px] border p-6 mb-6 bg-[var(--bg-card)] border-[var(--border-primary)] text-[var(--text-primary)];
+}
+.accounts-header {
+  @apply flex items-center justify-between mb-4;
+}
+.view-all {
+  @apply text-xs font-medium no-underline text-[var(--accent)];
+}
+.view-all:hover {
+  @apply text-[var(--accent-hover)] underline;
+}
+.accounts-empty {
+  @apply text-center py-8;
+}
+.accounts-empty-text {
+  @apply text-sm mb-4 m-0 text-[var(--text-muted)];
+}
+.accounts-empty-link {
+  @apply text-sm font-medium no-underline text-[var(--accent)];
+}
+.accounts-empty-link:hover {
+  @apply text-[var(--accent-hover)] underline;
+}
+.accounts-list {
+  @apply flex flex-col;
+}
+.account-row {
+  @apply flex items-center py-3 gap-3;
+  border-bottom: 1px solid var(--border-primary);
+}
+.account-row:last-child {
+  border-bottom: none;
+}
+.account-row.is-archived {
+  opacity: 0.6;
+}
+.account-info {
+  @apply flex items-center gap-2 flex-1 min-w-0;
+}
+.account-dot {
+  @apply w-2 h-2 rounded-full shrink-0;
+}
+.account-details {
+  @apply flex flex-col min-w-0;
+}
+.account-name {
+  @apply text-sm font-medium truncate text-[var(--text-primary)];
+}
+.account-type {
+  @apply text-xs truncate text-[var(--text-muted)];
+}
+.account-archived {
+  @apply text-[10px] font-medium ml-1 text-[var(--text-muted)];
+}
+.account-balance {
+  @apply flex flex-col items-end shrink-0;
+}
+.account-amount {
+  @apply text-sm font-semibold tabular-nums text-right text-[var(--text-primary)];
+}
+.account-currency {
+  @apply text-xs text-[var(--text-muted)];
+}
 </style>

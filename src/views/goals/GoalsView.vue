@@ -6,13 +6,10 @@
         <p class="page-subtitle">{{ t('goals.subtitle') }}</p>
       </div>
       <div class="header-actions">
-        <button class="btn-primary" @click="openCreateDialog">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
+        <BaseButton @click="openCreateDialog">
+          <Plus :size="16" stroke-width="1.75" aria-hidden="true" />
           {{ t('goals.addGoal') }}
-        </button>
+        </BaseButton>
       </div>
     </div>
 
@@ -25,21 +22,16 @@
       />
     </div>
 
-    <div class="goals-empty" v-if="!loading && goals.length === 0">
-      <div class="empty-state">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-          <path d="M2 17l10 5 10-5"></path>
-          <path d="M2 12l10 5 10-5"></path>
-        </svg>
-        <h3>{{ t('goals.emptyTitle') }}</h3>
-        <p>{{ t('goals.emptyDesc') }}</p>
-        <button class="btn-primary" @click="openCreateDialog">{{ t('goals.setGoal') }}</button>
-      </div>
+    <div v-if="!loading && goals.length === 0" class="goals-empty">
+      <EmptyState
+        :message="t('goals.emptyTitle')"
+        :action="t('goals.setGoal')"
+        @action="openCreateDialog"
+      />
     </div>
 
     <div v-else-if="loading" class="goals-grid">
-      <div class="skeleton skeleton-card" v-for="i in 4" :key="i" />
+      <div class="skeleton skeleton-card" v-for="i in 4" :key="i"></div>
     </div>
 
     <GoalDetailModalWidget
@@ -63,6 +55,8 @@ import { useI18n } from '@/locales'
 import GoalCardWidget from '@/widgets/goals/GoalCardWidget.vue'
 import GoalDetailModalWidget from '@/widgets/goals/GoalDetailModalWidget.vue'
 import GoalCreateModal from '@/widgets/goals/GoalCreateModal.vue'
+import { EmptyState } from '@/components/ui'
+import { Plus } from '@lucide/vue'
 import type { Goal } from '@/types/goal'
 
 interface GoalItem extends Goal {
@@ -81,6 +75,7 @@ const goals = ref<GoalItem[]>([])
 
 async function fetchData() {
   loading.value = true
+  console.log('[GoalsView] fetching goals')
   try {
     const rows = await localDb.list<any>('goal')
     goals.value = rows.map((g: any) => {
@@ -138,7 +133,7 @@ watchEffect(() => {
 @reference "tailwindcss";
 
 .goals-view {
-  @apply flex flex-col gap-4 p-6;
+  @apply flex flex-col gap-4 p-4 w-full max-w-[480px] mx-auto;
 }
 
 .page-header {
@@ -147,7 +142,7 @@ watchEffect(() => {
 }
 
 .header-left h1 {
-  @apply text-xl font-semibold;
+  @apply text-[20px] font-semibold;
   color: var(--text-primary);
 }
 
@@ -160,47 +155,13 @@ watchEffect(() => {
   @apply flex gap-2 items-center;
 }
 
-.btn-primary {
-  @apply inline-flex items-center gap-2 px-4 py-2 rounded-sm font-medium text-sm no-underline;
-  background-color: var(--accent);
-  color: var(--text-inverse);
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.btn-primary:hover {
-  @apply opacity-90;
-}
-
 .goals-grid {
   @apply grid gap-4;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .goals-empty {
   @apply col-span-full;
-}
-
-.empty-state {
-  @apply text-center p-12 rounded-xl;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  color: var(--text-secondary);
-}
-
-.empty-state svg {
-  @apply mb-4;
-  color: var(--text-muted);
-}
-
-.empty-state h3 {
-  @apply text-lg font-semibold mb-2;
-  color: var(--text-primary);
-}
-
-.empty-state p {
-  @apply text-sm mb-6 max-w-[300px] mx-auto;
 }
 
 .skeleton-card {
