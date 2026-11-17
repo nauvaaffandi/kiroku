@@ -111,13 +111,14 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `src/composables/` — reusable composables + `index.ts` barrel.
   - `src/types/` — TypeScript types + `index.ts` + `pwa.d.ts`.
   - `src/utils/` — `amountDisplay.ts`, `categoryName.ts`, `exportExcel.ts`.
-  - `src/api/` — `client.ts` (shared Axios), `notifications.ts`, `push.ts`, `receipts.ts`.
+  - `src/api/` — `client.ts` (shared Axios only).
   - `src/locales/` — `en.ts`, `ja.ts`, `id.ts`, `index.ts` (custom Pinia-based i18n store, `useI18n()`).
 - **Imports:** use the `@/` alias for `src/`.
 - **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/storage/repository.ts`.
 - **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through Pinia stores → `src/storage/repository.ts` (local SQLite).
 - **i18n:** use `const { t } = useI18n()` from `@/locales`. Add every new translation key to all three locale files: `en.ts`, `ja.ts`, and `id.ts`. English (`en`) is the fallback.
 - **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
+- **Utilities:** prefer `@vueuse` (already a dependency) for reusable utility composition (debounce, pagination, throttling, etc.) before writing custom composables. Check `@vueuse/core` exports first; only add a custom composable when `@vueuse` cannot cover the need.
 - **Money:** format values with `Intl.NumberFormat` using the user's number-format settings. Route displayed amounts through `utils/amountDisplay` so the **hide amounts** setting remains effective. Right-align monetary values and use tabular numerals.
 - **Dates:** use `dayjs`. Respect the `date_format` and `week_start` settings.
 - **Theme:** read and update theme state through `useSettingsStore` / `useUIStore`. Never manipulate `data-theme` directly elsewhere.
