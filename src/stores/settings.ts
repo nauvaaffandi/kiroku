@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import JSZip from 'jszip'
 import { localDb, type EntityKind } from '@/storage/repository'
+import { useSecureStorage, SECURE_KEYS } from '@/composables/useSecureStorage'
 import type { Settings, Theme, Language, DateFormat, NumberFormat, WeekStart } from '@/types'
 
 const BACKUP_KINDS: readonly string[] = [
@@ -18,12 +19,19 @@ const defaultSettings: Settings = {
   number_format: 'ja-JP',
   week_start: 1,
   totp_enabled: false,
-  hide_amounts: false
+  hide_amounts: false,
+  ocr_enabled: false,
+  ocr_api_key: '',
+  ai_provider_enabled: false,
+  ai_provider_url: '',
+  ai_model: '',
+  ai_api_key: ''
 }
 
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<Settings>({ ...defaultSettings })
   const loading = ref(false)
+  const secure = useSecureStorage()
 
   const theme = computed<Theme>(() => settings.value.theme || 'system')
   const language = computed<Language>(() => settings.value.language || 'ja')
@@ -36,12 +44,36 @@ export const useSettingsStore = defineStore('settings', () => {
   })
   const isTotpEnabled = computed(() => settings.value.totp_enabled === true)
   const isHideAmounts = computed(() => settings.value.hide_amounts === true)
+  const isOcrEnabled = computed(() => settings.value.ocr_enabled === true)
+  const isAiProviderEnabled = computed(() => settings.value.ai_provider_enabled === true)
 
   const fetchSettings = async () => {
+    console.log('[Settings] fetchSettings')
     loading.value = true
     try {
       const stored = await localDb.get<Settings>('setting', SETTINGS_ID)
-      if (stored) settings.value = { ...defaultSettings, ...stored }
+      console.log('[Settings] settings loaded', stored ? 'found' : 'empty')
+      if (stored) {
+        const { migrated, redactedKeys } = await secure.migratePlaintextKeys(stored)
+        if (migrated) {
+          const payload = { ...stored }
+          for (const key of redactedKeys) {
+            payload[key as keyof Settings] = ''
+          }
+          // Keys whose secure write failed (returned by migratePlaintextKeys as failedKeys)
+          // are intentionally left in SQLite plaintext so they are not lost.
+          await localDb.put('setting', SETTINGS_ID, payload)
+          console.log('[Settings] redacted plaintext API keys from SQLite')
+        }
+        settings.value = { ...defaultSettings, ...stored } as Settings
+      } else {
+        settings.value = { ...defaultSettings }
+      }
+      // Secure storage wins over (possibly redacted/empty) SQLite values.
+      const secureOcr = await secure.getSecure('ocr_api_key')
+      const secureAi = await secure.getSecure('ai_api_key')
+      if (secureOcr) settings.value.ocr_api_key = secureOcr
+      if (secureAi) settings.value.ai_api_key = secureAi
       applyTheme(settings.value.theme || 'system')
     } catch (e) {
       console.error('Failed to load settings:', e)
@@ -51,9 +83,27 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   const updateSettings = async (newSettings: Partial<Settings>) => {
+    console.log('[Settings] updateSettings')
     try {
-      settings.value = { ...settings.value, ...newSettings } as Settings
-      await localDb.put('setting', SETTINGS_ID, settings.value)
+      const next = { ...settings.value, ...newSettings } as Settings
+      // API keys live in secure storage only; redact them from the SQLite payload.
+      const payload = { ...next }
+      for (const key of SECURE_KEYS) {
+        if (key in newSettings) {
+          const value = next[key] as string
+          if (!value) continue
+          const ok = await secure.setSecure(key as string, value)
+          if (ok) {
+            payload[key] = ''
+          } else {
+            console.log('[Settings] setSecure failed')
+            payload[key] = value
+          }
+        }
+      }
+      settings.value = next
+      await localDb.put('setting', SETTINGS_ID, payload)
+      console.log('[Settings] settings updated')
       if (newSettings.theme) applyTheme(newSettings.theme)
       return true
     } catch (e) {
@@ -117,6 +167,8 @@ export const useSettingsStore = defineStore('settings', () => {
     weekStart,
     isTotpEnabled,
     isHideAmounts,
+    isOcrEnabled,
+    isAiProviderEnabled,
     fetchSettings,
     updateSettings,
     getSetting,

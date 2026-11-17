@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      'capacitor-secure-storage-plugin': path.resolve(
+        __dirname,
+        './src/stubs/secure-storage-plugin.ts'
+      )
     }
   },
   test: {

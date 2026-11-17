@@ -450,7 +450,16 @@ budgets: {
     disableBiometric: 'Disable',
     biometricNotSupported: 'Biometric authentication is not supported on this device.',
     biometricEnabled: 'Fingerprint enabled on this device.',
-    biometricDisabled: 'Fingerprint login disabled.'
+    biometricDisabled: 'Fingerprint login disabled.',
+    ocrTitle: 'OCR & Receipt Scanning',
+    ocrToggle: 'Enable OCR receipt scanning',
+    ocrApiKey: 'OCR API key',
+    aiTitle: 'AI Provider',
+    aiToggle: 'Enable AI provider',
+    aiProviderUrl: 'AI provider URL',
+    aiModel: 'AI model',
+    aiApiKey: 'AI API key',
+    aiLocalOnlyWarning: 'Stored locally only. No backend configured. OCR/AI calls not wired.'
   },
   notifications: {
     saved: 'Saved successfully',

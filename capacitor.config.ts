@@ -8,6 +8,9 @@ const config: CapacitorConfig = {
     url: 'http://192.168.0.160:5173',
     cleartext: true,
   },
+  plugins: {
+    SecureStoragePlugin: {}
+  }
 };
 
 export default config;

@@ -14,6 +14,16 @@ export interface Settings {
   week_start: WeekStart
   totp_enabled: boolean
   hide_amounts: boolean
+  ocr_enabled: boolean
+  // Populated from secure storage (useSecureStorage), not the SQLite payload.
+  // The SQLite payload stores '' for this field; the live value lives in encrypted at-rest storage.
+  ocr_api_key: string
+  ai_provider_enabled: boolean
+  ai_provider_url: string
+  ai_model: string
+  // Populated from secure storage (useSecureStorage), not the SQLite payload.
+  // The SQLite payload stores '' for this field; the live value lives in encrypted at-rest storage.
+  ai_api_key: string
   [key: string]: string | boolean | number | undefined
 }
 
@@ -27,6 +37,9 @@ export interface SettingsState {
   numberFormat: NumberFormat
   weekStart: WeekStart
   isTotpEnabled: boolean
+  isHideAmounts: boolean
+  isOcrEnabled: boolean
+  isAiProviderEnabled: boolean
 }
 
 export interface UpdateSettingsRequest {

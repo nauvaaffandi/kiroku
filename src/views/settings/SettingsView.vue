@@ -15,6 +15,8 @@
       @base-currency-change="(v: any) => (settingsStore.settings.base_currency = v)" />
 
     <SettingsDataSection @download-backup="createBackup" @clear-data="confirmClearData" />
+
+    <SettingsOCRAISection />
   </div>
 </template>
 
@@ -28,6 +30,7 @@ import type { WeekStart } from '@/types'
 import SettingsThemeSection from '@/components/settings/SettingsThemeSection.vue'
 import SettingsCurrencyLanguageSection from '@/components/settings/SettingsCurrencyLanguageSection.vue'
 import SettingsDataSection from '@/components/settings/SettingsDataSection.vue'
+import SettingsOCRAISection from '@/components/settings/SettingsOCRAISection.vue'
 
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
