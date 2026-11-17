@@ -45,7 +45,7 @@ All commands run from the repo root (there is no `frontend/` or `backend/` direc
 | Layer | Technology |
 |---|---|
 | UI framework | Vue 3 (`<script setup lang="ts">`) |
-| State | Pinia stores (14 stores) |
+| State | Pinia stores (13 stores) |
 | Routing | Vue Router |
 | Styling | Tailwind CSS v4, consumed only via `<style scoped>` blocks with `@reference "tailwindcss";` and `@apply` |
 | Build / dev server | Vite |
@@ -67,7 +67,7 @@ See `package.json` for exact versions.
 
 ## Architecture
 
-There is **no backend**. Data reads and writes go through Pinia stores → `src/storage/repository.ts` (local SQLite via Capacitor). `src/api/client.ts` creates a shared Axios instance with `baseURL: ''`; `initApiClient()` and `refreshBackendUrl()` both return `''`. Do not hard-code a host and do not expect `/api/v1` endpoints.
+There is **no backend**. Data reads and writes go through Pinia stores → `src/storage/repository.ts` (local SQLite via Capacitor). `src/api/client.ts` creates a shared Axios instance with `baseURL: ''`. Do not hard-code a host and do not expect `/api/v1` endpoints.
 
 Data layer (`src/storage/repository.ts`):
 - `LocalDatabase` opens the `kiroku` SQLite database (`no-encryption`), runs migrations from `src/storage/schema.ts`, and ensures an `entities` table.

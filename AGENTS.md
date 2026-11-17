@@ -106,7 +106,7 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `components/settings/` — settings UI.
   - `components/shared/` — shared access modals.
   - `src/widgets/` — self-contained, reusable UI compositions (NOT `components/widgets/`). Each widget folder has an `index.ts` entry point. Barrel at `src/widgets/index.ts`. Widgets are **not** feature-based or domain-based containers.
-  - `src/stores/` — Pinia setup stores (14 stores). Components call stores; stores call the API or local storage.
+  - `src/stores/` — Pinia setup stores (13 stores). Components call stores; stores call the API or local storage.
   - `src/storage/` — local SQLite via Capacitor (`LocalDatabase`, `localDb`). Offline-first data layer.
   - `src/composables/` — reusable composables + `index.ts` barrel.
   - `src/types/` — TypeScript types + `index.ts` + `pwa.d.ts`.
@@ -115,7 +115,7 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `src/locales/` — `en.ts`, `ja.ts`, `id.ts`, `index.ts` (custom Pinia-based i18n store, `useI18n()`).
 - **Imports:** use the `@/` alias for `src/`.
 - **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/storage/repository.ts`.
-- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`, `initApiClient()` and `refreshBackendUrl()` both return `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through Pinia stores → `src/storage/repository.ts` (local SQLite).
+- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through Pinia stores → `src/storage/repository.ts` (local SQLite).
 - **i18n:** use `const { t } = useI18n()` from `@/locales`. Add every new translation key to all three locale files: `en.ts`, `ja.ts`, and `id.ts`. English (`en`) is the fallback.
 - **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
 - **Money:** format values with `Intl.NumberFormat` using the user's number-format settings. Route displayed amounts through `utils/amountDisplay` so the **hide amounts** setting remains effective. Right-align monetary values and use tabular numerals.

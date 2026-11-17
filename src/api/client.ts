@@ -8,12 +8,3 @@ export const api = axios.create({
     'Content-Type': 'application/json'
   }
 })
-
-export const initApiClient = async () => {
-  // No remote backend in offline app.
-  return ''
-}
-
-export const refreshBackendUrl = async () => {
-  return ''
-}
