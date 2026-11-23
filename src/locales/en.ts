@@ -95,6 +95,10 @@ export default {
     Login: 'Login',
     notifications: 'Notifications'
   },
+  sidebar: {
+    expand: 'Expand sidebar',
+    collapse: 'Collapse sidebar',
+  },
   dashboard: {
     title: 'Dashboard',
     summary: 'Monthly Summary',

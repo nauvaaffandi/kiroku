@@ -68,5 +68,6 @@ archieve/
 skill-observations/
 .repomixignore
 repomix.config.json
+coverage/
 
 .docs/

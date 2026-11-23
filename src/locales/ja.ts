@@ -95,6 +95,10 @@ export default {
     Login: 'ログイン',
     notifications: '通知'
   },
+  sidebar: {
+    expand: 'サイドバーを展開',
+    collapse: 'サイドバーを折りたたむ',
+  },
   dashboard: {
     title: 'ダッシュボード',
     summary: '月次サマリー',

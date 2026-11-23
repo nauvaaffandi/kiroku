@@ -1,14 +1,16 @@
 <template>
-  <nav class="sidebar-nav">
+  <nav class="sidebar-nav" :class="{ 'sidebar-nav--collapsed': collapsed }">
     <ul class="nav-list">
       <li v-for="item in mainNavItems" :key="item.path">
         <router-link
           :to="item.path"
           :class="['nav-link', { active: isActive(item.path) }]"
+          :title="collapsed ? item.label : undefined"
+          :aria-label="collapsed ? item.label : undefined"
           @click="closeMobileSidebar"
         >
           <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
-          <span>{{ item.label }}</span>
+          <span v-if="!collapsed">{{ item.label }}</span>
         </router-link>
       </li>
 
@@ -16,9 +18,12 @@
         <button
           @click="toggleAnalytics"
           :class="['nav-link nav-group-toggle', { active: isAnalyticsActive && !isAnalyticsOpen }]"
+          :title="collapsed ? t('nav.analytics') : undefined"
+          :aria-label="collapsed ? t('nav.analytics') : undefined"
+          :aria-expanded="isAnalyticsOpen"
         >
           <AnalyticsIcon class="nav-icon nav-icon-analytics" />
-          <span class="nav-label">{{ t('nav.analytics') }}</span>
+          <span class="nav-label" v-if="!collapsed">{{ t('nav.analytics') }}</span>
           <svg
             width="16"
             height="16"
@@ -35,13 +40,15 @@
         <div class="expandable-wrapper" :style="{ height: isAnalyticsOpen ? analyticsHeight + 'px' : '0px' }">
           <ul class="sub-nav-list" ref="subNavRef">
             <li v-for="sub in analyticsItems" :key="sub.path">
-              <router-link
-                :to="sub.path"
-                :class="['sub-nav-link', { active: route.path === sub.path }]"
-                @click="closeMobileSidebar"
-              >
-                <component :is="(sub as any).icon" class="sub-nav-icon" v-if="(sub as any).icon" :style="{ color: sub.color }" />
-                <span>{{ sub.label }}</span>
+                <router-link
+                  :to="sub.path"
+                  :class="['sub-nav-link', { active: route.path === sub.path }]"
+                  :title="collapsed ? sub.label : undefined"
+                  :aria-label="collapsed ? sub.label : undefined"
+                  @click="closeMobileSidebar"
+                >
+                  <component :is="(sub as any).icon" class="sub-nav-icon" v-if="(sub as any).icon" :style="{ color: sub.color }" />
+                  <span v-if="!collapsed">{{ sub.label }}</span>
               </router-link>
             </li>
           </ul>
@@ -53,10 +60,12 @@
         <router-link
           :to="item.path"
           :class="['nav-link', { active: isActive(item.path) }]"
+          :title="collapsed ? item.label : undefined"
+          :aria-label="collapsed ? item.label : undefined"
           @click="closeMobileSidebar"
         >
           <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
-          <span>{{ item.label }}</span>
+          <span v-if="!collapsed">{{ item.label }}</span>
         </router-link>
       </li>
       <li class="nav-divider" aria-hidden="true" />
@@ -65,10 +74,12 @@
         <router-link
           :to="item.path"
           :class="['nav-link', { active: isActive(item.path) }]"
+          :title="collapsed ? item.label : undefined"
+          :aria-label="collapsed ? item.label : undefined"
           @click="closeMobileSidebar"
         >
           <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
-          <span>{{ item.label }}</span>
+          <span v-if="!collapsed">{{ item.label }}</span>
         </router-link>
       </li>
       <li class="nav-divider" aria-hidden="true" />
@@ -77,10 +88,12 @@
         <router-link
           :to="item.path"
           :class="['nav-link', { active: isActive(item.path) }]"
+          :title="collapsed ? item.label : undefined"
+          :aria-label="collapsed ? item.label : undefined"
           @click="closeMobileSidebar"
         >
           <component :is="item.icon" class="nav-icon" :style="{ color: item.color }" />
-          <span>{{ item.label }}</span>
+          <span v-if="!collapsed">{{ item.label }}</span>
         </router-link>
       </li>
       <li class="nav-divider" aria-hidden="true" />
@@ -89,13 +102,15 @@
         <router-link
           to="/settings"
           :class="['nav-link', { active: isActive('/settings') }]"
+          :title="collapsed ? t('nav.settings') : undefined"
+          :aria-label="collapsed ? t('nav.settings') : undefined"
           @click="closeMobileSidebar"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-icon nav-icon-settings">
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-          <span>{{ t('nav.settings') }}</span>
+          <span v-if="!collapsed">{{ t('nav.settings') }}</span>
         </router-link>
         <ThemeToggle />
       </li>
@@ -113,6 +128,8 @@ import AnalyticsIcon from '@/components/icons/AnalyticsIcon.vue'
 import { useAnalyticsNavigation } from '@/composables/useAnalyticsNavigation'
 import { useSidebarNav } from '@/composables/useSidebarNav'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
+
+const props = defineProps<{ collapsed?: boolean }>()
 
 const subNavRef = ref<HTMLElement | null>(null)
 const route = useRoute()
@@ -222,5 +239,9 @@ const {
 
 .nav-expand-icon {
   @apply transition-transform duration-200;
+}
+
+.sidebar-nav--collapsed .nav-link {
+  @apply justify-center;
 }
 </style>

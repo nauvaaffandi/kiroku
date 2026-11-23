@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { Toast, ToastType } from '@/types'
 
 export const useUIStore = defineStore('ui', () => {
+  // sidebarOpen: true = expanded (280px rail), false = collapsed (64px rail), default false
   const sidebarOpen = ref(false)
   const toasts = ref<Toast[]>([])
   const theme = ref<'light' | 'dark' | 'system'>(

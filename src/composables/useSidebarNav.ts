@@ -12,6 +12,7 @@ import ScheduledIcon from '@/components/icons/ScheduledIcon.vue'
 import ReportsIcon from '@/components/icons/ReportsIcon.vue'
 import BudgetIcon from '@/components/icons/BudgetIcon.vue'
 import GoalsIcon from '@/components/icons/GoalsIcon.vue'
+import { Wallet, Binoculars, TrendingUpDown, TrendingDown } from '@lucide/vue'
 
 export function useSidebarNav() {
   const route = useRoute()
@@ -26,10 +27,10 @@ export function useSidebarNav() {
   ]
 
   const analyticsItems = [
-    { path: '/analytics/balance', label: t('nav.analyticsBalance'), color: '#6366f1' },
-    { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), color: '#8b5cf6' },
-    { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), color: '#ec4899' },
-    { path: '/analytics/spending', label: t('nav.analyticsSpending'), color: '#f43f5e' }
+    { path: '/analytics/balance', label: t('nav.analyticsBalance'), icon: Wallet, color: '#6366f1' },
+    { path: '/analytics/outlook', label: t('nav.analyticsOutlook'), icon: Binoculars, color: '#8b5cf6' },
+    { path: '/analytics/cashflow', label: t('nav.analyticsCashflow'), icon: TrendingUpDown, color: '#ec4899' },
+    { path: '/analytics/spending', label: t('nav.analyticsSpending'), icon: TrendingDown, color: '#f43f5e' }
   ]
 
   const goalsItems = [

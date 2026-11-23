@@ -95,6 +95,10 @@ export default {
     Login: 'Masuk',
     notifications: 'Notifikasi'
   },
+  sidebar: {
+    expand: 'Perlebar bilah sisi',
+    collapse: 'Susutkan bilah sisi',
+  },
   dashboard: {
     title: 'Dasbor',
     summary: 'Ringkasan Bulanan',

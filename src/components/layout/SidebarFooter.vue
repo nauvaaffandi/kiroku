@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-defineEmits(['navigate'])
 </script>
 
 <style scoped>
