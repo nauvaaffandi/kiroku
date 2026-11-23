@@ -8,8 +8,9 @@
       :aria-label="uiStore.sidebarOpen ? t('sidebar.collapse') : t('sidebar.expand')"
       :aria-expanded="uiStore.sidebarOpen"
     >
-      <ChevronLeft v-if="uiStore.sidebarOpen" class="toggle-icon" />
-      <ChevronRight v-else class="toggle-icon" />
+      <span class="toggle-badge" :class="{ 'badge-expanded': uiStore.sidebarOpen }">
+        <ChevronRight class="toggle-arrow" :class="{ 'arrow-rotated': uiStore.sidebarOpen }" />
+      </span>
     </button>
 
     <div v-if="uiStore.sidebarOpen" class="sidebar-header">
@@ -26,7 +27,7 @@
 
 <script setup lang="ts">
 import { useUIStore } from '@/stores/ui'
-import { ChevronLeft, ChevronRight } from '@lucide/vue'
+import { ChevronRight } from '@lucide/vue'
 import AppIcon from '@/components/icons/AppIcon.vue'
 import SidebarNav from './SidebarNav.vue'
 import SidebarFooter from './SidebarFooter.vue'
@@ -61,11 +62,25 @@ const { t } = useI18n()
   @apply outline-none ring-2 ring-[var(--accent)];
 }
 
-.toggle-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+.toggle-badge {
+  @apply flex items-center justify-center w-8 h-8 rounded-md border border-[var(--border-primary)] bg-[var(--bg-hover)] transition-all duration-200;
+  flex-shrink: 0;
+}
+
+.badge-expanded {
+  @apply border-[var(--border-primary)];
+}
+
+.toggle-arrow {
+  width: 1rem;
+  height: 1rem;
   flex-shrink: 0;
   color: currentColor;
+  transition: transform 0.2s ease-out;
+}
+
+.arrow-rotated {
+  @apply rotate-180;
 }
 
 .sidebar-header {

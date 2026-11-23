@@ -38,12 +38,13 @@ describe('Sidebar — Collapsible Icon Sidebar (planned API, TDD red phase)', ()
     expect(wrapper.text()).not.toContain('Kiroku')
   })
 
-  test('expanded: ChevronLeft toggle, logo/app name shown', () => {
+  test('expanded: ChevronRight rotated, logo/app name shown', () => {
     const wrapper = mountSidebar(true)
     const toggle = wrapper.find('button.sidebar-toggle')
     expect(toggle.exists()).toBe(true)
-    expect(wrapper.find('.lucide-chevron-left').exists()).toBe(true)
-    expect(wrapper.find('.lucide-chevron-right').exists()).toBe(false)
+    expect(wrapper.find('.lucide-chevron-right').exists()).toBe(true)
+    expect(wrapper.find('.arrow-rotated').exists()).toBe(true)
+    expect(wrapper.find('.lucide-chevron-left').exists()).toBe(false)
     expect(wrapper.text()).toContain('Kiroku')
   })
 
@@ -53,7 +54,8 @@ describe('Sidebar — Collapsible Icon Sidebar (planned API, TDD red phase)', ()
     expect(toggle.exists()).toBe(true)
     toggle.trigger('click')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.lucide-chevron-left').exists()).toBe(true)
+    expect(wrapper.find('.lucide-chevron-right').exists()).toBe(true)
+    expect(wrapper.find('.arrow-rotated').exists()).toBe(true)
     expect(wrapper.text()).toContain('Kiroku')
   })
 

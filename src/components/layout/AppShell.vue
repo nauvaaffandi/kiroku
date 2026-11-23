@@ -2,6 +2,7 @@
   <div class="app-shell">
     <div class="app-body">
       <aside
+        ref="railEl"
         class="sidebar-rail"
         :class="{ 'sidebar-overlay': uiStore.sidebarOpen }"
         :style="{ width: sidebarWidth + 'px' }"
@@ -31,15 +32,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useUIStore } from '@/stores/ui'
+import { useSidebarRailGesture } from '@/composables/useSidebarRailGesture'
 
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
 import ToastContainer from '@/components/common/ToastContainer.vue'
 
 const uiStore = useUIStore()
+const railEl = ref<HTMLElement | null>(null)
 const sidebarWidth = computed(() => (uiStore.sidebarOpen ? 280 : 64))
+useSidebarRailGesture(railEl)
 </script>
 
 <style scoped>
@@ -66,6 +70,7 @@ const sidebarWidth = computed(() => (uiStore.sidebarOpen ? 280 : 64))
   height: 100svh;
   overflow-x: hidden;
   overflow-y: auto;
+  touch-action: pan-y;
   transition: width 0.3s ease;
   background-color: var(--bg-card);
   border-color: var(--border-primary);
