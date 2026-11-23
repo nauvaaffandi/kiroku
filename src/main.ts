@@ -4,13 +4,30 @@ import router from './router'
 import App from './App.vue'
 import './assets/main.css'
 import { useI18nStore } from '@/locales'
+import { cleanup, manifestManager } from '@/repository'
 
-const app = createApp(App)
-const pinia = createPinia()
-app.use(pinia)
-app.use(router)
+async function init() {
+  // Initialize filesystem repository layer on app startup.
+  // Wrapped in try/catch so a missing native plugin (e.g. browser/dev) does not
+  // prevent the app from mounting.
+  try {
+    await cleanup.runStartup()
+    await manifestManager.load()
+  } catch (e) {
+    console.error('[Repository] startup init failed:', e)
+  }
 
-// Initialize i18n store (sets document lang from localStorage)
-useI18nStore()
+  const app = createApp(App)
+  const pinia = createPinia()
+  app.use(pinia)
+  app.use(router)
 
-app.mount('#app')
+  // Initialize i18n store (sets document lang from localStorage)
+  useI18nStore()
+
+  app.mount('#app')
+}
+
+init().catch((e) => {
+  console.error('[Repository] init error:', e)
+})
