@@ -154,7 +154,8 @@ export default {
     duplicateTransaction: 'Duplikat',
     statusCleared: 'Terklarifikasi',
     statusPending: 'Menunggu',
-    fetchError: 'Gagal memuat transaksi'
+    fetchError: 'Gagal memuat transaksi',
+    createTransaction: 'Buat Transaksi'
   },
   accounts: {
     title: 'Akun',
@@ -212,7 +213,8 @@ export default {
     subcategoriesTitle: 'Subkategori {{name}}',
     subCategoriesCount: '{{count}} subkategori',
     showSubcategories: 'Tampilkan Subkategori',
-    hideSubcategories: 'Sembunyikan Subkategori'
+    hideSubcategories: 'Sembunyikan Subkategori',
+    fetchError: 'Gagal memuat kategori'
   },
   standardCategories: {
     cat_food: 'Makanan',
@@ -382,7 +384,9 @@ export default {
     thisMonth: 'Bulan Ini',
     thisYear: 'Tahun Ini',
     lastMonth: 'Bulan Lalu',
-    lastYear: 'Tahun Lalu'
+    lastYear: 'Tahun Lalu',
+    percent: '{{percent}}%',
+    topCategories: 'Kategori Teratas'
   },
   settings: {
     title: 'Pengaturan',

@@ -154,7 +154,8 @@ export default {
     duplicateTransaction: '複製',
     statusCleared: '決済済み',
     statusPending: '未決済',
-    fetchError: '取引の読み込みに失敗しました'
+    fetchError: '取引の読み込みに失敗しました',
+    createTransaction: '取引を作成'
   },
   accounts: {
     title: '口座管理',
@@ -212,7 +213,8 @@ export default {
     subcategoriesTitle: '子カテゴリの {{name}}',
     subCategoriesCount: '{{count}} 件のサブカテゴリ',
     showSubcategories: '子カテゴリを表示',
-    hideSubcategories: '子カテゴリを非表示'
+    hideSubcategories: '子カテゴリを非表示',
+    fetchError: 'カテゴリの読み込みに失敗しました'
   },
   standardCategories: {
     cat_food: '食費',
@@ -382,7 +384,9 @@ budgets: {
     thisMonth: '今月',
     thisYear: '今年',
     lastMonth: '先月',
-    lastYear: '昨年'
+    lastYear: '昨年',
+    percent: '{{percent}}%',
+    topCategories: 'トップカテゴリ'
   },
   settings: {
     title: '設定',

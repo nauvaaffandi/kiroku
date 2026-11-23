@@ -154,7 +154,8 @@ export default {
     duplicateTransaction: 'Duplicate',
     statusCleared: 'Cleared',
     statusPending: 'Pending',
-    fetchError: 'Failed to load transactions'
+    fetchError: 'Failed to load transactions',
+    createTransaction: 'Create Transaction'
   },
   accounts: {
     title: 'Accounts',
@@ -212,7 +213,8 @@ export default {
     subcategoriesTitle: 'Subcategories of {{name}}',
     subCategoriesCount: '{{count}} subcategories',
     showSubcategories: 'Show subcategories',
-    hideSubcategories: 'Hide subcategories'
+    hideSubcategories: 'Hide subcategories',
+    fetchError: 'Failed to load categories'
   },
   standardCategories: {
     cat_food: 'Food',
@@ -382,7 +384,9 @@ budgets: {
     thisMonth: 'This Month',
     thisYear: 'This Year',
     lastMonth: 'Last Month',
-    lastYear: 'Last Year'
+    lastYear: 'Last Year',
+    percent: '{{percent}}%',
+    topCategories: 'Top Categories'
   },
   settings: {
     title: 'Settings',
