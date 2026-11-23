@@ -1,10 +1,9 @@
 # 記録 (Kiroku)
 
-Offline-first personal finance tracker. Single user, many accounts and currencies. Mobile-first PWA / Capacitor Android app with local SQLite only — **no backend**.
+Offline-first personal finance tracker. Single user, many accounts and currencies. Mobile-first PWA / Capacitor Android app with local JSON only — **no backend**.
 
 [![Vue 3](https://img.shields.io/badge/Vue-3-%234FC08D?style=for-the-badge&logo=vue.js)](https://vuejs.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-%2338BDF8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com)
-[![SQLite](https://img.shields.io/badge/SQLite-local-%23003B57?style=for-the-badge&logo=sqlite)](https://sqlite.org)
 [![Capacitor Android](https://img.shields.io/badge/Capacitor-Android-%2325D366?style=for-the-badge&logo=capacitor)](https://capacitorjs.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
@@ -51,7 +50,7 @@ All commands run from the repo root (there is no `frontend/` or `backend/` direc
 | Build / dev server | Vite |
 | Type check | `vue-tsc` (part of `npm run build`) |
 | Tests | vitest (`tests/**`) |
-| Local storage | Capacitor + `@capacitor-community/sqlite`, SQLite database `kiroku` with `no-encryption` (`src/storage/repository.ts`) |
+| Local storage | Capacitor + `@capacitor/filesystem`, local JSON (`src/repository/`), offline-first |
 | Icons | `@lucide/vue` |
 | Dates | `dayjs` |
 | Charts | `echarts` / `vue-echarts` |

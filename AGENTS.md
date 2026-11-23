@@ -19,9 +19,9 @@ Read this file fully before changing anything. For any UI work, also read [DESIG
 | Part       | Stack                                                                                     |
 | ---------- | ----------------------------------------------------------------------------------------- |
 | frontend   | Vue 3 + `<script setup lang="ts">`, Vite, Pinia, Vue Router, Tailwind CSS v4, ECharts   |
-| storage    | Capacitor + `@capacitor-community/sqlite`, local SQLite (`src/storage/repository.ts`), offline-first |
+| storage    | Capacitor + `@capacitor/filesystem`, local JSON (`src/repository/`), offline-first |
 
-Single user, many accounts and currencies. Mobile-first PWA / Capacitor Android app: the app shell is a centered column (max 480px). There is **no backend** — data lives in local SQLite only.
+Single user, many accounts and currencies. Mobile-first PWA / Capacitor Android app: the app shell is a centered column (max 480px). There is **no backend** — data lives in local JSON only.
 
 ### Commands
 
