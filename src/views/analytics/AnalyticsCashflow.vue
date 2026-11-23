@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { localDb } from '@/storage/repository'
+import { transactionRepository } from '@/repository'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import CashflowWaterfallWidget from '@/widgets/analytics/CashflowWaterfallWidget.vue'
 import CashflowTrendWidget from '@/widgets/analytics/CashflowTrendWidget.vue'
@@ -71,7 +71,7 @@ function onDateChange(payload: { dateFrom: string; dateTo: string }) {
 async function fetchFlow() {
   flowLoading.value = true
   try {
-    const transactions = await localDb.list<Transaction>('transaction')
+    const transactions = await transactionRepository.findAll()
     const inRange = transactions.filter((t) => {
       const d = t.date_time.slice(0, 10)
       return (!dateFrom.value || d >= dateFrom.value) && (!dateTo.value || d <= dateTo.value)
@@ -114,7 +114,7 @@ async function fetchFlow() {
 async function fetchCashFlowTrend() {
   trendLoading.value = true
   try {
-    const transactions = await localDb.list<Transaction>('transaction')
+    const transactions = await transactionRepository.findAll()
     const now = new Date()
     const months: string[] = []
     const count = trendInterval.value === 'year' ? 12 : 6
@@ -146,11 +146,11 @@ async function fetchComparison() {
   if (!periodAFrom.value || !periodATo.value || !periodBFrom.value || !periodBTo.value) return
   comparisonLoading.value = true
   try {
-    const transA = (await localDb.list<Transaction>('transaction')).filter((t) => {
+    const transA = (await transactionRepository.findAll()).filter((t) => {
       const d = t.date_time.slice(0, 10)
       return (!periodAFrom.value || d >= periodAFrom.value) && (!periodATo.value || d <= periodATo.value)
     })
-    const transB = (await localDb.list<Transaction>('transaction')).filter((t) => {
+    const transB = (await transactionRepository.findAll()).filter((t) => {
       const d = t.date_time.slice(0, 10)
       return (!periodBFrom.value || d >= periodBFrom.value) && (!periodBTo.value || d <= periodBTo.value)
     })

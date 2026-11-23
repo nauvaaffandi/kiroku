@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { localDb } from '@/storage/repository'
+import { transactionRepository, categoryRepository } from '@/repository'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import PlannedByCategoryWidget from '@/widgets/analytics/PlannedByCategoryWidget.vue'
 import PlannedByTimelineWidget from '@/widgets/analytics/PlannedByTimelineWidget.vue'
@@ -73,8 +73,8 @@ async function fetchAll() {
 async function fetchPlannedByCategory() {
   categoryLoading.value = true
   try {
-    const categories = await localDb.list<any>('category')
-    const allTransactions = await localDb.list<any>('transaction')
+    const categories = await categoryRepository.findAll()
+    const allTransactions = await transactionRepository.findAll()
     const byCategory = new Map<string, any>()
     for (const t of allTransactions) {
       const cat = categories.find((c: any) => c.id === t.category_id)
@@ -97,7 +97,7 @@ async function fetchPlannedByCategory() {
 async function fetchPlannedByTimeline() {
   timelineLoading.value = true
   try {
-    const allTransactions = await localDb.list<any>('transaction')
+    const allTransactions = await transactionRepository.findAll()
     const months: string[] = []
     const count = timelineInterval.value === 'year' ? 12 : 6
     for (let i = count - 1; i >= 0; i--) {
@@ -127,7 +127,7 @@ async function fetchPlannedByTimeline() {
 async function fetchBalanceForecast() {
   forecastLoading.value = true
   try {
-    const allTransactions = await localDb.list<any>('transaction')
+    const allTransactions = await transactionRepository.findAll()
     const series = []
     for (let i = 0; i < 12; i++) {
       const d = new Date(new Date().getFullYear(), new Date().getMonth() + i, 1)

@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { localDb } from '@/storage/repository'
+import { goalRepository } from '@/repository'
 import ColorPalette from '@/components/ui/ColorPalette.vue'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
@@ -78,7 +78,7 @@ async function submit() {
   try {
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
-    await localDb.put('goal', id, {
+    await goalRepository.create({
       id,
       name: form.value.name,
       target_amount: form.value.target_amount,

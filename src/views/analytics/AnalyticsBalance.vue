@@ -31,13 +31,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { localDb } from '@/storage/repository'
+import { accountRepository, transactionRepository } from '@/repository'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import BalanceTrendWidget from '@/widgets/analytics/BalanceTrendWidget.vue'
 import BalanceByAccountsWidget from '@/widgets/analytics/BalanceByAccountsWidget.vue'
 import BalanceByCurrenciesWidget from '@/widgets/analytics/BalanceByCurrenciesWidget.vue'
 import type { BalanceTrendPoint, AccountBalanceSummary, CurrencyBalanceSummary } from '@/types/report'
-import type { Account, Transaction } from '@/types'
 
 const { t } = useI18n()
 
@@ -70,8 +69,8 @@ async function fetchAll() {
 async function fetchBalanceTrend() {
   trendLoading.value = true
   try {
-    const accounts = await localDb.list<Account>('account')
-    const transactions = await localDb.list<Transaction>('transaction')
+    const accounts = await accountRepository.findAll()
+    const transactions = await transactionRepository.findAll()
     const now = new Date()
     const months: string[] = []
     const count = trendInterval.value === 'year' ? 12 : 6
@@ -101,7 +100,7 @@ async function fetchBalanceTrend() {
 async function fetchBalanceByAccounts() {
   accountsLoading.value = true
   try {
-    const accounts = await localDb.list<Account>('account')
+    const accounts = await accountRepository.findAll()
     accountsData.value = accounts.map((a) => ({
       id: Number(a.id) || 0,
       name: a.name,
@@ -121,7 +120,7 @@ async function fetchBalanceByAccounts() {
 async function fetchBalanceByCurrencies() {
   currenciesLoading.value = true
   try {
-    const accounts = await localDb.list<Account>('account')
+    const accounts = await accountRepository.findAll()
     const byCurrency = new Map<string, { balance: number }>()
     for (const a of accounts) {
       const entry = byCurrency.get(a.currency) ?? { balance: 0 }

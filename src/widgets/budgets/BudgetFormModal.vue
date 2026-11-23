@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { computed, ref, reactive, watch } from 'vue'
-import { localDb } from '@/storage/repository'
+import { budgetRepository } from '@/repository'
 import { useI18n } from '@/locales'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAccountsStore } from '@/stores/accounts'
@@ -138,7 +138,7 @@ watch(() => [props.open, props.id], async ([openVal]) => {
 async function fetchCurrent() {
   if (!props.open || !form.id) return
   try {
-    const b = await localDb.get<any>('budget', form.id)
+    const b = await budgetRepository.findById(form.id)
     if (!b) return
     form.name = b.name
     form.period = b.period
@@ -189,10 +189,9 @@ async function save() {
       ...(form.ends_at ? { ends_at: form.ends_at } : {})
     }
     if (form.id) {
-      const current = await localDb.get<any>('budget', form.id)
-      await localDb.put('budget', form.id, { ...current, ...payload })
+      await budgetRepository.update(form.id, payload)
     } else {
-      await localDb.put('budget', crypto.randomUUID(), payload)
+      await budgetRepository.create(payload)
     }
     emit('save', { ...form })
     emit('close')

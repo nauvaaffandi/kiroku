@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { localDb } from '@/storage/repository'
+import { budgetRepository, transactionRepository } from '@/repository'
 import { useI18n } from '@/locales'
 import { useUIStore } from '@/stores/ui'
 import BudgetSummaryCardsWidget from '@/widgets/budgets/BudgetSummaryCardsWidget.vue'
@@ -81,8 +81,8 @@ async function fetchData() {
   loading.value = true
   console.log('[BudgetsView] fetching budgets and transactions')
   try {
-    const budgets = await localDb.list<any>('budget')
-    const transactions = await localDb.list<any>('transaction')
+    const budgets = await budgetRepository.findAll()
+    const transactions = await transactionRepository.findAll()
     const list: BudgetRowLocal[] = budgets.map((b: any) => {
       const spent = transactions.reduce((s, t) => t.category_id === b.id && t.type === 'expense' ? s + t.amount : s, 0)
       const amount = b.amount ?? 0
@@ -122,7 +122,7 @@ async function doDelete() {
   if (!deletingId.value) return
   try {
     console.log('[BudgetsView] deleting budget', { id: deletingId.value })
-    await localDb.remove('budget', deletingId.value)
+    await budgetRepository.delete(deletingId.value)
     cancelDelete()
     await fetchData()
   } catch (e) {

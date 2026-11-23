@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { localDb } from '@/storage/repository'
+import { transactionRepository, categoryRepository } from '@/repository'
 import { useCategoriesStore } from '@/stores/categories'
 import DateFilterBar from '@/components/common/DateFilterBar.vue'
 import SpendingByCategoryWidget from '@/widgets/analytics/SpendingByCategoryWidget.vue'
@@ -71,7 +71,7 @@ async function fetchSpendingByCategory() {
   try {
     const categoriesStore = useCategoriesStore()
     await categoriesStore.fetchCategories()
-    const allTransactions = await localDb.list<any>('transaction')
+    const allTransactions = await transactionRepository.findAll()
     const expenses = allTransactions.filter((t) => t.type === 'expense')
     const cats: any[] = (categoriesStore.categories as any)?.value ?? []
     const byCategory = new Map<string, any>()
@@ -116,7 +116,7 @@ async function fetchSpendingByCategory() {
 async function fetchSpendingByLabel() {
   labelLoading.value = true
   try {
-    const allTransactions = await localDb.list<any>('transaction')
+    const allTransactions = await transactionRepository.findAll()
     const labelsMap = new Map<string, any>()
     let totalExpense = 0
     for (const t of allTransactions) {
@@ -156,8 +156,8 @@ async function fetchSpendingByLabel() {
 async function fetchSpendingByNature() {
   natureLoading.value = true
   try {
-    const categories = await localDb.list<any>('category')
-    const allTransactions = await localDb.list<any>('transaction')
+    const categories = await categoryRepository.findAll()
+    const allTransactions = await transactionRepository.findAll()
     const nature: Record<string, { amount: number; count: number }> = {
       must: { amount: 0, count: 0 },
       have: { amount: 0, count: 0 },

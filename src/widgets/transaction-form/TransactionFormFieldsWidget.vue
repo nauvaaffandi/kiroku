@@ -166,7 +166,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { localDb } from '@/storage/repository'
+import { templateRepository } from '@/repository'
 import { useI18n } from '@/locales'
 import type { Category, Account } from '@/types'
 
@@ -224,7 +224,7 @@ const fetchAutocomplete = async () => {
 
 const fetchTemplates = async () => {
   try {
-    templates.value = await localDb.list<any>('template')
+    templates.value = await templateRepository.findAll()
   } catch (e) {
     templates.value = []
   }
@@ -255,7 +255,7 @@ const handleSubmit = async () => {
     if (saveAsTemplate.value && templateName.value) {
       const id = crypto.randomUUID()
       const now = new Date().toISOString()
-      await localDb.put('template', id, {
+      await templateRepository.create({
         id,
         name: templateName.value,
         type: form.value.type,

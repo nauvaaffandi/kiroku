@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
-import { localDb } from '@/storage/repository'
+import { goalRepository } from '@/repository'
 import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
 import GoalCardWidget from '@/widgets/goals/GoalCardWidget.vue'
@@ -77,7 +77,7 @@ async function fetchData() {
   loading.value = true
   console.log('[GoalsView] fetching goals')
   try {
-    const rows = await localDb.list<any>('goal')
+    const rows = await goalRepository.findAll()
     goals.value = rows.map((g: any) => {
       const target = g.target_amount ?? 0
       const saved = g.saved_already ?? 0
