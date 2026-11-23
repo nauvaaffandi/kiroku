@@ -1,7 +1,7 @@
 <template>
   <img
     class="app-icon"
-    src="/legacy_512.png"
+    src="/icon.png"
     alt="Kiroku logo"
     aria-hidden="true"
   />
