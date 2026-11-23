@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { localDb } from '@/storage/repository'
+import { accountRepository } from '@/repository'
 import { useUIStore } from './ui'
 import { useI18n } from '@/locales'
 import type { Account, AccountFilters } from '@/types'
@@ -23,7 +23,7 @@ export const useAccountsStore = defineStore('accounts', () => {
   const fetchAccounts = async (page = 1) => {
     loading.value = true
     try {
-      const rows = await localDb.list<Account>('account')
+      const rows = await accountRepository.findAll()
       let list = rows.filter((a) => !a.archived)
       if (filters.value.q) {
         const q = filters.value.q.toLowerCase()
@@ -48,7 +48,7 @@ export const useAccountsStore = defineStore('accounts', () => {
   const createAccount = async (data: Partial<Account>) => {
     try {
       const id = crypto.randomUUID()
-      await localDb.put('account', id, { ...data, id, archived: false } as Account)
+      await accountRepository.create({ ...data, id, archived: false } as Account)
       await fetchAccounts(pagination.value.page)
       return id
     } catch (e: any) {
@@ -59,9 +59,9 @@ export const useAccountsStore = defineStore('accounts', () => {
 
   const updateAccount = async (id: string, data: Partial<Account>) => {
     try {
-      const current = await localDb.get<Account>('account', id)
+      const current = await accountRepository.findById(id)
       if (!current) throw new Error('Account not found')
-      await localDb.put('account', id, { ...current, ...data } as Account)
+      await accountRepository.update(id, { ...current, ...data } as Account)
       await fetchAccounts(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to update account')
@@ -71,7 +71,7 @@ export const useAccountsStore = defineStore('accounts', () => {
 
   const deleteAccount = async (id: string) => {
     try {
-      await localDb.remove('account', id)
+      await accountRepository.delete(id)
       await fetchAccounts(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to delete account')

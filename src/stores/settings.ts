@@ -1,13 +1,33 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import JSZip from 'jszip'
-import { localDb, type EntityKind } from '@/storage/repository'
+import {
+  accountRepository,
+  categoryRepository,
+  labelRepository,
+  notificationRepository,
+  transactionRepository,
+  templateRepository,
+  scheduledRepository,
+  budgetRepository,
+  goalRepository,
+  settingRepository,
+} from '@/repository'
 import { useSecureStorage, SECURE_KEYS } from '@/composables/useSecureStorage'
 import type { Settings, Theme, Language, DateFormat, NumberFormat, WeekStart } from '@/types'
 
-const BACKUP_KINDS: readonly string[] = [
-  'account', 'category', 'label', 'notification', 'transaction', 'template', 'scheduled', 'budget', 'goal', 'setting'
-]
+const BACKUP_REPOS: Record<string, { findAll: () => Promise<unknown[]> }> = {
+  account: accountRepository,
+  category: categoryRepository,
+  label: labelRepository,
+  notification: notificationRepository,
+  transaction: transactionRepository,
+  template: templateRepository,
+  scheduled: scheduledRepository,
+  budget: budgetRepository,
+  goal: goalRepository,
+  setting: settingRepository,
+}
 
 const SETTINGS_ID = 'settings'
 
@@ -51,25 +71,22 @@ export const useSettingsStore = defineStore('settings', () => {
     console.log('[Settings] fetchSettings')
     loading.value = true
     try {
-      const stored = await localDb.get<Settings>('setting', SETTINGS_ID)
+      const stored = await settingRepository.findById(SETTINGS_ID)
       console.log('[Settings] settings loaded', stored ? 'found' : 'empty')
       if (stored) {
-        const { migrated, redactedKeys } = await secure.migratePlaintextKeys(stored)
+        const { migrated, redactedKeys } = await secure.migratePlaintextKeys(stored as Settings)
         if (migrated) {
           const payload = { ...stored }
           for (const key of redactedKeys) {
             payload[key as keyof Settings] = ''
           }
-          // Keys whose secure write failed (returned by migratePlaintextKeys as failedKeys)
-          // are intentionally left in SQLite plaintext so they are not lost.
-          await localDb.put('setting', SETTINGS_ID, payload)
+          await settingRepository.update(SETTINGS_ID, payload as Settings)
           console.log('[Settings] redacted plaintext API keys from SQLite')
         }
         settings.value = { ...defaultSettings, ...stored } as Settings
       } else {
         settings.value = { ...defaultSettings }
       }
-      // Secure storage wins over (possibly redacted/empty) SQLite values.
       const secureOcr = await secure.getSecure('ocr_api_key')
       const secureAi = await secure.getSecure('ai_api_key')
       if (secureOcr) settings.value.ocr_api_key = secureOcr
@@ -86,7 +103,6 @@ export const useSettingsStore = defineStore('settings', () => {
     console.log('[Settings] updateSettings')
     try {
       const next = { ...settings.value, ...newSettings } as Settings
-      // API keys live in secure storage only; redact them from the SQLite payload.
       const payload = { ...next }
       for (const key of SECURE_KEYS) {
         if (key in newSettings) {
@@ -102,7 +118,7 @@ export const useSettingsStore = defineStore('settings', () => {
         }
       }
       settings.value = next
-      await localDb.put('setting', SETTINGS_ID, payload)
+      await settingRepository.update(SETTINGS_ID, payload as Settings)
       console.log('[Settings] settings updated')
       if (newSettings.theme) applyTheme(newSettings.theme)
       return true
@@ -122,9 +138,9 @@ export const useSettingsStore = defineStore('settings', () => {
     const zip = new JSZip()
     const payload: Record<string, unknown[]> = {}
 
-    for (const kind of BACKUP_KINDS) {
+    for (const [kind, repo] of Object.entries(BACKUP_REPOS)) {
       console.log(`[Backup] Fetching data for kind: ${kind}`)
-      const items = await localDb.list(kind as EntityKind)
+      const items = await repo.findAll()
       console.log(`[Backup] Retrieved ${items.length} records for kind: ${kind}`)
       payload[kind] = items
       zip.file(`${kind}.json`, JSON.stringify(items, null, 2))

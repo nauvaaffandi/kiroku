@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { localDb } from '@/storage/repository'
+import { templateRepository, transactionRepository } from '@/repository'
 import { useTransactionsStore } from './transactions'
 import { useUIStore } from './ui'
 import type { ApplyTemplateResponse, Template } from '@/types'
@@ -13,7 +13,7 @@ export const useTemplatesStore = defineStore('templates', () => {
   const fetchTemplates = async () => {
     loading.value = true
     try {
-      templates.value = await localDb.list<Template>('template')
+      templates.value = await templateRepository.findAll()
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to load templates')
     } finally {
@@ -31,7 +31,7 @@ export const useTemplatesStore = defineStore('templates', () => {
         updated_at: now,
         ...data
       } as Template
-      await localDb.put('template', id, template)
+      await templateRepository.create(template)
       await fetchTemplates()
       return id
     } catch (e: any) {
@@ -42,10 +42,10 @@ export const useTemplatesStore = defineStore('templates', () => {
 
   const updateTemplate = async (id: string, data: Partial<Template>) => {
     try {
-      const current = await localDb.get<Template>('template', id)
+      const current = await templateRepository.findById(id)
       if (!current) throw new Error('Template not found')
       const updated: Template = { ...current, ...data, updated_at: new Date().toISOString() } as Template
-      await localDb.put('template', id, updated)
+      await templateRepository.update(id, updated)
       await fetchTemplates()
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to update template')
@@ -55,7 +55,7 @@ export const useTemplatesStore = defineStore('templates', () => {
 
   const deleteTemplate = async (id: string) => {
     try {
-      await localDb.remove('template', id)
+      await templateRepository.delete(id)
       await fetchTemplates()
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to delete template')
@@ -65,7 +65,7 @@ export const useTemplatesStore = defineStore('templates', () => {
 
   const applyTemplate = async (id: string): Promise<ApplyTemplateResponse | null> => {
     try {
-      const template = await localDb.get<Template>('template', id)
+      const template = await templateRepository.findById(id)
       if (!template) throw new Error('Template not found')
       const transactionsStore = useTransactionsStore()
       const transactionId = crypto.randomUUID()
@@ -93,7 +93,7 @@ export const useTemplatesStore = defineStore('templates', () => {
         created_at: now,
         updated_at: now
       }
-      await localDb.put('transaction', transactionId, transaction)
+      await transactionRepository.create(transaction)
       await transactionsStore.fetchTransactions()
       return { ...transaction, template_id: id } as ApplyTemplateResponse
     } catch (e: any) {

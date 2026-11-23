@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { localDb } from '@/storage/repository'
-import { useUIStore } from './ui'
+import { labelRepository } from '@/repository'
+import { useUIStore } from '@/stores/ui'
 import { useI18n } from '@/locales'
 import type { Label, CreateLabelRequest, UpdateLabelRequest } from '@/types'
 
@@ -13,7 +13,7 @@ export const useLabelsStore = defineStore('labels', () => {
   const fetchLabels = async () => {
     loading.value = true
     try {
-      const rows = await localDb.list<Label>('label')
+      const rows = await labelRepository.findAll()
       labels.value = rows
     } catch (e: any) {
       const uiStore = useUIStore()
@@ -28,7 +28,7 @@ export const useLabelsStore = defineStore('labels', () => {
     try {
       const id = crypto.randomUUID()
       const label: Label = { id, ...data } as Label
-      await localDb.put('label', id, label)
+      await labelRepository.create(label)
       labels.value.push(label)
       return id
     } catch (e: any) {
@@ -40,10 +40,10 @@ export const useLabelsStore = defineStore('labels', () => {
 
   const updateLabel = async (id: string, data: UpdateLabelRequest) => {
     try {
-      const current = await localDb.get<Label>('label', id)
+      const current = await labelRepository.findById(id)
       if (!current) throw new Error('Label not found')
       const updated: Label = { ...current, ...data } as Label
-      await localDb.put('label', id, updated)
+      await labelRepository.update(id, updated)
       const idx = labels.value.findIndex(l => l.id === id)
       if (idx >= 0) labels.value[idx] = updated
       return updated
@@ -56,7 +56,7 @@ export const useLabelsStore = defineStore('labels', () => {
 
   const deleteLabel = async (id: string) => {
     try {
-      await localDb.remove('label', id)
+      await labelRepository.delete(id)
       labels.value = labels.value.filter(l => l.id !== id)
     } catch (e: any) {
       const uiStore = useUIStore()
@@ -68,8 +68,8 @@ export const useLabelsStore = defineStore('labels', () => {
   const reorderLabels = async (items: { id: string; sort_order: number }[]) => {
     try {
       for (const item of items) {
-        const current = await localDb.get<Label>('label', item.id)
-        if (current) await localDb.put('label', item.id, { ...current, sort_order: item.sort_order } as Label)
+        const current = await labelRepository.findById(item.id)
+        if (current) await labelRepository.update(item.id, { ...current, sort_order: item.sort_order } as Label)
       }
       await fetchLabels()
     } catch (e: any) {

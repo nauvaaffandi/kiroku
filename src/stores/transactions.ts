@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { localDb } from '@/storage/repository'
+import { transactionRepository } from '@/repository'
 import { useUIStore } from './ui'
 import { useI18n } from '@/locales'
 import type { Transaction, TransactionFilters, TransactionSummary } from '@/types'
@@ -56,7 +56,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
   const fetchTransactions = async (page = 1) => {
     loading.value = true
     try {
-      const all = await localDb.list<Transaction>('transaction')
+      const all = await transactionRepository.findAll()
       const filtered = all.filter(matchesFilters)
       filtered.sort((a, b) => {
         const d = filters.value.order === 'DESC' ? -1 : 1
@@ -104,7 +104,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
         updated_at: now,
         ...data
       } as Transaction
-      await localDb.put('transaction', id, transaction)
+      await transactionRepository.create(transaction)
       await fetchTransactions(pagination.value.page)
       return id
     } catch (e: any) {
@@ -115,9 +115,9 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const updateTransaction = async (id: string, data: Partial<Transaction>) => {
     try {
-      const current = await localDb.get<Transaction>('transaction', id)
+      const current = await transactionRepository.findById(id)
       if (!current) throw new Error('Transaction not found')
-      await localDb.put('transaction', id, { ...current, ...data, updated_at: new Date().toISOString() } as Transaction)
+      await transactionRepository.update(id, { ...current, ...data, updated_at: new Date().toISOString() } as Transaction)
       await fetchTransactions(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to update transaction')
@@ -127,7 +127,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const deleteTransaction = async (id: string) => {
     try {
-      await localDb.remove('transaction', id)
+      await transactionRepository.delete(id)
       await fetchTransactions(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to delete transaction')
@@ -139,15 +139,15 @@ export const useTransactionsStore = defineStore('transactions', () => {
     try {
       for (const id of ids) {
         if (action === 'delete') {
-          await localDb.remove('transaction', id)
+          await transactionRepository.delete(id)
           continue
         }
-        const current = await localDb.get<Transaction>('transaction', id)
+        const current = await transactionRepository.findById(id)
         if (!current) continue
         const next = { ...current, updated_at: new Date().toISOString() }
         if (action === 'recategorize') next.category_id = category_id ?? null
         if (action === 'relabel') next.labels = labels ?? ''
-        await localDb.put('transaction', id, next)
+        await transactionRepository.update(id, next)
       }
       await fetchTransactions(pagination.value.page)
       return { updated: ids.length }
@@ -159,7 +159,7 @@ export const useTransactionsStore = defineStore('transactions', () => {
 
   const fetchSummary = async () => {
     try {
-      const all = await localDb.list<Transaction>('transaction')
+      const all = await transactionRepository.findAll()
       const filtered = all.filter(matchesFilters)
       const result: TransactionSummary = {}
       for (const t of filtered) {

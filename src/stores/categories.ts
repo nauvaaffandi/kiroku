@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { localDb } from '@/storage/repository'
+import { categoryRepository } from '@/repository'
 import { useUIStore } from './ui'
 import { useI18n } from '@/locales'
 import type { Category, CategoryFilters } from '@/types'
@@ -34,7 +34,7 @@ export const useCategoriesStore = defineStore('categories', () => {
   const fetchCategories = async (page = 1) => {
     loading.value = true
     try {
-      const rows = await localDb.list<Category>('category')
+      const rows = await categoryRepository.findAll()
       let list = rows.filter((c) => !c.archived)
       if (filters.value.q) {
         const q = filters.value.q.toLowerCase()
@@ -72,7 +72,7 @@ export const useCategoriesStore = defineStore('categories', () => {
         archived: false,
         ...data
       } as Category
-      await localDb.put('category', id, node)
+      await categoryRepository.create(node)
       await fetchCategories(pagination.value.page)
       return id
     } catch (e: any) {
@@ -83,9 +83,9 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   const updateCategory = async (id: string, data: Partial<Category>) => {
     try {
-      const current = await localDb.get<Category>('category', id)
+      const current = await categoryRepository.findById(id)
       if (!current) throw new Error('Category not found')
-      await localDb.put('category', id, { ...current, ...data } as Category)
+      await categoryRepository.update(id, { ...current, ...data } as Category)
       await fetchCategories(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to update category')
@@ -95,7 +95,7 @@ export const useCategoriesStore = defineStore('categories', () => {
 
   const deleteCategory = async (id: string) => {
     try {
-      await localDb.remove('category', id)
+      await categoryRepository.delete(id)
       await fetchCategories(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to delete category')
@@ -106,8 +106,8 @@ export const useCategoriesStore = defineStore('categories', () => {
   const reorderCategories = async (items: { id: string; sort_order: number }[]) => {
     try {
       for (const item of items) {
-        const current = await localDb.get<Category>('category', item.id)
-        if (current) await localDb.put('category', item.id, { ...current, sort_order: item.sort_order } as Category)
+        const current = await categoryRepository.findById(item.id)
+        if (current) await categoryRepository.update(item.id, { ...current, sort_order: item.sort_order } as Category)
       }
       await fetchCategories(pagination.value.page)
     } catch (e: any) {

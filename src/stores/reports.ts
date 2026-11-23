@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { localDb } from '@/storage/repository'
+import { transactionRepository, categoryRepository, accountRepository } from '@/repository'
 import type {
   SpendingReport,
   TrendReport,
@@ -9,21 +9,18 @@ import type {
   CashflowProjectionReport,
   GoalsReport,
   OutlookReport,
-  Transaction,
-  Category,
-  Account
 } from '@/types'
 
 export const useReportsStore = defineStore('reports', () => {
   const loading = ref(false)
 
-  const listTransactions = () => localDb.list<Transaction>('transaction')
+  const listTransactions = () => transactionRepository.findAll()
 
   const getSpending = async (params: Record<string, string>): Promise<SpendingReport> => {
     loading.value = true
     try {
       const all = await listTransactions()
-      const categories = await localDb.list<Category>('category')
+      const categories = await categoryRepository.findAll()
       const byCategory = new Map<string, { category_name: string; category_icon: string; category_color: string; amount: number; count: number }>()
       let totalExpense = 0
       let totalIncome = 0
@@ -87,7 +84,7 @@ export const useReportsStore = defineStore('reports', () => {
   const getBalance = async (_params: Record<string, string>): Promise<BalanceReport> => {
     loading.value = true
     try {
-      const accounts = await localDb.list<Account>('account')
+      const accounts = await accountRepository.findAll()
       const series = accounts.map((a) => ({
         date: new Date().toISOString().slice(0, 10),
         balance: a.balance,

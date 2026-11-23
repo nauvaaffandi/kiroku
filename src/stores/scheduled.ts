@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { localDb } from '@/storage/repository'
+import { scheduledRepository } from '@/repository'
 import { useUIStore } from './ui'
 import type { ScheduledTransaction, ScheduledFilters } from '@/types'
 
@@ -21,7 +21,7 @@ export const useScheduledStore = defineStore('scheduled', () => {
   const fetchScheduled = async (page = 1) => {
     loading.value = true
     try {
-      const rows = await localDb.list<ScheduledTransaction>('scheduled')
+      const rows = await scheduledRepository.findAll()
       let list = [...rows]
       if (filters.value.q) {
         const q = filters.value.q.toLowerCase()
@@ -71,7 +71,7 @@ export const useScheduledStore = defineStore('scheduled', () => {
         updated_at: now,
         ...data
       } as ScheduledTransaction
-      await localDb.put('scheduled', id, row)
+      await scheduledRepository.create(row)
       await fetchScheduled(pagination.value.page)
       return id
     } catch (e: any) {
@@ -82,9 +82,9 @@ export const useScheduledStore = defineStore('scheduled', () => {
 
   const updateScheduled = async (id: string, data: Partial<ScheduledTransaction>) => {
     try {
-      const current = await localDb.get<ScheduledTransaction>('scheduled', id)
+      const current = await scheduledRepository.findById(id)
       if (!current) throw new Error('Scheduled transaction not found')
-      await localDb.put('scheduled', id, { ...current, ...data, updated_at: new Date().toISOString() } as ScheduledTransaction)
+      await scheduledRepository.update(id, { ...current, ...data, updated_at: new Date().toISOString() } as ScheduledTransaction)
       await fetchScheduled(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to update scheduled transaction')
@@ -94,7 +94,7 @@ export const useScheduledStore = defineStore('scheduled', () => {
 
   const deleteScheduled = async (id: string) => {
     try {
-      await localDb.remove('scheduled', id)
+      await scheduledRepository.delete(id)
       await fetchScheduled(pagination.value.page)
     } catch (e: any) {
       uiStore.error(e?.message || 'Failed to delete scheduled transaction')
@@ -104,9 +104,9 @@ export const useScheduledStore = defineStore('scheduled', () => {
 
   const toggleScheduled = async (id: string) => {
     try {
-      const current = await localDb.get<ScheduledTransaction>('scheduled', id)
+      const current = await scheduledRepository.findById(id)
       if (current) {
-        await localDb.put('scheduled', id, { ...current, active: !current.active, updated_at: new Date().toISOString() } as ScheduledTransaction)
+        await scheduledRepository.update(id, { ...current, active: !current.active, updated_at: new Date().toISOString() } as ScheduledTransaction)
       }
       await fetchScheduled(pagination.value.page)
     } catch (e: any) {
