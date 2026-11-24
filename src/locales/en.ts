@@ -820,5 +820,12 @@ budgets: {
     expense: 'Expense',
     balance: 'Balance',
     thirtyDays: 'Last 30 Days'
+  },
+  monthlyDirs: {
+    title: 'Monthly Directories',
+    checking: 'Checking for new month directories...',
+    created: 'Created {{count}} day file(s) for {year}-{month}',
+    skipped: 'Day files already exist for {year}-{month}',
+    error: 'Failed to create monthly directories',
   }
 }

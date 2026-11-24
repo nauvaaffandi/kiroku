@@ -2,6 +2,8 @@
 
 // Infrastructure (core)
 export { filesystem } from './core/filesystem';
+export { checkAndProcessNewMonth } from './core/schedule-month-dirs';
+export type { MonthDirsResult } from './core/schedule-month-dirs';
 export { cacheRegistry, MemoryCache, CacheRegistryImpl } from './core/cache';
 export { writeQueue, type QueuedOperation } from './queue/write-queue';
 export { atomicWrite, type AtomicWriteResult } from './core/atomic-write';

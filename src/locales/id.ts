@@ -827,6 +827,13 @@ export default {
     balance: 'Saldo',
     thirtyDays: '30 Hari Terakhir'
   },
+  monthlyDirs: {
+    title: 'Direktori Bulanan',
+    checking: 'Memeriksa direktori bulan baru...',
+    created: 'Membuat {{count}} file hari untuk {year}-{month}',
+    skipped: 'File hari untuk {year}-{month} sudah ada',
+    error: 'Gagal membuat direktori bulanan',
+  },
   colorPicker: {
     open: 'Buka pilihan warna',
     options: 'Pilihan warna',

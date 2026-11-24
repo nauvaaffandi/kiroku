@@ -827,6 +827,13 @@ budgets: {
     balance: '残高',
     thirtyDays: '過去30日間'
   },
+  monthlyDirs: {
+    title: '月間ディレクトリ',
+    checking: '新しい月のディレクトリを確認しています...',
+    created: '{year}-{month} の日ファイルを {{count}} 個作成しました',
+    skipped: '{year}-{month} の日ファイルは既に存在します',
+    error: '月間ディレクトリの作成に失敗しました',
+  },
   colorPicker: {
     open: '色の選択肢を開く',
     options: '色の選択肢',
