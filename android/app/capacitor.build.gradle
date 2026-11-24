@@ -9,7 +9,14 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
+    implementation project(':capacitor-background-runner')
+    implementation project(':capacitor-camera')
+    implementation project(':capacitor-clipboard')
     implementation project(':capacitor-filesystem')
+    implementation project(':capacitor-geolocation')
+    implementation project(':capacitor-local-notifications')
+    implementation project(':capacitor-preferences')
+    implementation project(':capacitor-toast')
     implementation project(':capacitor-secure-storage-plugin')
 
 }

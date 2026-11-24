@@ -1,7 +1,35 @@
 [
 	{
+		"pkg": "@capacitor/background-runner",
+		"classpath": "io.ionic.backgroundrunner.plugin.BackgroundRunnerPlugin"
+	},
+	{
+		"pkg": "@capacitor/camera",
+		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
+	},
+	{
+		"pkg": "@capacitor/clipboard",
+		"classpath": "com.capacitorjs.plugins.clipboard.ClipboardPlugin"
+	},
+	{
 		"pkg": "@capacitor/filesystem",
 		"classpath": "com.capacitorjs.plugins.filesystem.FilesystemPlugin"
+	},
+	{
+		"pkg": "@capacitor/geolocation",
+		"classpath": "com.capacitorjs.plugins.geolocation.GeolocationPlugin"
+	},
+	{
+		"pkg": "@capacitor/local-notifications",
+		"classpath": "com.capacitorjs.plugins.localnotifications.LocalNotificationsPlugin"
+	},
+	{
+		"pkg": "@capacitor/preferences",
+		"classpath": "com.capacitorjs.plugins.preferences.PreferencesPlugin"
+	},
+	{
+		"pkg": "@capacitor/toast",
+		"classpath": "com.capacitorjs.plugins.toast.ToastPlugin"
 	},
 	{
 		"pkg": "capacitor-secure-storage-plugin",
