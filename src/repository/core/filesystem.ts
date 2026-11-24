@@ -43,15 +43,26 @@ export class FilesystemAdapter {
 
   async readDir(path: string): Promise<FileEntry[]> {
     log('readDir', path);
-    const result = await Filesystem.readdir({ path, directory: this.directory });
-    return (result.files ?? []).map((f) => ({
-      path: `${path}/${f.name}`,
-      uri: f.uri ?? '',
-      name: f.name,
-      type: f.type === 'file' ? 'file' : 'directory',
-      size: f.size ?? 0,
-      lastModified: f.mtime ?? 0,
-    }));
+    try {
+      const result = await Filesystem.readdir({ path, directory: this.directory });
+      return (result.files ?? []).map((f) => ({
+        path: `${path}/${f.name}`,
+        uri: f.uri ?? '',
+        name: f.name,
+        type: f.type === 'file' ? 'file' : 'directory',
+        size: f.size ?? 0,
+        lastModified: f.mtime ?? 0,
+      }));
+    } catch (err: any) {
+      const msg = err?.message ?? '';
+      if (/directory does not exist|not found|ENOENT/i.test(msg)) {
+        console.log(`[FilesystemAdapter] readDir: dir tidak ada, otomatis buat path=${path}`, { error: msg });
+        await Filesystem.mkdir({ path, directory: this.directory, recursive: true });
+        return [];
+      }
+      console.error(`[FilesystemAdapter] readDir error path=${path}`, err);
+      throw err;
+    }
   }
 
   async rename(from: string, to: string): Promise<void> {

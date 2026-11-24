@@ -4,13 +4,14 @@ import router from './router'
 import App from './App.vue'
 import './assets/main.css'
 import { useI18nStore } from '@/locales'
-import { cleanup, manifestManager } from '@/repository'
+import { cleanup, manifestManager, seed } from '@/repository'
 
 async function init() {
   // Initialize filesystem repository layer on app startup.
   // Wrapped in try/catch so a missing native plugin (e.g. browser/dev) does not
   // prevent the app from mounting.
   try {
+    await seed()
     await cleanup.runStartup()
     await manifestManager.load()
   } catch (e) {

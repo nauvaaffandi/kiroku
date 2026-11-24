@@ -6,6 +6,7 @@ export { cacheRegistry, MemoryCache, CacheRegistryImpl } from './core/cache';
 export { writeQueue, type QueuedOperation } from './queue/write-queue';
 export { atomicWrite, type AtomicWriteResult } from './core/atomic-write';
 export { cleanup } from './core/cleanup';
+export { seed } from './core/seed';
 export { manifestManager, type Manifest } from './core/manifest';
 export { journal } from './core/journal';
 
