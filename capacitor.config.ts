@@ -1,6 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-/// <reference types="@capacitor/background-runner" />
 /// <reference types="@capacitor/preferences" />
 /// <reference types="@capacitor/local-notifications" />
 /// <reference types="@capacitor/toast" />
@@ -14,14 +13,6 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   plugins: {
     SecureStoragePlugin: {},
-    BackgroundRunner: {
-      label: 'app.kiroku.finance.monthly.dirs',
-      src: 'background-runner.js',
-      event: 'kiroku_monthly_dirs',
-      repeat: true,
-      interval: 60,
-      autoStart: true,
-    },
     Camera: {},
     Clipboard: {},
     Geolocation: {},
