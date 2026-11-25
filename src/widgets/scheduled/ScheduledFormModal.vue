@@ -138,23 +138,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, withDefaults } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
 import { useI18n } from '@/locales'
-import type { ScheduledTransaction, ScheduledType, ScheduledFrequency } from '@/types'
+import type { ScheduledTransaction, ScheduledType, ScheduledFrequency, Account, Category } from '@/types'
 
 interface Props {
   modelValue: boolean
   scheduled?: ScheduledTransaction | null
+  accounts?: Account[]
+  categories?: Category[]
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  accounts: () => [],
+  categories: () => []
+})
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   submit: [data: Partial<ScheduledTransaction>]
 }>()
 
 const { t } = useI18n()
+
+const accounts = computed(() => props.accounts ?? [])
+const categories = computed(() => props.categories ?? [])
 
 const isOpen = ref(props.modelValue)
 const isEditing = computed(() => !!props.scheduled)
@@ -207,11 +215,13 @@ const frequencyOptions = [
   { value: 'custom', label: 'Custom (Cron)' }
 ]
 
-const accountOptions = computed(() => (props.scheduled?.from_account_id
-  ? [] // Would need accounts passed as prop
-  : []))
+const accountOptions = computed(() =>
+  accounts.value.map((a) => ({ value: a.id, label: a.name }))
+)
 
-const categoryOptions = computed(() => [])
+const categoryOptions = computed(() =>
+  categories.value.map((c) => ({ value: c.id, label: c.name }))
+)
 
 watch(() => props.modelValue, (val) => {
   isOpen.value = val

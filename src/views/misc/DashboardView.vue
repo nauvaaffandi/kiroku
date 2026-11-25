@@ -2,7 +2,10 @@
   <div class="dashboard-page">
     <main class="dashboard-main">
       <DashboardSummaryWidget />
-      <DashboardAccountsWidget />
+      <DashboardAccountsWidget
+        @view-accounts="router.push('/accounts')"
+        @add-account="router.push('/accounts')"
+      />
       <DashboardChartsWidget />
       <RecentTransactionsWidget
         :recentTransactions="recentTransactions"
@@ -15,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useTransactionsStore } from '@/stores/transactions'
 import { useAccountsStore } from '@/stores/accounts'
 import { useCategoriesStore } from '@/stores/categories'
@@ -26,6 +30,7 @@ import DashboardChartsWidget from '@/widgets/dashboard/DashboardChartsWidget.vue
 const transactionsStore = useTransactionsStore()
 const accountsStore = useAccountsStore()
 const categoriesStore = useCategoriesStore()
+const router = useRouter()
 
 console.log('[DashboardView] reading store data', {
   transactionCount: transactionsStore.transactions?.length,

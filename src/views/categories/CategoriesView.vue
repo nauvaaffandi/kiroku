@@ -40,6 +40,7 @@
       v-model="showFormModal"
       :category="editingCategory"
       :parent="creatingChildParent"
+      :parents="parents"
       @submit="handleFormSubmit"
     />
   </div>

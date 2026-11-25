@@ -44,6 +44,7 @@
       v-model="showFormModal"
       :category="editingCategory"
       :parent="parentCategory"
+      :parents="parents"
       @submit="handleFormSubmit"
     />
   </div>
@@ -67,6 +68,7 @@ const route = useRoute()
 const parentName = ref(decodeURIComponent(route.params.parentName as string))
 
 const categories = computed(() => categoriesStore.categories)
+const parents = computed(() => categories.value.filter(c => c.parent_id === null))
 
 const parentCategory = computed(() => {
   return categories.value.find(c => c.name === parentName.value && c.parent_id === null) || null

@@ -29,6 +29,8 @@
     <ScheduledFormModal
       v-model="showFormModal"
       :scheduled="editingScheduled"
+      :accounts="accountsStore.accounts"
+      :categories="categoriesStore.categories"
       @submit="handleFormSubmit"
     />
   </div>
@@ -37,6 +39,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useScheduledStore } from '@/stores/scheduled'
+import { useAccountsStore } from '@/stores/accounts'
+import { useCategoriesStore } from '@/stores/categories'
 import { useI18n } from '@/locales'
 import type { ScheduledTransaction, ScheduledFilters as ScheduledFiltersType } from '@/types'
 import { ScheduledList, ScheduledFormModal, ScheduledFilters } from '@/widgets/scheduled'
@@ -44,6 +48,8 @@ import { BaseButton } from '@/components/ui'
 import { Plus } from '@lucide/vue'
 
 const scheduledStore = useScheduledStore()
+const accountsStore = useAccountsStore()
+const categoriesStore = useCategoriesStore()
 const { t } = useI18n()
 
 const scheduled = computed(() => scheduledStore.scheduled)

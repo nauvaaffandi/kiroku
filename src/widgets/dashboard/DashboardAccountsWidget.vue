@@ -2,12 +2,12 @@
   <div class="dashboard-accounts" aria-labelledby="accounts-heading">
     <div class="accounts-header">
       <h2 id="accounts-heading" class="dashboard-heading">{{ t('dashboard.accounts') }}</h2>
-      <router-link to="/accounts" class="view-all">{{ t('dashboard.viewAll') }}</router-link>
+      <button class="view-all" @click="$emit('view-accounts')">{{ t('dashboard.viewAll') }}</button>
     </div>
 
     <div v-if="accounts.length === 0" class="accounts-empty">
       <p class="accounts-empty-text">{{ t('dashboard.noAccounts') }}</p>
-      <router-link to="/accounts" class="accounts-empty-link">{{ t('accounts.addAccount') }}</router-link>
+      <button class="accounts-empty-link" @click="$emit('add-account')">{{ t('accounts.addAccount') }}</button>
     </div>
 
     <div v-else class="accounts-list">
@@ -44,6 +44,11 @@ import { useSettingsStore } from '@/stores/settings'
 const { t } = useI18n()
 const accountsStore = useAccountsStore()
 const settingsStore = useSettingsStore()
+
+const emit = defineEmits<{
+  'view-accounts': []
+  'add-account': []
+}>()
 
 console.log('[DashboardAccounts] reading accounts from store', { accountCount: accountsStore.accounts?.length })
 

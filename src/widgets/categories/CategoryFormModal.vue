@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, withDefaults } from 'vue'
 import { BaseModal, BaseInput, BaseSelect, BaseButton } from '@/components/ui'
 import ColorPalette from '@/components/ui/ColorPalette.vue'
 import { useI18n } from '@/locales'
@@ -76,9 +76,12 @@ interface Props {
   modelValue: boolean
   category?: Category | null
   parent?: Category | null
+  parents?: Category[]
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  parents: () => []
+})
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   submit: [data: Partial<Category>]
@@ -122,7 +125,12 @@ const defaultForm = (): FormData => ({
 
 const formData = ref<FormData>(defaultForm())
 
-const parentOptions = computed(() => (props.category ? [] : []))
+const parentOptions = computed(() => {
+  const list = props.parents || []
+  return list
+    .filter((p) => !props.category || p.id !== props.category.id)
+    .map((p) => ({ value: p.id, label: p.name }))
+})
 
 watch(() => props.modelValue, (val) => {
   isOpen.value = val
