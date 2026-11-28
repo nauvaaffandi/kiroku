@@ -56,9 +56,7 @@
 import { ref } from 'vue'
 import { useI18n } from '@/locales'
 import { useReportsPage } from '@/composables/useReportsPage'
-import ReportsSidebar from '@/components/reports/ReportsSidebar.vue'
-import ReportsSpendingPanel from '@/components/reports/ReportsSpendingPanel.vue'
-import ReportsTrendPanel from '@/components/reports/ReportsTrendPanel.vue'
+import { ReportsSidebar, ReportsSpendingPanel, ReportsTrendPanel } from '@/widgets/reports'
 import CashflowTable from '@/components/charts/CashflowTable.vue'
 import { Download, FileText } from '@lucide/vue'
 
