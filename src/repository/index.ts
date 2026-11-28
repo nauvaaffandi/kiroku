@@ -19,6 +19,7 @@ export type { EntityKind, FileEntry, Filter, RepositoryConfig, WriteOperation };
 
 // Entity repositories
 export { accountRepository, type AccountRepository } from './entities/account.repository';
+export { currencyRepository, type CurrencyRepository } from './entities/currency.repository';
 export { categoryRepository, type CategoryRepository } from './entities/category.repository';
 export { labelRepository, type LabelRepository } from './entities/label.repository';
 export { notificationRepository, type NotificationRepository } from './entities/notification.repository';
