@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vue-tsc && bunx vite build",
+    "build": "bunx vue-tsc && bunx vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
