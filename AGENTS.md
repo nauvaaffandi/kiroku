@@ -123,11 +123,12 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - **Flow:** Component → composable (`src/composables/use*.ts`) → entity repository → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`. Components and views call composables, not repositories directly.
   - **Soft delete:** `deleted: true` + `deletedAt`; filtered out on all reads unless trash/restore
   - **Logging:** every get/save/update/delete must have `console.log` (input, response, errors) — in both the repository layer and its composable wrapper.
-  - **Repository composable pattern:** each `EntityKind` has one composable in `src/composables/` (`useAccounts.ts`, `useCategories.ts`, etc.) that wraps the repository instance. The composable:
-    - calls `console.log` at the start and end (success/error) of every operation,
+  - **Repository wrapper pattern:** use `useRepositoryProxy<T>(repo, entity)` from `src/composables/useRepositoryProxy.ts` to wrap any repository instance. The Proxy:
+    - calls `console.log` at the start and end (success/error) of every method automatically (no per-method registration needed),
     - triggers `useUIStore().error()` **only when an operation throws** — never on success,
-    - translates user-facing messages with `useI18n().t('repository.error.*', { entity })`,
+    - translates user-facing messages with `useI18n().t('repository.error.fetch', { entity })`,
     - re-throws the error after logging and notifying so callers can still handle it.
+    - Example: `const accountRepo = useRepositoryProxy(accountRepository, 'account')`
 - **Imports:** use the `@/` alias for `src/`.
 - **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/repository/`.
 - **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through composables → `src/repository/` (local JSON).
