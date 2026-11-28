@@ -107,15 +107,25 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `components/shared/` — shared access modals.
   - `src/widgets/` — self-contained, reusable UI compositions (NOT `components/widgets/`). Each widget folder has an `index.ts` entry point. Barrel at `src/widgets/index.ts`. Widgets are **not** feature-based or domain-based containers.
   - `src/stores/` — Pinia setup stores (13 stores). Components call stores; stores call the API or local storage.
-  - `src/storage/` — local SQLite via Capacitor (`LocalDatabase`, `localDb`). Offline-first data layer.
+  - `src/repository/` — local JSON via Capacitor `@capacitor/filesystem`. `entities/` holds repository functions per entity kind; `core/` holds filesystem, cache, journal, atomic-write, manifest, schedule-month-dirs, cleanup, seed. Offline-first data layer.
   - `src/composables/` — reusable composables + `index.ts` barrel.
   - `src/types/` — TypeScript types + `index.ts` + `pwa.d.ts`.
   - `src/utils/` — `amountDisplay.ts`, `categoryName.ts`, `exportExcel.ts`.
   - `src/api/` — `client.ts` (shared Axios only).
   - `src/locales/` — `en.ts`, `ja.ts`, `id.ts`, `index.ts` (custom Pinia-based i18n store, `useI18n()`).
+- **Repository infrastructure (`src/repository/`):**
+  - `index.ts` — barrel export (core, crud, entities, queue)
+  - `types.ts` — `EntityKind`, `FileEntry`, `Filter`, `RepositoryConfig`, `WriteOperation`, `JournalEntry`, `CacheEntry`
+  - `core/` — `filesystem` (Capacitor `Filesystem` wrapper, `Directory.Documents`), `cache` (MemoryCache + CacheRegistry), `journal` (crash-recovery log), `atomic-write` (two-phase commit via journal), `manifest` (manifest.json), `schedule-month-dirs` (daily `transaction/{y}/{m}/{d}.json`), `cleanup` (startup recovery), `seed` (init `data/{kind}` dirs)
+  - `crud/base.ts` — `BaseRepository<T>` (findById, findAll, create, update, soft-delete, count; in-memory cache + per-file locks)
+  - `entities/` — one repository per `EntityKind` extending `BaseRepository`; `transaction.repository.ts` overrides to store daily arrays with in-memory id→path index
+  - `queue/write-queue.ts` — `WriteQueue` (serialize writes per target file; not yet wired into BaseRepository)
+  - **Flow:** Pinia store → entity repository → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`
+  - **Soft delete:** `deleted: true` + `deletedAt`; filtered out on all reads unless trash/restore
+  - **Logging:** every get/save/update/delete must have `console.log` (input, response, errors)
 - **Imports:** use the `@/` alias for `src/`.
-- **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/storage/repository.ts`.
-- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through Pinia stores → `src/storage/repository.ts` (local SQLite).
+- **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/repository/`.
+- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through Pinia stores → `src/repository/` (local JSON).
 - **i18n:** use `const { t } = useI18n()` from `@/locales`. Add every new translation key to all three locale files: `en.ts`, `ja.ts`, and `id.ts`. English (`en`) is the fallback.
 - **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
 - **Utilities:** prefer `@vueuse` (already a dependency) for reusable utility composition (debounce, pagination, throttling, etc.) before writing custom composables. Check `@vueuse/core` exports first; only add a custom composable when `@vueuse` cannot cover the need.
@@ -130,7 +140,7 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
 
 Do not assume these are fine. Flag them to the user when your work touches them.
 
-1. **Backend removed.** `backend/` (Go server, SQLite, migrations) has been deleted. No backend routes, auth, JWT, or tunnel remain. The app is offline-first with local SQLite only.
+1. **Backend removed.** `backend/` (Go server, SQLite, migrations) has been deleted. No backend routes, auth, JWT, or tunnel remain. The app is offline-first with local JSON only.
 2. **No `start.sh`.** Previously referenced `start.sh` (PM2 + cloudflared); it does not exist. Do not reference it.
 3. **No `go.yml` CI.** `.github/workflows/go.yml` does not exist. Only `build-app.yml` (Android APK) is active.
 4. **No frontend tests.** `vitest` is configured for `tests/**` but the folder does not exist.
