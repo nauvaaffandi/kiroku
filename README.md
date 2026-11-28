@@ -56,9 +56,8 @@ All commands run from the repo root (there is no `frontend/` or `backend/` direc
 | Charts | `echarts` / `vue-echarts` |
 | Export | `jszip` |
 | Maps | `leaflet` |
-| HTTP client | `axios` (`baseURL: ''` — no remote backend) |
 | Native shell | `@capacitor/android` (Capacitor Android app) |
-| i18n | Custom Pinia-based store (`src/locales/`, `useI18n()`), locales `en.ts`, `ja.ts`, `id.ts` |
+| i18n | Custom Pinia-based store (`src/locales/language/`, `useI18n()`), locales `en.ts`, `ja.ts`, `id.ts` |
 
 See `package.json` for exact versions.
 
@@ -66,16 +65,15 @@ See `package.json` for exact versions.
 
 ## Architecture
 
-There is **no backend**. Data reads and writes go through Pinia stores → `src/storage/repository.ts` (local SQLite via Capacitor). `src/api/client.ts` creates a shared Axios instance with `baseURL: ''`. Do not hard-code a host and do not expect `/api/v1` endpoints.
+There is **no backend**. Data reads and writes go through composables → `src/repository/` → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`. Do not hard-code a host and do not expect `/api/v1` endpoints.
 
-Data layer (`src/storage/repository.ts`):
-- `LocalDatabase` opens the `kiroku` SQLite database (`no-encryption`), runs migrations from `src/storage/schema.ts`, and ensures an `entities` table.
+Data layer (`src/repository/`):
 - Entity kinds: `account`, `category`, `label`, `notification`, `transaction`, `template`, `scheduled`, `budget`, `goal`, `setting`.
-- Each entity row stores `id`, `kind`, `payload` (JSON), `updated_at`, and `deleted` (soft-delete flag).
+- Each entity stores `id`, `kind`, `payload` (JSON), `updated_at`, and `deleted` (soft-delete flag).
 - Queries filter `deleted = 0` unless the feature is trash or restore.
 
 State:
-- Pinia stores in `src/stores/` own reactive state; components call stores, stores call `src/storage/repository.ts` (local storage) or the (offline-only) API client.
+- Pinia stores in `src/stores/` own reactive state; components call composables (`src/composables/`), composables call `src/repository/` (local storage).
 - Settings live as one `setting` row (`id: 'settings'`, kind `setting`) whose `payload` is JSON shaped by `Settings` in `src/types/settings.ts`.
 
 Code conventions (from `AGENTS.md`):
@@ -112,13 +110,13 @@ Store API: `fetchSettings()`, `updateSettings(Partial<Settings>)`, `getSetting(k
 
 Theme is applied via `data-theme` on `<html>` through `useSettingsStore` / `useUIStore`; never manipulate `data-theme` directly elsewhere. Amounts are routed through `src/utils/amountDisplay.ts` so the hide-amounts setting stays effective; dates use `dayjs` respecting `date_format` and `week_start`.
 
-Settings UI sections (`src/components/settings/`): `SettingsThemeSection`, `SettingsCurrencyLanguageSection`, `SettingsDataSection`, `SettingsOCRAISection`. Widgets at `src/widgets/settings` (`SettingSection`, `SettingItem`).
+Settings UI sections (`src/views/settings/`): `SettingsThemeSection`, `SettingsCurrencyLanguageSection`, `SettingsDataSection`, `SettingsOCRAISection`. Widgets at `src/widgets/settings` (`SettingSection`, `SettingItem`).
 
 ---
 
 ## OCR & AI Provider Settings
 
-Two setting groups rendered by `SettingsOCRAISection.vue` (`src/components/settings/SettingsOCRAISection.vue`), each with its own toggle:
+Two setting groups rendered by `SettingsOCRAISection.vue` (`src/views/settings/SettingsOCRAISection.vue`), each with its own toggle:
 
 **OCR & Receipt Scanning** (`settings.ocrTitle` / i18n keys `settings.ocr*`):
 1. `ocr_enabled` — toggle ("Enable OCR receipt scanning")
@@ -134,7 +132,7 @@ Warning banner (`settings.aiLocalOnlyWarning`, key `aiLocalOnlyWarning`):
 
 > Stored locally only. No backend configured. OCR/AI calls not wired.
 
-All values are stored as JSON `payload` in the local SQLite `setting` row; API key fields (`ocr_api_key`, `ai_api_key`) are routed to secure storage (section 6), so SQLite stores `''` for them after migration.
+All values are stored as JSON `payload` in local JSON via `src/repository/`; API key fields (`ocr_api_key`, `ai_api_key`) are routed to secure storage (section 6), so SQLite stores `''` for them after migration.
 
 Offline-only note: no network request is wired for OCR or AI calls. `ocr_api_key` and `ai_api_key` are stored locally only. Actual OCR/AI provider integration requires a backend/network layer that does not exist in this repository.
 
@@ -177,7 +175,7 @@ npm run preview
 npm run test:run
 ```
 
-`npm run build` is also the type-check (`vue-tsc && vite build`).
+`npm run build` is also the type-check (`bunx vue-tsc && bunx vite build`).
 
 ---
 
@@ -232,7 +230,7 @@ Frontend variables (from `.env.example`):
 
 Backend variables in `.env.example` (PORT, JWT_SECRET, ARGON2_*, CLOUDFLARE_TUNNEL_ENABLED, etc.) are **reference only** — the Go backend is deleted; they are not read by the frontend. No `config.yaml` exists.
 
-Runtime: `axios` baseURL is `''`. There is no remote backend — do not hard-code a host, do not expect `/api/v1` endpoints.
+Runtime: No remote backend — data reads/writes go through composables → `src/repository/`. Do not hard-code a host, do not expect `/api/v1` endpoints.
 
 ---
 
