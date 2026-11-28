@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '@/views/misc/DashboardView.vue'
+import NotFoundView from '@/views/404.vue'
 import NotificationsView from '@/views/notifications/NotificationsView.vue'
 import TransactionsView from '@/views/transactions/TransactionsView.vue'
 import ScanReceiptView from '@/views/transactions/ScanReceiptView.vue'
@@ -120,6 +121,11 @@ const router = createRouter({
       path: '/goals',
       name: 'Goals',
       component: GoalsView
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFoundView
     }
   ]
 })
