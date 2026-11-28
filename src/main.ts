@@ -5,7 +5,6 @@ import App from './App.vue'
 import './assets/main.css'
 import { useI18nStore } from '@/locales'
 import { cleanup, manifestManager, seed, checkAndProcessNewMonth } from '@/repository'
-import { registerMonthlyDirsBackgroundTask } from './background-tasks'
 
 async function init() {
   // Initialize filesystem repository layer on app startup.
@@ -17,8 +16,6 @@ async function init() {
     await manifestManager.load()
     // Auto-create transaction day files for a new month (year taken from current date).
     await checkAndProcessNewMonth()
-    // Register monthly directory background task (capgo background-task).
-    await registerMonthlyDirsBackgroundTask()
   } catch (e) {
     console.error('[Repository] startup init failed:', e)
   }

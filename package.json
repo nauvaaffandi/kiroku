@@ -22,7 +22,6 @@
     "@capacitor/local-notifications": "^8.3.1",
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/toast": "^8.0.1",
-    "@capgo/capacitor-background-task": "^8.1.14",
     "@lucide/vue": "^1.59.0",
     "axios": "^1.6.7",
     "capacitor-secure-storage-plugin": "^0.14.2",

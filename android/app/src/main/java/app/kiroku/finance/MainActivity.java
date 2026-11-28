@@ -2,7 +2,6 @@ package app.kiroku.finance;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
-import app.capgo.backgroundtask.BackgroundTaskPlugin;
 import com.capacitorjs.plugins.camera.CameraPlugin;
 import com.capacitorjs.plugins.clipboard.ClipboardPlugin;
 import com.capacitorjs.plugins.geolocation.GeolocationPlugin;
@@ -14,7 +13,6 @@ public class MainActivity extends BridgeActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    this.registerPlugin(BackgroundTaskPlugin.class);
     this.registerPlugin(CameraPlugin.class);
     this.registerPlugin(ClipboardPlugin.class);
     this.registerPlugin(GeolocationPlugin.class);

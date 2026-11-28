@@ -23,8 +23,5 @@ project(':capacitor-preferences').projectDir = new File('../node_modules/@capaci
 include ':capacitor-toast'
 project(':capacitor-toast').projectDir = new File('../node_modules/@capacitor/toast/android')
 
-include ':capgo-capacitor-background-task'
-project(':capgo-capacitor-background-task').projectDir = new File('../node_modules/@capgo/capacitor-background-task/android')
-
 include ':capacitor-secure-storage-plugin'
 project(':capacitor-secure-storage-plugin').projectDir = new File('../node_modules/capacitor-secure-storage-plugin/android')
