@@ -876,4 +876,11 @@ budgets: {
       notFound: '{{entity}} not found',
     },
   },
+  notFound: {
+    title: '404',
+    message: 'Page not found',
+    subtitle: 'The page you are looking for does not exist.',
+    home: 'Go Home',
+    character: '😵‍💫'
+  },
 }

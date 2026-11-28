@@ -887,4 +887,11 @@ export default {
       notFound: '{{entity}} tidak ditemukan',
     },
   },
+  notFound: {
+    title: '404',
+    message: 'Halaman tidak ditemukan',
+    subtitle: 'Halaman yang Anda cari tidak ada.',
+    home: 'Kembali ke Beranda',
+    character: '😵‍💫'
+  },
 }

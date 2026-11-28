@@ -1,6 +1,6 @@
-import en from './en'
-import ja from './ja'
-import id from './id'
+import en from './language/en'
+import ja from './language/ja'
+import id from './language/id'
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 

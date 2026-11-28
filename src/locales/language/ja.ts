@@ -887,4 +887,11 @@ budgets: {
       notFound: '{{entity}} が見つかりません',
     },
   },
+  notFound: {
+    title: '404',
+    message: 'ページが見つかりません',
+    subtitle: 'お探しのページは存在しません。',
+    home: 'ホームへ戻る',
+    character: '😵‍💫'
+  },
 }
