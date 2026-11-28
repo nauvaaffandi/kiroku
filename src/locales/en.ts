@@ -860,5 +860,20 @@ budgets: {
     created: 'Created {{count}} day file(s) for {year}-{month}',
     skipped: 'Day files already exist for {year}-{month}',
     error: 'Failed to create monthly directories',
-  }
+  },
+  repository: {
+    success: {
+      fetch: '{{entity}} retrieved',
+      save: '{{entity}} saved',
+      update: '{{entity}} updated',
+      delete: '{{entity}} deleted',
+    },
+    error: {
+      fetch: 'Failed to load {{entity}}',
+      save: 'Failed to save {{entity}}',
+      update: 'Failed to update {{entity}}',
+      delete: 'Failed to delete {{entity}}',
+      notFound: '{{entity}} not found',
+    },
+  },
 }

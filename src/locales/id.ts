@@ -871,5 +871,20 @@ export default {
     open: 'Buka pilihan warna',
     options: 'Pilihan warna',
     select: 'Pilih warna {{color}}'
-  }
+  },
+  repository: {
+    success: {
+      fetch: '{{entity}} berhasil diambil',
+      save: '{{entity}} berhasil disimpan',
+      update: '{{entity}} berhasil diperbarui',
+      delete: '{{entity}} berhasil dihapus',
+    },
+    error: {
+      fetch: 'Gagal memuat {{entity}}',
+      save: 'Gagal menyimpan {{entity}}',
+      update: 'Gagal memperbarui {{entity}}',
+      delete: 'Gagal menghapus {{entity}}',
+      notFound: '{{entity}} tidak ditemukan',
+    },
+  },
 }

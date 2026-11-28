@@ -871,5 +871,20 @@ budgets: {
     open: '色の選択肢を開く',
     options: '色の選択肢',
     select: '色 {{color}} を選択'
-  }
+  },
+  repository: {
+    success: {
+      fetch: '{{entity}} を取得しました',
+      save: '{{entity}} を保存しました',
+      update: '{{entity}} を更新しました',
+      delete: '{{entity}} を削除しました',
+    },
+    error: {
+      fetch: '{{entity}} の読み込みに失敗しました',
+      save: '{{entity}} の保存に失敗しました',
+      update: '{{entity}} の更新に失敗しました',
+      delete: '{{entity}} の削除に失敗しました',
+      notFound: '{{entity}} が見つかりません',
+    },
+  },
 }
