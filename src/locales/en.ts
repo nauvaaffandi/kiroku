@@ -195,6 +195,14 @@ export default {
     placeholderBalance: '0.00',
     archived: 'Archived',
     btnCreateAccount: 'Create Account',
+    searchPlaceholder: 'Search accounts...',
+    allTypes: 'All Types',
+    allCurrencies: 'All Currencies',
+    allStatus: 'All Status',
+    filterAll: 'All',
+    typeBank: 'Bank',
+    typeCreditCard: 'Credit Card',
+    typeEWallet: 'E-Wallet',
     fetchError: 'Failed to load accounts'
   },
   categories: {
@@ -767,7 +775,19 @@ budgets: {
     addScheduled: 'Add Scheduled',
     noScheduledTransactions: 'No scheduled transactions yet',
     addScheduledTransaction: 'Add Scheduled Transaction',
-    deleteConfirm: 'Delete this scheduled transaction?'
+    deleteConfirm: 'Delete this scheduled transaction?',
+    searchPlaceholder: 'Search scheduled transactions...',
+    allTypes: 'All Types',
+    allFrequencies: 'All Frequencies',
+    allStatus: 'All Status',
+    filterAll: 'All',
+    filterActive: 'Active',
+    filterInactive: 'Inactive',
+    freqDaily: 'Daily',
+    freqWeekly: 'Weekly',
+    freqMonthly: 'Monthly',
+    freqYearly: 'Yearly',
+    freqCustom: 'Custom'
   },
   colorPicker: {
     open: 'Open color choices',

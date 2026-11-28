@@ -4,7 +4,7 @@
       <BaseInput
         v-model="localFilters.q"
         type="search"
-        placeholder="Search scheduled transactions..."
+        :placeholder="t('scheduled.searchPlaceholder')"
         @input="emitSearch"
       />
     </div>
@@ -12,7 +12,7 @@
       <BaseSelect
         v-model="localFilters.type"
         :options="typeOptions"
-        placeholder="All Types"
+        :placeholder="t('scheduled.allTypes')"
         @change="emitChange"
       />
     </div>
@@ -20,7 +20,7 @@
       <BaseSelect
         v-model="localFilters.frequency"
         :options="frequencyOptions"
-        placeholder="All Frequencies"
+        :placeholder="t('scheduled.allFrequencies')"
         @change="emitChange"
       />
     </div>
@@ -28,7 +28,7 @@
       <BaseSelect
         v-model="localFilters.active"
         :options="activeOptions"
-        placeholder="All Status"
+        :placeholder="t('scheduled.allStatus')"
         @change="emitChange"
       />
     </div>
@@ -36,8 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { BaseInput, BaseSelect } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { ScheduledFilters } from '@/types'
 
 interface Props {
@@ -54,29 +55,31 @@ const emit = defineEmits<{
 
 const localFilters = ref<ScheduledFilters>({ ...props.modelValue })
 
+const { t } = useI18n()
+
 watch(() => props.modelValue, (newVal) => {
   localFilters.value = { ...newVal }
 }, { deep: true })
 
-const typeOptions = [
-  { value: 'income', label: 'Income' },
-  { value: 'expense', label: 'Expense' },
-  { value: 'transfer', label: 'Transfer' }
-]
+const typeOptions = computed(() => [
+  { value: 'income', label: t('transactions.typeIncome') },
+  { value: 'expense', label: t('transactions.typeExpense') },
+  { value: 'transfer', label: t('transactions.typeTransfer') }
+])
 
-const frequencyOptions = [
-  { value: 'daily', label: 'Daily' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'monthly', label: 'Monthly' },
-  { value: 'yearly', label: 'Yearly' },
-  { value: 'custom', label: 'Custom' }
-]
+const frequencyOptions = computed(() => [
+  { value: 'daily', label: t('scheduled.freqDaily') },
+  { value: 'weekly', label: t('scheduled.freqWeekly') },
+  { value: 'monthly', label: t('scheduled.freqMonthly') },
+  { value: 'yearly', label: t('scheduled.freqYearly') },
+  { value: 'custom', label: t('scheduled.freqCustom') }
+])
 
-const activeOptions = [
-  { value: '', label: 'All' },
-  { value: 'true', label: 'Active' },
-  { value: 'false', label: 'Inactive' }
-]
+const activeOptions = computed(() => [
+  { value: '', label: t('scheduled.filterAll') },
+  { value: 'true', label: t('scheduled.filterActive') },
+  { value: 'false', label: t('scheduled.filterInactive') }
+])
 
 const emitChange = () => {
   emit('update:modelValue', { ...localFilters.value })

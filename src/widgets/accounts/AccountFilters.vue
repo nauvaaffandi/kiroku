@@ -4,7 +4,7 @@
       <BaseInput
         v-model="localFilters.q"
         type="search"
-        placeholder="Search accounts..."
+        :placeholder="t('accounts.searchPlaceholder')"
         @input="emitSearch"
       />
     </div>
@@ -12,7 +12,7 @@
       <BaseSelect
         v-model="localFilters.type"
         :options="typeOptions"
-        placeholder="All Types"
+        :placeholder="t('accounts.allTypes')"
         @change="emitChange"
       />
     </div>
@@ -20,7 +20,7 @@
       <BaseSelect
         v-model="localFilters.currency"
         :options="currencyOptions"
-        placeholder="All Currencies"
+        :placeholder="t('accounts.allCurrencies')"
         @change="emitChange"
       />
     </div>
@@ -28,7 +28,7 @@
       <BaseSelect
         v-model="localFilters.archived"
         :options="archivedOptions"
-        placeholder="All Status"
+        :placeholder="t('accounts.allStatus')"
         @change="emitChange"
       />
     </div>
@@ -38,10 +38,13 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { BaseInput, BaseSelect } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { AccountFilters } from '@/types'
 import { useCurrencies } from '@/composables/useCurrencies'
 
 const { currencies } = useCurrencies()
+const { t } = useI18n()
+
 const currencyOptions = computed(() => currencies.value.map(c => ({ value: c, label: c })))
 
 interface Props {
@@ -62,20 +65,20 @@ watch(() => props.modelValue, (newVal) => {
   localFilters.value = { ...newVal }
 }, { deep: true })
 
-const typeOptions = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'bank', label: 'Bank' },
-  { value: 'credit_card', label: 'Credit Card' },
-  { value: 'investment', label: 'Investment' },
-  { value: 'ewallet', label: 'E-Wallet' },
-  { value: 'other', label: 'Other' }
-]
+const typeOptions = computed(() => [
+  { value: 'cash', label: t('accounts.typeCash') },
+  { value: 'bank', label: t('accounts.typeBank') },
+  { value: 'credit_card', label: t('accounts.typeCreditCard') },
+  { value: 'investment', label: t('accounts.typeInvestment') },
+  { value: 'ewallet', label: t('accounts.typeEWallet') },
+  { value: 'other', label: t('accounts.typeOther') }
+])
 
-const archivedOptions = [
-  { value: '', label: 'All' },
-  { value: 'false', label: 'Active' },
-  { value: 'true', label: 'Archived' }
-]
+const archivedOptions = computed(() => [
+  { value: '', label: t('accounts.filterAll') },
+  { value: 'false', label: t('categories.filterActive') },
+  { value: 'true', label: t('accounts.archived') }
+])
 
 const emitChange = () => {
   emit('update:modelValue', { ...localFilters.value })

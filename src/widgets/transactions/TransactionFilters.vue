@@ -4,14 +4,14 @@
       <BaseInput
         v-model="localSearchQuery"
         type="search"
-        placeholder="Search transactions..."
+        :placeholder="t('transactions.searchPlaceholder')"
       />
     </div>
     <div class="filter-group">
       <BaseSelect
         v-model="localFilters.type"
         :options="typeOptions"
-        placeholder="All Types"
+        :placeholder="t('transactions.allTypes')"
         @change="emitChange"
       />
     </div>
@@ -19,7 +19,7 @@
       <BaseSelect
         v-model="localFilters.category_id"
         :options="categoryOptions"
-        placeholder="All Categories"
+        :placeholder="t('transactions.allCategories')"
         @change="emitChange"
       />
     </div>
@@ -41,7 +41,7 @@
       <BaseSelect
         v-model="localFilters.status"
         :options="statusOptions"
-        placeholder="All Status"
+        :placeholder="t('transactions.allStatus')"
         @change="emitChange"
       />
     </div>
@@ -49,7 +49,7 @@
       <BaseSelect
         v-model="localFilters.account_id"
         :options="accountOptions"
-        placeholder="All Accounts"
+        :placeholder="t('transactions.allAccounts')"
         @change="emitChange"
       />
     </div>
@@ -57,8 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { BaseInput, BaseSelect } from '@/components/ui'
+import { useI18n } from '@/locales'
 import type { TransactionFilters, Category, Account } from '@/types'
 
 interface Props {
@@ -78,6 +79,8 @@ const emit = defineEmits<{
 const localFilters = ref<TransactionFilters>({ ...props.modelValue })
 const localSearchQuery = ref(props.searchQuery)
 
+const { t } = useI18n()
+
 watch(() => props.modelValue, (newVal) => {
   localFilters.value = { ...newVal }
 }, { deep: true })
@@ -90,16 +93,16 @@ watch(localSearchQuery, (value) => {
   emit('search', value)
 })
 
-const typeOptions = [
-  { value: 'income', label: 'Income' },
-  { value: 'expense', label: 'Expense' },
-  { value: 'transfer', label: 'Transfer' }
-]
+const typeOptions = computed(() => [
+  { value: 'income', label: t('transactions.typeIncome') },
+  { value: 'expense', label: t('transactions.typeExpense') },
+  { value: 'transfer', label: t('transactions.typeTransfer') }
+])
 
-const statusOptions = [
-  { value: 'cleared', label: 'Cleared' },
-  { value: 'pending', label: 'Pending' }
-]
+const statusOptions = computed(() => [
+  { value: 'cleared', label: t('transactions.statusCleared') },
+  { value: 'pending', label: t('transactions.statusPending') }
+])
 
 const categoryOptions = props.categories.map(c => ({
   value: c.id,

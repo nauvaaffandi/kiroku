@@ -195,6 +195,14 @@ export default {
     placeholderBalance: '0.00',
     archived: 'アーカイブ済み',
     btnCreateAccount: '口座を作成',
+    searchPlaceholder: '口座を検索...',
+    allTypes: 'すべての種類',
+    allCurrencies: 'すべての通貨',
+    allStatus: 'すべてのステータス',
+    filterAll: 'すべて',
+    typeBank: '銀行',
+    typeCreditCard: 'クレジットカード',
+    typeEWallet: '電子マネー',
     fetchError: 'アカウントの読み込みに失敗しました'
   },
   categories: {
@@ -778,7 +786,19 @@ budgets: {
     addScheduled: '定期取引を追加',
     noScheduledTransactions: '定期取引はまだありません',
     addScheduledTransaction: '定期取引を追加',
-    deleteConfirm: 'この定期取引を削除しますか？'
+    deleteConfirm: 'この定期取引を削除しますか？',
+    searchPlaceholder: '定期取引を検索...',
+    allTypes: 'すべての種類',
+    allFrequencies: 'すべての頻度',
+    allStatus: 'すべてのステータス',
+    filterAll: 'すべて',
+    filterActive: '有効',
+    filterInactive: '無効',
+    freqDaily: '日次',
+    freqWeekly: '週次',
+    freqMonthly: '月次',
+    freqYearly: '年次',
+    freqCustom: 'カスタム'
   },
   receipt: {
     scanDesc: 'レシートをスキャンまたはアップロードして取引を作成',

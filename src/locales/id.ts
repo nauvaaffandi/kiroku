@@ -195,6 +195,14 @@ export default {
     placeholderBalance: '0.00',
     archived: 'Diarsipkan',
     btnCreateAccount: 'Buat Akun',
+    searchPlaceholder: 'Cari akun...',
+    allTypes: 'Semua Tipe',
+    allCurrencies: 'Semua Mata Uang',
+    allStatus: 'Semua Status',
+    filterAll: 'Semua',
+    typeBank: 'Bank',
+    typeCreditCard: 'Kartu Kredit',
+    typeEWallet: 'E-Wallet',
     fetchError: 'Gagal memuat akun'
   },
   categories: {
@@ -778,7 +786,19 @@ export default {
     addScheduled: 'Tambah Terjadwal',
     noScheduledTransactions: 'Belum ada transaksi terjadwal',
     addScheduledTransaction: 'Tambah Transaksi Terjadwal',
-    deleteConfirm: 'Hapus transaksi terjadwal ini?'
+    deleteConfirm: 'Hapus transaksi terjadwal ini?',
+    searchPlaceholder: 'Cari transaksi terjadwal...',
+    allTypes: 'Semua Tipe',
+    allFrequencies: 'Semua Frekuensi',
+    allStatus: 'Semua Status',
+    filterAll: 'Semua',
+    filterActive: 'Aktif',
+    filterInactive: 'Tidak Aktif',
+    freqDaily: 'Harian',
+    freqWeekly: 'Mingguan',
+    freqMonthly: 'Bulanan',
+    freqYearly: 'Tahunan',
+    freqCustom: 'Custom'
   },
   receipt: {
     scanDesc: 'Pindai atau unggah receipt untuk membuat transaksi',
