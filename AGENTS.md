@@ -100,19 +100,15 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `components/common/` — shared components that do not belong to a more specific category.
   - `components/charts/` — chart components.
   - `components/icons/` — icon components.
-  - `components/auth/` — auth modals (PIN, fingerprint, Telegram).
-  - `components/forms/` — form controls (FAB, TransactionForm, etc.).
-  - `components/reports/` — report panels.
-  - `components/settings/` — settings UI.
+  - `components/forms/` — form controls.
   - `components/shared/` — shared access modals.
   - `src/widgets/` — self-contained, reusable UI compositions (NOT `components/widgets/`). Each widget folder has an `index.ts` entry point. Barrel at `src/widgets/index.ts`. Widgets are **not** feature-based or domain-based containers.
-  - `src/stores/` — Pinia setup stores (13 stores). Components call stores; stores call the API or local storage.
+  - `src/stores/` — Pinia setup stores. Components call stores; stores call composables or `src/repository/`.
   - `src/repository/` — local JSON via Capacitor `@capacitor/filesystem`. `entities/` holds repository functions per entity kind; `core/` holds filesystem, cache, journal, atomic-write, manifest, schedule-month-dirs, cleanup, seed. Offline-first data layer.
   - `src/composables/` — reusable composables + `index.ts` barrel.
-  - `src/types/` — TypeScript types + `index.ts` + `pwa.d.ts`.
-  - `src/utils/` — `amountDisplay.ts`, `categoryName.ts`, `exportExcel.ts`.
-  - `src/api/` — `client.ts` (shared Axios only).
-  - `src/locales/` — `en.ts`, `ja.ts`, `id.ts`, `index.ts` (custom Pinia-based i18n store, `useI18n()`).
+  - `src/types/` — TypeScript types + `index.ts`.
+  - `src/utils/` — utility functions used across features.
+  - `src/locales/` — `language/` folder with `en.ts`, `ja.ts`, `id.ts` + `index.ts` barrel (custom Pinia-based i18n store, `useI18n()`).
 - **Repository infrastructure (`src/repository/`):**
   - `index.ts` — barrel export (core, crud, entities, queue)
   - `types.ts` — `EntityKind`, `FileEntry`, `Filter`, `RepositoryConfig`, `WriteOperation`, `JournalEntry`, `CacheEntry`
@@ -120,7 +116,7 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `crud/base.ts` — `BaseRepository<T>` (findById, findAll, create, update, soft-delete, count; in-memory cache + per-file locks)
   - `entities/` — one repository per `EntityKind` extending `BaseRepository`; `transaction.repository.ts` overrides to store daily arrays with in-memory id→path index
   - `queue/write-queue.ts` — `WriteQueue` (serialize writes per target file; not yet wired into BaseRepository)
-  - **Flow:** Component → composable (`src/composables/use*.ts`) → entity repository → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`. Components and views call composables, not repositories directly.
+  - **Flow:** Component → composable (`src/composables/use*.ts`) → entity repository → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`. Components and views may call composables directly, or wrap a repository instance with `useRepositoryProxy`.
   - **Soft delete:** `deleted: true` + `deletedAt`; filtered out on all reads unless trash/restore
   - **Logging:** every get/save/update/delete must have `console.log` (input, response, errors) — in both the repository layer and its composable wrapper.
   - **Repository wrapper pattern:** use `useRepositoryProxy<T>(repo, entity)` from `src/composables/useRepositoryProxy.ts` to wrap any repository instance. The Proxy:
@@ -130,32 +126,20 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
     - re-throws the error after logging and notifying so callers can still handle it.
     - Example: `const accountRepo = useRepositoryProxy(accountRepository, 'account')`
 - **Imports:** use the `@/` alias for `src/`.
-- **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/repository/`.
-- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through composables → `src/repository/` (local JSON).
+- **State:** Pinia stores in `src/stores/`. Components call stores; stores call composables or `src/repository/`. Components may also use `useRepositoryProxy` to access repository directly.
 - **i18n:** use `const { t } = useI18n()` from `@/locales`. Add every new translation key to all three locale files: `en.ts`, `ja.ts`, and `id.ts`. English (`en`) is the fallback.
-- **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
+- **Icons:** use `@lucide/vue` first (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
 - **Utilities:** prefer `@vueuse` (already a dependency) for reusable utility composition (debounce, pagination, throttling, etc.) before writing custom composables. Check `@vueuse/core` exports first; only add a custom composable when `@vueuse` cannot cover the need.
 - **Money:** format values with `Intl.NumberFormat` using the user's number-format settings. Route displayed amounts through `utils/amountDisplay` so the **hide amounts** setting remains effective. Right-align monetary values and use tabular numerals.
 - **Dates:** use `dayjs`. Respect the `date_format` and `week_start` settings.
 - **Theme:** read and update theme state through `useSettingsStore` / `useUIStore`. Never manipulate `data-theme` directly elsewhere.
-- **Storage:** entities are soft-deleted (`deleted = 1`). Queries must filter `deleted = 0` unless the feature is about trash or restore.
+- **Storage:** entities are soft-deleted (`deleted = true`). Queries must filter `deleted = false` unless the feature is about trash or restore.
 - **Accessibility:** use semantic `<button>` and `<a>` elements, provide accessible labels for icon-only buttons, maintain visible `:focus-visible` states, ensure touch targets are at least 44px, and never rely on color alone to distinguish income from expenses.
 - **Logging:** Full frontend, no complex logging level. Always use `console.log()` for all data flow operations. Every **get**, **save**, **update**, and **delete** process MUST have `console.log()` to trace input payload, response data, and errors. Never log secrets, PINs, or raw auth tokens.
 
-## 5. Known gaps
-
-Do not assume these are fine. Flag them to the user when your work touches them.
-
-1. **Backend removed.** `backend/` (Go server, SQLite, migrations) has been deleted. No backend routes, auth, JWT, or tunnel remain. The app is offline-first with local JSON only.
-2. **No `start.sh`.** Previously referenced `start.sh` (PM2 + cloudflared); it does not exist. Do not reference it.
-3. **No `go.yml` CI.** `.github/workflows/go.yml` does not exist. Only `build-app.yml` (Android APK) is active.
-4. **No frontend tests.** `vitest` is configured for `tests/**` but the folder does not exist.
-5. **`.env.example` is partly decorative.** It contains frontend vars (`VITE_BACKEND_URL`, `VITE_VAPID_PUBLIC_KEY`, etc.) plus commented-out backend reference vars (PORT, JWT_SECRET, ARGON2_*, 9Router, OCR) that are not read from the environment. No `config.yaml` exists.
-6. **Offline-only API client.** `@/api/client` returns `''` for base URL — no remote backend. Do not write code assuming `/api/v1` endpoints exist.
-
 ## 6. Definition of done
 
-- Frontend change: `npm run build` passes from repo root (this runs `vue-tsc`).
+- Frontend change: if the task has nothing to do with the changed files, skip verification. For simple one-off changes, run `npm run ts-check` (vue-tsc type-check only). For heavy or structural changes, run `npm run build` (vue-tsc + vite build) from repo root.
 - UI change: checked in **light and dark**, at 360px width, with long text (Japanese and Indonesian strings are longer or wider than English), and with the hide-amounts setting on.
 - New strings exist in `en`, `ja` and `id`.
 - Styling follows section 3 and uses only tokens from DESIGN.md.

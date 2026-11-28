@@ -4,9 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "bunx vite --host",
     "build": "bunx vue-tsc && bunx vite build",
-    "preview": "vite preview",
+    "ts-check": "bunx vue-tsc",
+    "build:only": "bunx vite build",
+    "preview": "bunx vite preview",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage"
