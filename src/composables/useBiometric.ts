@@ -1,27 +1,9 @@
 import { ref, computed } from 'vue'
+import type { BiometricSupportResult, BiometricStatus } from '@/types'
 
 // Storage keys
 const BIOMETRIC_CREDENTIAL_ID_KEY = 'kiroku_biometric_credential_id'
 const BIOMETRIC_ENABLED_KEY = 'kiroku_biometric_enabled'
-
-// Types
-export interface BiometricCredential {
-  id: string
-  rawId: ArrayBuffer
-  type: 'public-key'
-}
-
-export interface BiometricSupportResult {
-  supported: boolean
-  reason?: string
-}
-
-export interface BiometricStatus {
-  supported: boolean
-  enabled: boolean
-  credentialRegistered: boolean
-  reason?: string
-}
 
 /**
  * Check if the device/browser supports WebAuthn (biometric authentication)

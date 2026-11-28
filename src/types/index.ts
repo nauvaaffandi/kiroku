@@ -6,8 +6,14 @@ export * from './common'
 // Currency
 export * from './currency'
 
+// Exchange
+export * from './exchange'
+
 // Auth
 export * from './auth'
+
+// Biometric
+export * from './biometric'
 
 // Transactions
 export * from './transaction'
