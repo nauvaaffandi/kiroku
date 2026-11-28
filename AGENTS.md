@@ -120,12 +120,17 @@ Use Tailwind's built-in `dark:` variant for dark-mode styling. Apply it directly
   - `crud/base.ts` — `BaseRepository<T>` (findById, findAll, create, update, soft-delete, count; in-memory cache + per-file locks)
   - `entities/` — one repository per `EntityKind` extending `BaseRepository`; `transaction.repository.ts` overrides to store daily arrays with in-memory id→path index
   - `queue/write-queue.ts` — `WriteQueue` (serialize writes per target file; not yet wired into BaseRepository)
-  - **Flow:** Pinia store → entity repository → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`
+  - **Flow:** Component → composable (`src/composables/use*.ts`) → entity repository → `BaseRepository` → `filesystem` → local JSON at `data/{kind}/`. Components and views call composables, not repositories directly.
   - **Soft delete:** `deleted: true` + `deletedAt`; filtered out on all reads unless trash/restore
-  - **Logging:** every get/save/update/delete must have `console.log` (input, response, errors)
+  - **Logging:** every get/save/update/delete must have `console.log` (input, response, errors) — in both the repository layer and its composable wrapper.
+  - **Repository composable pattern:** each `EntityKind` has one composable in `src/composables/` (`useAccounts.ts`, `useCategories.ts`, etc.) that wraps the repository instance. The composable:
+    - calls `console.log` at the start and end (success/error) of every operation,
+    - triggers `useUIStore().error()` **only when an operation throws** — never on success,
+    - translates user-facing messages with `useI18n().t('repository.error.*', { entity })`,
+    - re-throws the error after logging and notifying so callers can still handle it.
 - **Imports:** use the `@/` alias for `src/`.
 - **State:** Pinia stores in `src/stores/`. Components call stores; stores call the API or `src/repository/`.
-- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through Pinia stores → `src/repository/` (local JSON).
+- **API:** always use the shared Axios instance from `@/api/client`. **Offline app:** `baseURL` is `''`. There is **no remote backend** — do not hard-code a host, do not expect `/api/v1` endpoints. Data writes/reads go through composables → `src/repository/` (local JSON).
 - **i18n:** use `const { t } = useI18n()` from `@/locales`. Add every new translation key to all three locale files: `en.ts`, `ja.ts`, and `id.ts`. English (`en`) is the fallback.
 - **Icons:** use `@lucide/vue` (already a dependency) for new icons. Do not introduce inline `<svg>` blocks. Emoji are reserved for user-selected category and account icons, never UI chrome.
 - **Utilities:** prefer `@vueuse` (already a dependency) for reusable utility composition (debounce, pagination, throttling, etc.) before writing custom composables. Check `@vueuse/core` exports first; only add a custom composable when `@vueuse` cannot cover the need.
