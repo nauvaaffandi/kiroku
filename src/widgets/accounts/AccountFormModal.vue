@@ -124,14 +124,14 @@ const defaultForm = (): FormData => ({
 
 const formData = ref<FormData>(defaultForm())
 
-const typeOptions = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'checking', label: 'Checking' },
-  { value: 'savings', label: 'Savings' },
-  { value: 'credit', label: 'Credit' },
-  { value: 'investment', label: 'Investment' },
-  { value: 'other', label: 'Other' }
-]
+const typeOptions = computed(() => [
+  { value: 'cash', label: t('accounts.typeCash') },
+  { value: 'checking', label: t('accounts.typeChecking') },
+  { value: 'savings', label: t('accounts.typeSavings') },
+  { value: 'credit', label: t('accounts.typeCredit') },
+  { value: 'investment', label: t('accounts.typeInvestment') },
+  { value: 'other', label: t('accounts.typeOther') }
+])
 
 watch(() => props.modelValue, (val) => {
   isOpen.value = val

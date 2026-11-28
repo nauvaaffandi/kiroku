@@ -10,7 +10,7 @@
       </div>
       <div class="account-badges">
         <span v-if="account.archived" class="account-type-badge archived">{{ t('accounts.archived') }}</span>
-        <div class="account-type-badge" :class="account.type">{{ account.type }}</div>
+        <div class="account-type-badge" :class="account.type">{{ accountTypeLabel }}</div>
       </div>
     </div>
     <h3 class="account-name">{{ account.name }}</h3>
@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BaseButton } from '@/components/ui'
 import { useI18n } from '@/locales'
 import { getCurrencySymbol } from '@/utils/amountDisplay'
@@ -44,6 +45,18 @@ defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+const accountTypeLabel = computed(() => {
+  const map: Record<string, string> = {
+    cash: t('accounts.typeCash'),
+    checking: t('accounts.typeChecking'),
+    savings: t('accounts.typeSavings'),
+    credit: t('accounts.typeCredit'),
+    investment: t('accounts.typeInvestment'),
+    other: t('accounts.typeOther')
+  }
+  return map[props.account.type] || props.account.type
+})
 
 const settingsStore = useSettingsStore()
 
