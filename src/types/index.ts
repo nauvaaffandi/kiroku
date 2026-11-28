@@ -9,9 +9,6 @@ export * from './currency'
 // Exchange
 export * from './exchange'
 
-// Auth
-export * from './auth'
-
 // Transactions
 export * from './transaction'
 
