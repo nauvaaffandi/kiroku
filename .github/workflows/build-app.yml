@@ -43,22 +43,9 @@ jobs:
           mkdir -p android/app/src/main/assets/public
           cp -r dist/* android/app/src/main/assets/public/
 
-      - name: Clean Gradle jar caches
-        run: rm -rf ~/.gradle/caches/jars-9 ~/.gradle/caches/modules-2/files-2.1/org.bouncycastle
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('gradle-wrapper.properties') }}-${{ hashFiles('**/*.gradle') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
       - name: Build APK
         working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon --no-build-cache
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
 
       - name: Rename APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk kiroku.apk
