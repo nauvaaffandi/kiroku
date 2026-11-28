@@ -3,12 +3,10 @@ import { useSettingsStore } from '@/stores/settings'
 import { useUIStore } from '@/stores/ui'
 import type { Theme, WeekStart } from '@/types'
 import { useCurrencies } from '@/composables/useCurrencies'
-import { useBiometric } from '@/composables/useBiometric'
 
 export function useSettingsPage() {
   const settingsStore = useSettingsStore()
   const uiStore = useUIStore()
-  const { status, enable, disable, loading: biometricLoading, refreshStatus } = useBiometric()
   const settings = computed(() => settingsStore.settings)
 
   const theme = computed<Theme>({
@@ -77,15 +75,9 @@ export function useSettingsPage() {
     uiStore.success('Settings saved')
   }
 
-  const toggleBiometric = async () => {
-    if (status.value.enabled) { const ok = await disable(); if (ok) uiStore.success('Biometric disabled') }
-    else { const ok = await enable(); if (ok) uiStore.success('Biometric enabled') }
-  }
-
   return {
     settings, theme, weekStartStr, newCurrencyCode, totpButtonVariant, currencies,
     currencyOptions, themeOptions, dateFormatOptions, numberFormatOptions, weekStartOptions,
-    handleAddCurrency, onThemeChange, onWeekStartChange, saveSettings, toggleBiometric,
-    biometricLoading, status, refreshStatus
+    handleAddCurrency, onThemeChange, onWeekStartChange, saveSettings
   }
 }

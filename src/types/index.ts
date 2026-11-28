@@ -12,9 +12,6 @@ export * from './exchange'
 // Auth
 export * from './auth'
 
-// Biometric
-export * from './biometric'
-
 // Transactions
 export * from './transaction'
 
