@@ -1,31 +1,30 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from '@/locales'
-import { useUIStore } from '@/stores/ui'
 import { currencyRepository } from '@/repository'
+import { useRepositoryProxy } from './useRepositoryProxy'
 
 export function useCurrencies() {
   const currencies = ref<string[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
   const { t } = useI18n()
-  const uiStore = useUIStore()
+
+  const repo = useRepositoryProxy(currencyRepository, 'currency')
 
   const fetchCurrencies = async () => {
     loading.value = true
     error.value = null
     try {
-      const picked = await currencyRepository.findPicked()
+      const picked = await repo.findPicked()
       currencies.value = picked.map((c) => c.code)
       console.log('[useCurrencies] fetchCurrencies', {
         count: currencies.value.length,
         codes: currencies.value,
       })
-  } catch (e: any) {
-    const errMsg = e.message || t('repository.error.fetch', { entity: 'currency' })
-    error.value = errMsg
-    currencies.value = []
-    uiStore.error(errMsg)
-    console.error('[useCurrencies] fetchCurrencies error', errMsg)
+    } catch (e: any) {
+      error.value = e.message || t('repository.error.fetch', { entity: 'currency' })
+      currencies.value = []
+      console.error('[useCurrencies] fetchCurrencies error', error.value)
     } finally {
       loading.value = false
     }
@@ -33,14 +32,12 @@ export function useCurrencies() {
 
   const addCurrency = async (code: string): Promise<boolean> => {
     try {
-      await currencyRepository.pick(code)
+      await repo.pick(code)
       await fetchCurrencies()
       console.log('[useCurrencies] addCurrency', { code, success: true })
       return true
     } catch (e: any) {
-      const errMsg = e.message || t('repository.error.save', { entity: 'currency' })
-      error.value = errMsg
-      uiStore.error(errMsg)
+      error.value = e.message || t('repository.error.save', { entity: 'currency' })
       console.error('[useCurrencies] addCurrency error', {
         code,
         error: error.value,
@@ -51,7 +48,7 @@ export function useCurrencies() {
 
   const removeCurrency = async (code: string): Promise<boolean> => {
     try {
-      await currencyRepository.unpick(code)
+      await repo.unpick(code)
       await fetchCurrencies()
       console.log('[useCurrencies] removeCurrency', {
         code,
@@ -59,9 +56,7 @@ export function useCurrencies() {
       })
       return true
     } catch (e: any) {
-      const errMsg = e.message || t('repository.error.delete', { entity: 'currency' })
-      error.value = errMsg
-      uiStore.error(errMsg)
+      error.value = e.message || t('repository.error.delete', { entity: 'currency' })
       console.error('[useCurrencies] removeCurrency error', {
         code,
         error: error.value,
