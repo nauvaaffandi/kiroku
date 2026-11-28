@@ -27,10 +27,10 @@ import { useSettingsStore } from '@/stores/settings'
 import { useSettingsPage } from '@/composables/useSettingsPage'
 import { useSettingsData } from '@/composables/useSettingsData'
 import type { WeekStart } from '@/types'
-import SettingsThemeSection from '@/components/settings/SettingsThemeSection.vue'
-import SettingsCurrencyLanguageSection from '@/components/settings/SettingsCurrencyLanguageSection.vue'
-import SettingsDataSection from '@/components/settings/SettingsDataSection.vue'
-import SettingsOCRAISection from '@/components/settings/SettingsOCRAISection.vue'
+import SettingsThemeSection from '@/views/settings/SettingsThemeSection.vue'
+import SettingsCurrencyLanguageSection from '@/views/settings/SettingsCurrencyLanguageSection.vue'
+import SettingsDataSection from '@/views/settings/SettingsDataSection.vue'
+import SettingsOCRAISection from '@/views/settings/SettingsOCRAISection.vue'
 
 const settingsStore = useSettingsStore()
 const { t } = useI18n()
